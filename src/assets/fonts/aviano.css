@@ -1,0 +1,139 @@
+/* Aviano Regular */
+@font-face {
+  font-family: "Aviano";
+  src: url("./Aviano/Aviano-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Aviano Bold */
+@font-face {
+  font-family: "Aviano";
+  src: url("./Aviano/Aviano-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Aviano Black */
+@font-face {
+  font-family: "Aviano";
+  src: url("./Aviano/Aviano-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Aviano Light */
+@font-face {
+  font-family: "Aviano";
+  src: url("./Aviano/Aviano-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Serif Variants */
+@font-face {
+  font-family: "Aviano Serif";
+  src: url("./Aviano/Aviano-Serif-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Serif";
+  src: url("./Aviano/Aviano-Serif-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Serif";
+  src: url("./Aviano/Aviano-Serif-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Serif";
+  src: url("./Aviano/Aviano-Serif-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Royale Variants */
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Heavy.otf") format("opentype");
+  font-weight: 950;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Royale";
+  src: url("./Aviano/Aviano-Royale-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* Didone Variants */
+@font-face {
+  font-family: "Aviano Didone";
+  src: url("./Aviano/Aviano-Didone-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Didone";
+  src: url("./Aviano/Aviano-Didone-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Didone";
+  src: url("./Aviano/Aviano-Didone-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Didone";
+  src: url("./Aviano/Aviano-Didone-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Aviano Didone";
+  src: url("./Aviano/Aviano-Didone-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+}
