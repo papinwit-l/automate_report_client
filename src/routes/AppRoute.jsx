@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
+import DataSheet from "@/pages/DataSheet";
 import Home from "@/pages/Home";
 import React from "react";
 import {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "/data-sheet",
+        element: <DataSheet />,
       },
     ],
   },
