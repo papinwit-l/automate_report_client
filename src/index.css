@@ -2,13 +2,14 @@
 @import "tw-animate-css";
 
 @theme {
-  --color-main-primary: #003342;
+  --color-main-primary: #c15b42;
   --color-main-secondary: #9a8669;
   --color-main-tertiary: #b8a469;
   --color-main-quaternary: #333333;
   --color-main-primary-hover: #00242e;
   --color-main-secondary-hover: #8e7b60;
   --color-text-primary: #06262d;
+  --font-header: "Baskervville", serif;
 }
 
 @custom-variant dark (&:is(.dark *));

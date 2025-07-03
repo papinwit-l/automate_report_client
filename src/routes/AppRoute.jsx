@@ -1,6 +1,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import DataSheet from "@/pages/DataSheet";
 import Home from "@/pages/Home";
+import SlideRport from "@/pages/SlideRport";
 import React from "react";
 import {
   createBrowserRouter,
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/data-sheet",
         element: <DataSheet />,
+      },
+      {
+        path: "/slide-report",
+        element: <SlideRport />,
       },
     ],
   },
