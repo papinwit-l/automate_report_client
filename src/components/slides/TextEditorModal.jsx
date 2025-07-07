@@ -31,6 +31,7 @@ const TextEditorModal = ({
   const resetToDefault = () => {
     // setTempText(initialText);
     revertText();
+    onClose();
   };
 
   const insertFormatting = (startTag, endTag) => {

@@ -26,6 +26,8 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   const [hasPotentialChannel, setHasPotentialChannel] = React.useState(false);
   const [potentialChannelText, setPotentialChannelText] = React.useState("");
 
+  const [summaryText, setSummaryText] = React.useState("");
+
   const handleGetData = useCallback(async () => {
     try {
       setLoading(true);
@@ -181,11 +183,16 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   };
 
   const summarizeData = () => {
-    setSummaryOverallText(
-      `Overall: **CPL ${parseFloat(
-        totalData?.cpl?.toFixed(2) || 0
-      )?.toLocaleString()} THB with ${totalData.Conversions || 0} conversions**`
-    );
+    let summaryTextTemp = "";
+    const overallText = `Overall: **CPL ${parseFloat(
+      totalData?.cpl?.toFixed(2) || 0
+    )?.toLocaleString()} THB with ${totalData.Conversions || 0} conversions**`;
+    summaryTextTemp = `<li>${overallText}</li>`;
+
+    let highestConversionChannelText = ``;
+    let highestConversionRateChannelText = ``;
+
+    setSummaryOverallText(overallText);
 
     const channelEntries = Object.entries(channelData);
 
@@ -200,25 +207,26 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
     );
 
     if (channelEntries.length > 1) {
-      setHighestConversionChannelText(
-        `Highest conversion channel: **${topConversionChannel[0]} with ${
-          topConversionChannel[1].Conversions
-        } conversions (${(
-          (topConversionChannel[1].Conversions / totalData.Conversions) *
-          100
-        ).toFixed(2)}% of total conversions)**`
-      );
+      highestConversionChannelText = `Highest conversion channel: **${
+        topConversionChannel[0]
+      } with ${topConversionChannel[1].Conversions} conversions (${(
+        (topConversionChannel[1].Conversions / totalData.Conversions) *
+        100
+      ).toFixed(2)}% of total conversions)**`;
+      setHighestConversionChannelText(highestConversionChannelText);
+      summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
     if (topConversionChannel[0] != topConversionRateChannel[0]) {
+      highestConversionRateChannelText = `Highest conversion rate channel: **${
+        topConversionRateChannel[0]
+      } with ${topConversionRateChannel[1].conRate.toFixed(
+        2
+      )}% conversion rate**`;
       setHasPotentialChannel(true);
-      setPotentialChannelText(
-        `Potential channel: **${
-          topConversionRateChannel[0]
-        } with ${topConversionRateChannel[1].conRate.toFixed(
-          2
-        )}% conversion rate**`
-      );
+      setPotentialChannelText(highestConversionRateChannelText);
+      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
     }
+    setSummaryText(summaryTextTemp);
   };
 
   useEffect(() => {
@@ -278,7 +286,10 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   };
 
   return (
-    <div className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4">
+    <div
+      id="overall-component"
+      className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4"
+    >
       <SlideHeader title={"Overall"} />
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-8 gap-2">
@@ -341,73 +352,28 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
         <div className="mt-4 border-1 rounded-xl shadow-lg p-4">
           <h4 className="text-lg font-semibold">Summary</h4>
           <ul className="list-disc pl-6">
-            <li>
-              <div
-                className="flex-1"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryOverallText),
-                }}
-              />
-              {/* Overall:{" "}
-              <span className="font-semibold">
-                CPL{" "}
-                {`${parseFloat(
-                  totalData?.cpl?.toFixed(2) || 0
-                )?.toLocaleString()}`}{" "}
-                THB with {totalData.Conversions || 0} conversions
-              </span> */}
-            </li>
-            {highestConversionChannelText.length > 0 &&
-              Object.keys(channelData).length > 1 && (
-                <li>
-                  <div
-                    className="flex-1"
-                    dangerouslySetInnerHTML={{
-                      __html: renderFormattedText(highestConversionChannelText),
-                    }}
-                  />
-                  {/* Highest conversion channel:{" "}
-                  <span className="font-semibold">
-                    {channelStats.topConversionChannel[0]} with{" "}
-                    {channelStats.topConversionChannel[1].Conversions}{" "}
-                    conversions (
-                    {(
-                      (channelStats.topConversionChannel[1].Conversions /
-                        totalData.Conversions) *
-                      100
-                    ).toFixed(2)}
-                    % of all conversions)
-                  </span> */}
-                </li>
-              )}
-            {hasPotentialChannel && (
-              <li>
-                <div
-                  className="flex-1"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(potentialChannelText),
-                  }}
-                />
-              </li>
-            )}
-            {/* {channelStats && !channelStats.isTopConversionAlsoTopRate && (
-              <li>
-                Potential channel:{" "}
-                <span className="font-semibold">
-                  {channelStats.topConversionRateChannel[0]} with{" "}
-                  {channelStats.topConversionRateChannel[1].conRate.toFixed(2)}%
-                  conversion rate
-                </span>
-              </li>
-            )} */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: renderFormattedText(summaryText),
+              }}
+            />
           </ul>
         </div>
       </div>
-      <TextEditorModal
+      {/* <TextEditorModal
         isOpen={isOverallEditModalOpen}
         onClose={() => setIsOverallEditModalOpen(false)}
         onSave={(newText) => setSummaryOverallText(newText)}
         initialText={summaryOverallText}
+        revertText={summarizeData}
+        title="Edit Summary Text"
+        placeholder="Enter your summary text..."
+      /> */}
+      <TextEditorModal
+        isOpen={isOverallEditModalOpen}
+        onClose={() => setIsOverallEditModalOpen(false)}
+        onSave={(newText) => setSummaryText(newText)}
+        initialText={summaryText}
         revertText={summarizeData}
         title="Edit Summary Text"
         placeholder="Enter your summary text..."
