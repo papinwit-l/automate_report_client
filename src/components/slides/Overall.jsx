@@ -3,8 +3,9 @@ import SlideHeader from "./SlideHeader";
 import PerformanceDataTable from "../charts-tables/PerformanceDataTable";
 import axios from "axios";
 import NumberDisplayBox from "./NumberDisplayBox";
+import TextEditorModal from "./TextEditorModal";
 
-function Overall() {
+function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   const [totalData, setTotalData] = React.useState({});
   const [channelData, setChannelData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
@@ -18,6 +19,12 @@ function Overall() {
     "Post Engagement",
     "Value",
   ]);
+
+  const [summaryOverallText, setSummaryOverallText] = React.useState("");
+  const [highestConversionChannelText, setHighestConversionChannelText] =
+    React.useState("");
+  const [hasPotentialChannel, setHasPotentialChannel] = React.useState(false);
+  const [potentialChannelText, setPotentialChannelText] = React.useState("");
 
   const handleGetData = useCallback(async () => {
     try {
@@ -173,9 +180,57 @@ function Overall() {
     };
   };
 
+  const summarizeData = () => {
+    setSummaryOverallText(
+      `Overall: **CPL ${parseFloat(
+        totalData?.cpl?.toFixed(2) || 0
+      )?.toLocaleString()} THB with ${totalData.Conversions || 0} conversions**`
+    );
+
+    const channelEntries = Object.entries(channelData);
+
+    if (channelEntries.length === 0) return null;
+
+    const topConversionChannel = channelEntries.reduce((max, current) =>
+      current[1].Conversions > max[1].Conversions ? current : max
+    );
+
+    const topConversionRateChannel = channelEntries.reduce((max, current) =>
+      current[1].conRate > max[1].conRate ? current : max
+    );
+
+    if (channelEntries.length > 1) {
+      setHighestConversionChannelText(
+        `Highest conversion channel: **${topConversionChannel[0]} with ${
+          topConversionChannel[1].Conversions
+        } conversions (${(
+          (topConversionChannel[1].Conversions / totalData.Conversions) *
+          100
+        ).toFixed(2)}% of total conversions)**`
+      );
+    }
+    if (topConversionChannel[0] != topConversionRateChannel[0]) {
+      setHasPotentialChannel(true);
+      setPotentialChannelText(
+        `Potential channel: **${
+          topConversionRateChannel[0]
+        } with ${topConversionRateChannel[1].conRate.toFixed(
+          2
+        )}% conversion rate**`
+      );
+    }
+  };
+
   useEffect(() => {
     handleGetData();
+    summarizeData();
   }, []);
+
+  useEffect(() => {
+    if (totalData && Object.keys(totalData).length > 0) {
+      summarizeData();
+    }
+  }, [totalData]);
 
   // Show loading state
   if (loading) {
@@ -203,6 +258,25 @@ function Overall() {
 
   const channelStats = getChannelStats();
 
+  const renderFormattedText = (text) => {
+    // Simple HTML parsing for basic formatting
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/__(.*?)__/g, "<u>$1</u>")
+      .replace(/~~(.*?)~~/g, '<span class="text-red-500">$1</span>')
+      .replace(/\+\+(.*?)\+\+/g, '<span class="text-green-500">$1</span>')
+      .replace(
+        /\[\[(.*?)\]\]/g,
+        '<span class="text-blue-500 font-semibold">$1</span>'
+      )
+      .replace(/\{\{(.*?)\}\}/g, '<span class="text-lg font-bold">$1</span>')
+      .replace(
+        /\(\((.*?)\)\)/g,
+        '<span class="text-sm text-gray-600">$1</span>'
+      );
+  };
+
   return (
     <div className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4">
       <SlideHeader title={"Overall"} />
@@ -228,18 +302,27 @@ function Overall() {
             title={"%CTR"}
             value={`${totalData.ctr?.toFixed(2)}%`}
           />
+
+          {/* Conversion */}
           <NumberDisplayBox
             title={"Conversions"}
             value={totalData.Conversions?.toLocaleString() || "0"}
+            isConversion={true}
           />
           <NumberDisplayBox
             title={"%Con Rate"}
             value={`${totalData.conRate?.toFixed(2)}%`}
+            isConversion={true}
           />
-          <NumberDisplayBox title={"CPL"} value={convertToBMK(totalData.cpl)} />
+          <NumberDisplayBox
+            title={"CPL"}
+            value={convertToBMK(totalData.cpl)}
+            isConversion={true}
+          />
           <NumberDisplayBox
             title={"Spent"}
             value={convertToBMK(totalData.Spent)}
+            isConversion={true}
           />
         </div>
 
@@ -259,32 +342,55 @@ function Overall() {
           <h4 className="text-lg font-semibold">Summary</h4>
           <ul className="list-disc pl-6">
             <li>
-              Overall:{" "}
+              <div
+                className="flex-1"
+                dangerouslySetInnerHTML={{
+                  __html: renderFormattedText(summaryOverallText),
+                }}
+              />
+              {/* Overall:{" "}
               <span className="font-semibold">
                 CPL{" "}
                 {`${parseFloat(
                   totalData?.cpl?.toFixed(2) || 0
                 )?.toLocaleString()}`}{" "}
                 THB with {totalData.Conversions || 0} conversions
-              </span>
+              </span> */}
             </li>
-            {channelStats && Object.keys(channelData).length > 1 && (
+            {highestConversionChannelText.length > 0 &&
+              Object.keys(channelData).length > 1 && (
+                <li>
+                  <div
+                    className="flex-1"
+                    dangerouslySetInnerHTML={{
+                      __html: renderFormattedText(highestConversionChannelText),
+                    }}
+                  />
+                  {/* Highest conversion channel:{" "}
+                  <span className="font-semibold">
+                    {channelStats.topConversionChannel[0]} with{" "}
+                    {channelStats.topConversionChannel[1].Conversions}{" "}
+                    conversions (
+                    {(
+                      (channelStats.topConversionChannel[1].Conversions /
+                        totalData.Conversions) *
+                      100
+                    ).toFixed(2)}
+                    % of all conversions)
+                  </span> */}
+                </li>
+              )}
+            {hasPotentialChannel && (
               <li>
-                Highest conversion channel:{" "}
-                <span className="font-semibold">
-                  {channelStats.topConversionChannel[0]} with{" "}
-                  {channelStats.topConversionChannel[1].Conversions} conversions{" "}
-                  (
-                  {(
-                    (channelStats.topConversionChannel[1].Conversions /
-                      totalData.Conversions) *
-                    100
-                  ).toFixed(2)}
-                  % of all conversions)
-                </span>
+                <div
+                  className="flex-1"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(potentialChannelText),
+                  }}
+                />
               </li>
             )}
-            {channelStats && !channelStats.isTopConversionAlsoTopRate && (
+            {/* {channelStats && !channelStats.isTopConversionAlsoTopRate && (
               <li>
                 Potential channel:{" "}
                 <span className="font-semibold">
@@ -293,10 +399,19 @@ function Overall() {
                   conversion rate
                 </span>
               </li>
-            )}
+            )} */}
           </ul>
         </div>
       </div>
+      <TextEditorModal
+        isOpen={isOverallEditModalOpen}
+        onClose={() => setIsOverallEditModalOpen(false)}
+        onSave={(newText) => setSummaryOverallText(newText)}
+        initialText={summaryOverallText}
+        revertText={summarizeData}
+        title="Edit Summary Text"
+        placeholder="Enter your summary text..."
+      />
     </div>
   );
 }
