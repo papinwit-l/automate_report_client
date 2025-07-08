@@ -31,12 +31,12 @@ function SlideReport() {
         bgcolor: "#ffffff",
         width: element.offsetWidth,
         height: element.offsetHeight,
-        style: {
-          transform: "scale(2)",
-          transformOrigin: "top left",
-          width: element.offsetWidth + "px",
-          height: element.offsetHeight + "px",
-        },
+        // style: {
+        //   transform: "scale(2)",
+        //   transformOrigin: "top left",
+        //   width: element.offsetWidth + "px",
+        //   height: element.offsetHeight + "px",
+        // },
         filter: (node) => {
           // Filter out any problematic nodes if needed
           return true;
