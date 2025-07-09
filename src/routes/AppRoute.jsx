@@ -1,3 +1,4 @@
+import { DataProvider } from "@/contexts/dataContext";
 import MainLayout from "@/layouts/MainLayout";
 import DataSheet from "@/pages/DataSheet";
 import Home from "@/pages/Home";
@@ -24,7 +25,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/slide-report",
-        element: <SlideRport />,
+        element: (
+          <DataProvider>
+            <SlideRport />
+          </DataProvider>
+        ),
       },
     ],
   },

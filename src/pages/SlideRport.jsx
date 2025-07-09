@@ -1,5 +1,7 @@
 import Overall from "@/components/slides/Overall";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useData } from "@/contexts/dataContext";
 import domtoimage from "dom-to-image";
 import React from "react";
 
@@ -9,6 +11,15 @@ function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [presentationUrl, setPresentationUrl] = React.useState(null);
+  const [sheetsID, setSheetsID] = React.useState(
+    "Please enter a Google Sheets link"
+  );
+  const [sheetsLinkInput, setSheetsLinkInput] = React.useState("");
+  const [ableToGenerate, setAbleToGenerate] = React.useState(false);
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [slideGernerated, setSlideGenerated] = React.useState(false);
+
+  const { fetchData } = useData();
 
   const handleExportToSlides = async () => {
     setIsExporting(true);
@@ -56,7 +67,7 @@ function SlideReport() {
           },
           body: JSON.stringify({
             imageData: imageData,
-            title: "Performance Dashboard",
+            title: "Monthly Report",
             slideTitle: "Overall Performance",
           }),
         }
@@ -152,6 +163,35 @@ function SlideReport() {
     }
   };
 
+  const handleSheetsLinkChange = (event) => {
+    const value = event.target.value;
+    setSheetsLinkInput(value);
+    const match = value.match(
+      /^(https:\/\/docs\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9-_]+)/
+    );
+    if (!match) {
+      setSheetsID("Invalid Sheets Link");
+      setAbleToGenerate(false);
+      return;
+    }
+    const sheetsId = match[2];
+    setSheetsID(sheetsId);
+    setAbleToGenerate(true);
+  };
+
+  const handleGenerate = async () => {
+    if (!ableToGenerate) {
+      alert("Please enter a valid Google Sheets link");
+      return;
+    }
+    try {
+      await fetchData(sheetsID);
+      setSlideGenerated(true);
+    } catch (error) {
+      alert("Failed to generate slides: " + error.message);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full p-4">
       <h1 className="text-2xl font-bold mb-4">Slide Report</h1>
@@ -180,10 +220,27 @@ function SlideReport() {
 
       <div className="flex flex-col w-full items-center gap-4">
         {/* Controls */}
+        <div className="flex flex-col gap-2 w-full max-w-[500px]">
+          <div className="flex gap-2">
+            <Input
+              id="sheet-link"
+              type="text"
+              placeholder="Please enter a Google Sheets link"
+              onChange={handleSheetsLinkChange}
+            />
+            <Button
+              disabled={isGenerating || !ableToGenerate}
+              onClick={handleGenerate}
+            >
+              Generate Google Slide
+            </Button>
+          </div>
+          <p>ID: {sheetsID}</p>
+        </div>
         <div className="flex gap-2 mb-4">
           <Button
             onClick={handleExportToSlides}
-            disabled={isExporting}
+            disabled={isExporting || !slideGernerated}
             className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
           >
             {isExporting
@@ -209,16 +266,18 @@ function SlideReport() {
         </div>
 
         {/* Component to be exported */}
-        <div className="w-full flex justify-center">
-          <Overall
-            isOverallEditModalOpen={isOverallEditModalOpen}
-            setIsOverallEditModalOpen={setIsOverallEditModalOpen}
-          />
-        </div>
+        {slideGernerated && (
+          <div className="w-full flex justify-center">
+            <Overall
+              isOverallEditModalOpen={isOverallEditModalOpen}
+              setIsOverallEditModalOpen={setIsOverallEditModalOpen}
+            />
+          </div>
+        )}
       </div>
 
       {/* Debug Info (remove in production) */}
-      {process.env.NODE_ENV === "development" && (
+      {/* {process.env.NODE_ENV === "development" && (
         <div className="mt-8 p-4 bg-gray-100 rounded text-sm">
           <h3 className="font-semibold mb-2">Debug Info:</h3>
           <p>
@@ -227,7 +286,7 @@ function SlideReport() {
           <p>Component ID: overall-component</p>
           <p>Presentation URL: {presentationUrl || "None created yet"}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
