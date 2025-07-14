@@ -1,4 +1,5 @@
 import Overall from "@/components/slides/Overall";
+import SEMSlide from "@/components/slides/SEMSlide";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useData } from "@/contexts/dataContext";
@@ -8,6 +9,7 @@ import React from "react";
 function SlideReport() {
   const [isOverallEditModalOpen, setIsOverallEditModalOpen] =
     React.useState(false);
+  const [isSEMEditModalOpen, setIsSEMEditModalOpen] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [presentationUrl, setPresentationUrl] = React.useState(null);
@@ -268,9 +270,13 @@ function SlideReport() {
         {/* Component to be exported */}
         {slideGernerated && (
           <div className="w-full flex justify-center">
-            <Overall
+            {/* <Overall
               isOverallEditModalOpen={isOverallEditModalOpen}
               setIsOverallEditModalOpen={setIsOverallEditModalOpen}
+            /> */}
+            <SEMSlide
+              isSEMEditModalOpen={isSEMEditModalOpen}
+              setIsSEMEditModalOpen={setIsSEMEditModalOpen}
             />
           </div>
         )}
