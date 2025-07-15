@@ -18,19 +18,13 @@ export const useData = () => {
 };
 
 export const DataProvider = ({ children }) => {
-  const [totalData, setTotalData] = useState({});
-  const [channelData, setChannelData] = useState({});
+  const [enableDateRange, setEnableDateRange] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    from: undefined,
+    to: undefined,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [metrics, setMetrics] = useState([
-    "Impressions",
-    "Reach",
-    "Clicks",
-    "Conversions",
-    "Spent",
-    "Post Engagement",
-    "Value",
-  ]);
   const [SEMData, setSEMData] = useState({});
   const [SEMTotals, setSEMTotals] = useState({});
   const [SEMMetrics, setSEMMetrics] = useState([
@@ -40,87 +34,125 @@ export const DataProvider = ({ children }) => {
     "Conversions",
     "Spent",
   ]);
+  const [SEMComparison, setSEMComparison] = useState({});
 
-  const processChannelDataAll = (cleanedData, metrics, finalMetrics) => {
-    // Group by channel
-    const summaryByChannel = cleanedData.reduce((acc, item) => {
-      const channel = item.Channel || "Unknown";
-      if (!acc[channel]) {
-        acc[channel] = Object.fromEntries(metrics.map((m) => [m, 0]));
-      }
-      for (const key of metrics) {
-        acc[channel][key] += item[key];
-      }
-      return acc;
-    }, {});
-
-    // Add calculations for each channel
-    const enhancedChannelData = {};
-    Object.entries(summaryByChannel).forEach(([channel, data]) => {
-      const ctr =
-        data.Impressions > 0 ? (data.Clicks / data.Impressions) * 100 : 0;
-      const conRate =
-        data.Clicks > 0 ? (data.Conversions / data.Clicks) * 100 : 0;
-      const cpl = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
-
-      enhancedChannelData[channel] = {
-        ...data,
-        ctr,
-        conRate,
-        cpl,
-      };
-    });
-
-    // Calculate totals
-    const totals = Object.fromEntries(metrics.map((m) => [m, 0]));
-    Object.values(summaryByChannel).forEach((channelValues) => {
-      for (const key of metrics) {
-        totals[key] += channelValues[key];
-      }
-    });
-
-    // Add calculated totals
-    const totalCtr =
-      totals.Impressions > 0 ? (totals.Clicks / totals.Impressions) * 100 : 0;
-    const totalConRate =
-      totals.Clicks > 0 ? (totals.Conversions / totals.Clicks) * 100 : 0;
-    const totalCpl =
-      totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
-
-    const enhancedTotals = {
-      ...totals,
-      ctr: totalCtr,
-      conRate: totalConRate,
-      cpl: totalCpl,
-    };
-
-    return { enhancedChannelData, enhancedTotals, allMetrics: finalMetrics };
+  // Helper function to calculate date difference in days
+  const getDateDifference = (from, to) => {
+    // Convert to Date objects if they're strings
+    const fromDate = from instanceof Date ? from : new Date(from);
+    const toDate = to instanceof Date ? to : new Date(to);
+    return Math.abs(toDate - fromDate) / (1000 * 60 * 60 * 24);
   };
 
-  const processKeywordsData = (cleanedData, metrics, finalMetrics) => {
-    // Group by Keywords
-    const summaryByKeyword = cleanedData.reduce((acc, item) => {
-      const keyword = item.Keyword || "Unknown";
+  // Helper function to get previous period dates
+  const getPreviousPeriodDates = (from, to) => {
+    const fromDate = from instanceof Date ? from : new Date(from);
+    const toDate = to instanceof Date ? to : new Date(to);
 
-      if (!acc[keyword]) {
-        acc[keyword] = Object.fromEntries(metrics.map((m) => [m, 0]));
+    const daysDifference = getDateDifference(fromDate, toDate);
+
+    const previousTo = new Date(fromDate);
+    previousTo.setDate(previousTo.getDate() - 1);
+
+    const previousFrom = new Date(previousTo);
+    previousFrom.setDate(previousFrom.getDate() - daysDifference);
+
+    const formatDateLocal = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    return {
+      from: formatDateLocal(previousFrom),
+      to: formatDateLocal(previousTo),
+    };
+  };
+
+  // Helper function to filter data by date range
+  const filterDataByDateRange = (data, from, to) => {
+    if (!from || !to) return data;
+
+    // Helper function to format date in local timezone (UTC+7)
+    const formatDateLocal = (date) => {
+      if (date instanceof Date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+      return date;
+    };
+
+    const fromStr = formatDateLocal(from);
+    const toStr = formatDateLocal(to);
+
+    const filtered = data.filter((item) => {
+      const itemDate = item["Updated Date"];
+      if (!itemDate) return false;
+
+      const itemDateStr = itemDate.toString().trim();
+      return itemDateStr >= fromStr && itemDateStr <= toStr;
+    });
+
+    return filtered;
+  };
+
+  // Helper function to calculate comparison percentages
+  const calculateComparison = (current, previous) => {
+    const comparison = {};
+
+    Object.keys(current).forEach((key) => {
+      const currentValue = current[key];
+      const previousValue = previous[key] || 0;
+
+      if (
+        typeof currentValue === "number" &&
+        typeof previousValue === "number"
+      ) {
+        if (previousValue === 0) {
+          comparison[key] = currentValue > 0 ? 100 : 0;
+        } else {
+          const percentChange =
+            ((currentValue - previousValue) / previousValue) * 100;
+          comparison[key] = Number(percentChange.toFixed(2));
+        }
+      }
+    });
+
+    return comparison;
+  };
+
+  const processData = (
+    cleanedData,
+    metrics,
+    finalMetrics,
+    groupBy = "Keyword"
+  ) => {
+    // Group by the specified field
+    const summaryByField = cleanedData.reduce((acc, item) => {
+      const fieldValue = item[groupBy] || "Unknown";
+
+      if (!acc[fieldValue]) {
+        acc[fieldValue] = Object.fromEntries(metrics.map((m) => [m, 0]));
       }
       for (const key of metrics) {
-        acc[keyword][key] += item[key];
+        acc[fieldValue][key] += item[key];
       }
       return acc;
     }, {});
 
-    // Add calculations for each keyword
-    const enhancedKeywordData = {};
-    Object.entries(summaryByKeyword).forEach(([keyword, data]) => {
+    // Add calculations for each field value
+    const enhancedFieldData = {};
+    Object.entries(summaryByField).forEach(([fieldValue, data]) => {
       const ctr =
         data.Impressions > 0 ? (data.Clicks / data.Impressions) * 100 : 0;
       const conRate =
         data.Clicks > 0 ? (data.Conversions / data.Clicks) * 100 : 0;
       const cpl = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
 
-      enhancedKeywordData[keyword] = {
+      enhancedFieldData[fieldValue] = {
         ...data,
         ctr: Number(ctr.toFixed(2)),
         conRate: Number(conRate.toFixed(2)),
@@ -130,9 +162,9 @@ export const DataProvider = ({ children }) => {
 
     // Calculate totals
     const totals = Object.fromEntries(metrics.map((m) => [m, 0]));
-    Object.values(summaryByKeyword).forEach((keywordValues) => {
+    Object.values(summaryByField).forEach((fieldValues) => {
       for (const key of metrics) {
-        totals[key] += keywordValues[key];
+        totals[key] += fieldValues[key];
       }
     });
 
@@ -152,78 +184,10 @@ export const DataProvider = ({ children }) => {
     };
 
     return {
-      enhancedKeywordData, // Fixed: was enhancedChannelData
+      enhancedFieldData,
       enhancedTotals,
       allMetrics: finalMetrics,
     };
-  };
-
-  const processChannelData = (cleanedData, metrics) => {
-    // Group by channel
-    const summaryByChannel = cleanedData.reduce((acc, item) => {
-      const channel = item.Channel || "Unknown";
-      if (!acc[channel]) {
-        acc[channel] = Object.fromEntries(metrics.map((m) => [m, 0]));
-      }
-      for (const key of metrics) {
-        acc[channel][key] += item[key];
-      }
-      return acc;
-    }, {});
-
-    // Add calculations for each channel
-    const enhancedChannelData = {};
-    Object.entries(summaryByChannel).forEach(([channel, data]) => {
-      const ctr =
-        data.Impressions > 0 ? (data.Clicks / data.Impressions) * 100 : 0;
-      const conRate =
-        data.Clicks > 0 ? (data.Conversions / data.Clicks) * 100 : 0;
-      const cpl = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
-
-      enhancedChannelData[channel] = {
-        ...data,
-        ctr,
-        conRate,
-        cpl,
-      };
-    });
-
-    // Calculate totals
-    const totals = Object.fromEntries(metrics.map((m) => [m, 0]));
-    Object.values(summaryByChannel).forEach((channelValues) => {
-      for (const key of metrics) {
-        totals[key] += channelValues[key];
-      }
-    });
-
-    // Add calculated totals
-    const totalCtr =
-      totals.Impressions > 0 ? (totals.Clicks / totals.Impressions) * 100 : 0;
-    const totalConRate =
-      totals.Clicks > 0 ? (totals.Conversions / totals.Clicks) * 100 : 0;
-    const totalCpl =
-      totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
-
-    const enhancedTotals = {
-      ...totals,
-      ctr: totalCtr,
-      conRate: totalConRate,
-      cpl: totalCpl,
-    };
-
-    // Update metrics to include calculated fields in desired order
-    const allMetrics = [
-      "Impressions",
-      "Reach",
-      "Clicks",
-      "ctr",
-      "Conversions",
-      "conRate",
-      "cpl",
-      "Spent",
-    ];
-
-    return { enhancedChannelData, enhancedTotals, allMetrics };
   };
 
   const getSEMData = async (id) => {
@@ -244,17 +208,73 @@ export const DataProvider = ({ children }) => {
 
       const cleanedData = dataObjects.map((entry) => {
         const cleaned = { ...entry };
+
+        // Clean numeric fields
         for (const key of SEMMetrics) {
           cleaned[key] =
             parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
         }
+
+        // Clean all text fields that could be used for grouping
+        // This will handle any potential groupBy field
+        Object.keys(cleaned).forEach((key) => {
+          // Skip numeric fields and date fields
+          if (!SEMMetrics.includes(key) && key !== "Updated Date") {
+            if (cleaned[key] && typeof cleaned[key] === "string") {
+              cleaned[key] = cleaned[key].trim();
+            } else if (cleaned[key]) {
+              // Convert to string and trim if it's not already a string
+              cleaned[key] = cleaned[key].toString().trim();
+            }
+          }
+        });
+
+        // Keep the Updated Date as is
         cleaned["Updated Date"] = entry["Updated Date"];
+
         return cleaned;
       });
 
-      const { enhancedKeywordData, enhancedTotals, allMetrics } =
-        processKeywordsData(cleanedData, SEMMetrics, [
-          "Keyword", // Fixed: was "Keywords"
+      let currentPeriodData = cleanedData;
+      let previousPeriodData = [];
+      let comparison = {};
+
+      // Apply date range filtering if enabled
+      if (enableDateRange && dateRange.from && dateRange.to) {
+        // console.log("Date range filtering enabled:", dateRange);
+        // console.log("Original data count:", cleanedData.length);
+
+        currentPeriodData = filterDataByDateRange(
+          cleanedData,
+          dateRange.from,
+          dateRange.to
+        );
+
+        // Get previous period data for comparison
+        const previousPeriodDates = getPreviousPeriodDates(
+          dateRange.from,
+          dateRange.to
+        );
+        // console.log("Previous period dates:", previousPeriodDates);
+
+        previousPeriodData = filterDataByDateRange(
+          cleanedData,
+          previousPeriodDates.from,
+          previousPeriodDates.to
+        );
+
+        // console.log("Current period data count:", currentPeriodData.length);
+        // console.log("Previous period data count:", previousPeriodData.length);
+      } else {
+        // console.log("Date range filtering disabled or no date range provided");
+      }
+
+      // Process current period data
+      const currentPeriodResults = processData(
+        currentPeriodData,
+        SEMMetrics,
+        [
+          "Keyword",
           "Impressions",
           "Clicks",
           "ctr",
@@ -262,13 +282,47 @@ export const DataProvider = ({ children }) => {
           "conRate",
           "cpl",
           "Spent",
-        ]);
+        ],
+        "Keyword"
+      );
 
-      setSEMData(enhancedKeywordData); // Fixed: now using enhancedKeywordData
-      setSEMTotals(enhancedTotals);
-      setSEMMetrics(allMetrics);
+      // Process previous period data if date range is enabled
+      if (
+        enableDateRange &&
+        dateRange.from &&
+        dateRange.to &&
+        previousPeriodData.length > 0
+      ) {
+        const previousPeriodResults = processData(
+          previousPeriodData,
+          SEMMetrics,
+          [
+            "Keyword",
+            "Impressions",
+            "Clicks",
+            "ctr",
+            "Conversions",
+            "conRate",
+            "cpl",
+            "Spent",
+          ],
+          "Keyword"
+        );
 
-      // console.log("SEM Raw Data:", rawData);
+        // Calculate comparison
+        comparison = calculateComparison(
+          currentPeriodResults.enhancedTotals,
+          previousPeriodResults.enhancedTotals
+        );
+      }
+
+      // console.log("SEM Enhanced Data:", currentPeriodResults.enhancedFieldData);
+      // console.log("SEM Comparison:", comparison);
+
+      setSEMData(currentPeriodResults.enhancedFieldData);
+      setSEMTotals(currentPeriodResults.enhancedTotals);
+      setSEMMetrics(currentPeriodResults.allMetrics);
+      setSEMComparison(comparison);
     } catch (error) {
       console.error("Error fetching SEM data:", error);
     }
@@ -282,37 +336,6 @@ export const DataProvider = ({ children }) => {
 
         // Fetch SEM data
         await getSEMData(id);
-        // Fetch overall data
-        const response = await axios.get(
-          `http://localhost:8000/data-sheets/overall-data/${id}`
-        );
-        const rawData = response.data.data;
-        const headers = rawData[0];
-        const dataRows = rawData.slice(1);
-
-        const dataObjects = dataRows.map((row) =>
-          Object.fromEntries(
-            headers.map((header, index) => [header, row[index]])
-          )
-        );
-
-        const cleanedData = dataObjects.map((entry) => {
-          const cleaned = { ...entry };
-          for (const key of metrics) {
-            cleaned[key] =
-              parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
-          }
-          cleaned["Updated Date"] = entry["Updated Date"];
-          return cleaned;
-        });
-
-        // Process channel data
-        const { enhancedChannelData, enhancedTotals, allMetrics } =
-          processChannelData(cleanedData, metrics);
-
-        setMetrics(allMetrics);
-        setChannelData(enhancedChannelData);
-        setTotalData(enhancedTotals);
       } catch (err) {
         console.error(err);
         const ErrMsg = err?.response?.data?.message;
@@ -322,23 +345,21 @@ export const DataProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [metrics]
+    [enableDateRange, dateRange, SEMMetrics]
   );
 
-  //   useEffect(() => {
-  //     fetchData();
-  //   }, [fetchData]);
-
   const value = {
-    totalData,
-    channelData,
     loading,
     error,
-    metrics,
     fetchData,
     SEMData,
     SEMTotals,
     SEMMetrics,
+    SEMComparison, // New: comparison data
+    dateRange,
+    setDateRange,
+    enableDateRange,
+    setEnableDateRange,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

@@ -1,27 +1,37 @@
-import Overall from "@/components/slides/Overall";
 import SEMSlide from "@/components/slides/SEMSlide";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import SlideGeneratorSidebar from "@/components/slides/SlideGeneratorSidebar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useData } from "@/contexts/dataContext";
 import domtoimage from "dom-to-image";
 import React from "react";
+import {
+  Presentation,
+  CheckCircle,
+  AlertCircle,
+  ExternalLink,
+} from "lucide-react";
 
 function SlideReport() {
-  const [isOverallEditModalOpen, setIsOverallEditModalOpen] =
-    React.useState(false);
   const [isSEMEditModalOpen, setIsSEMEditModalOpen] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [presentationUrl, setPresentationUrl] = React.useState(null);
-  const [sheetsID, setSheetsID] = React.useState(
-    "Please enter a Google Sheets link"
-  );
-  const [sheetsLinkInput, setSheetsLinkInput] = React.useState("");
+  const [sheetsID, setSheetsID] = React.useState("");
+  const [sheetsLink, setSheetsLink] = React.useState("");
   const [ableToGenerate, setAbleToGenerate] = React.useState(false);
   const [isGenerating, setIsGenerating] = React.useState(false);
-  const [slideGernerated, setSlideGenerated] = React.useState(false);
+  const [slideGenerated, setSlideGenerated] = React.useState(false);
 
-  const { fetchData } = useData();
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  const { fetchData, enableDateRange, setEnableDateRange } = useData();
 
   const handleExportToSlides = async () => {
     setIsExporting(true);
@@ -30,7 +40,6 @@ function SlideReport() {
     try {
       console.log("Starting export process...");
 
-      // Step 1: Capture component as image
       const element = document.getElementById("overall-component");
       if (!element) {
         throw new Error(
@@ -44,21 +53,13 @@ function SlideReport() {
         bgcolor: "#ffffff",
         width: element.offsetWidth,
         height: element.offsetHeight,
-        // style: {
-        //   transform: "scale(2)",
-        //   transformOrigin: "top left",
-        //   width: element.offsetWidth + "px",
-        //   height: element.offsetHeight + "px",
-        // },
         filter: (node) => {
-          // Filter out any problematic nodes if needed
           return true;
         },
       });
 
       console.log("Component captured successfully");
 
-      // Step 2: Send to backend
       console.log("Sending to backend...");
       const response = await fetch(
         "http://localhost:8000/data-sheets/create-presentation",
@@ -85,15 +86,11 @@ function SlideReport() {
       const result = await response.json();
       console.log("Backend response:", result);
 
-      // Step 3: Open presentation
       setPresentationUrl(result.presentationUrl);
       window.open(result.presentationUrl, "_blank");
-
-      alert("Presentation created successfully! Opening in new tab...");
     } catch (error) {
       console.error("Export failed:", error);
       setError(error.message);
-      alert(`Failed to create presentation: ${error.message}`);
     } finally {
       setIsExporting(false);
     }
@@ -101,7 +98,7 @@ function SlideReport() {
 
   const handleAddSlide = async () => {
     if (!presentationUrl) {
-      alert("Please create a presentation first");
+      setError("Please create a presentation first");
       return;
     }
 
@@ -109,14 +106,12 @@ function SlideReport() {
     setError(null);
 
     try {
-      // Extract presentation ID from URL
       const urlMatch = presentationUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
       if (!urlMatch) {
         throw new Error("Invalid presentation URL");
       }
       const presentationId = urlMatch[1];
 
-      // Capture component
       const element = document.getElementById("overall-component");
       const imageData = await domtoimage.toPng(element, {
         quality: 0.95,
@@ -131,7 +126,6 @@ function SlideReport() {
         },
       });
 
-      // Add slide to existing presentation
       const response = await fetch(
         "http://localhost:8000/data-sheets/add-slide",
         {
@@ -155,11 +149,9 @@ function SlideReport() {
       }
 
       const result = await response.json();
-      alert("Slide added successfully!");
     } catch (error) {
       console.error("Add slide failed:", error);
       setError(error.message);
-      alert(`Failed to add slide: ${error.message}`);
     } finally {
       setIsExporting(false);
     }
@@ -167,15 +159,24 @@ function SlideReport() {
 
   const handleSheetsLinkChange = (event) => {
     const value = event.target.value;
-    setSheetsLinkInput(value);
+    setSheetsLink(value);
+
+    if (!value.trim()) {
+      setSheetsID("");
+      setAbleToGenerate(false);
+      return;
+    }
+
     const match = value.match(
       /^(https:\/\/docs\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9-_]+)/
     );
+
     if (!match) {
       setSheetsID("Invalid Sheets Link");
       setAbleToGenerate(false);
       return;
     }
+
     const sheetsId = match[2];
     setSheetsID(sheetsId);
     setAbleToGenerate(true);
@@ -183,116 +184,129 @@ function SlideReport() {
 
   const handleGenerate = async () => {
     if (!ableToGenerate) {
-      alert("Please enter a valid Google Sheets link");
+      setError("Please enter a valid Google Sheets link");
       return;
     }
+
+    setIsGenerating(true);
+    setError(null);
+
     try {
       await fetchData(sheetsID);
       setSlideGenerated(true);
     } catch (error) {
-      alert("Failed to generate slides: " + error.message);
+      setError("Failed to generate slides: " + error.message);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
+  const handleEnableDateRangeChange = (event) => {
+    setEnableDateRange(event.target.checked);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="flex flex-col gap-4 w-full p-4">
-      <h1 className="text-2xl font-bold mb-4">Slide Report</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
+      {/* Sidebar Component */}
+      <SlideGeneratorSidebar
+        isOpen={sidebarOpen}
+        onToggle={toggleSidebar}
+        sheetsLink={sheetsLink}
+        sheetsID={sheetsID}
+        ableToGenerate={ableToGenerate}
+        isGenerating={isGenerating}
+        slideGenerated={slideGenerated}
+        enableDateRange={enableDateRange}
+        isExporting={isExporting}
+        presentationUrl={presentationUrl}
+        onSheetsLinkChange={handleSheetsLinkChange}
+        onGenerate={handleGenerate}
+        onEnableDateRangeChange={handleEnableDateRangeChange}
+        onExportToSlides={handleExportToSlides}
+        onAddSlide={handleAddSlide}
+        onEditSummary={() => setIsSEMEditModalOpen(true)}
+      />
 
-      {/* Error Display */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {/* Success Display */}
-      {presentationUrl && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          <strong>Success:</strong> Presentation created!
-          <a
-            href={presentationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-2 underline hover:text-green-800"
-          >
-            Open Presentation
-          </a>
-        </div>
-      )}
-
-      <div className="flex flex-col w-full items-center gap-4">
-        {/* Controls */}
-        <div className="flex flex-col gap-2 w-full max-w-[500px]">
-          <div className="flex gap-2">
-            <Input
-              id="sheet-link"
-              type="text"
-              placeholder="Please enter a Google Sheets link"
-              onChange={handleSheetsLinkChange}
-            />
-            <Button
-              disabled={isGenerating || !ableToGenerate}
-              onClick={handleGenerate}
-            >
-              Generate Google Slide
-            </Button>
+      {/* Main Content */}
+      <div className="flex flex-col h-screen">
+        {/* Header */}
+        <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white/80 backdrop-blur-sm px-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Presentation className="h-4 w-4 text-white" />
+            </div>
+            <h1 className="text-xl font-bold text-slate-900">
+              Slide Report Generator
+            </h1>
           </div>
-          <p>ID: {sheetsID}</p>
-        </div>
-        <div className="flex gap-2 mb-4">
-          <Button
-            onClick={handleExportToSlides}
-            disabled={isExporting || !slideGernerated}
-            className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
-          >
-            {isExporting
-              ? "Creating Presentation..."
-              : "Export to Google Slides"}
-          </Button>
-
-          <Button
-            onClick={handleAddSlide}
-            disabled={isExporting || !presentationUrl}
-            variant="outline"
-            className="disabled:opacity-50"
-          >
-            {isExporting ? "Adding Slide..." : "Add Another Slide"}
-          </Button>
-
-          <Button
-            onClick={() => setIsOverallEditModalOpen(true)}
-            variant="outline"
-          >
-            Edit Summary
-          </Button>
-        </div>
-
-        {/* Component to be exported */}
-        {slideGernerated && (
-          <div className="w-full flex justify-center">
-            {/* <Overall
-              isOverallEditModalOpen={isOverallEditModalOpen}
-              setIsOverallEditModalOpen={setIsOverallEditModalOpen}
-            /> */}
-            <SEMSlide
-              isSEMEditModalOpen={isSEMEditModalOpen}
-              setIsSEMEditModalOpen={setIsSEMEditModalOpen}
-            />
+          <div className="ml-auto text-sm text-slate-600">
+            Transform your Google Sheets data into beautiful presentation slides
           </div>
-        )}
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto p-6">
+          <div className="space-y-6">
+            {/* Status Alerts */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {presentationUrl && (
+              <Alert className="border-green-200 bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  Presentation created successfully!{" "}
+                  <a
+                    href={presentationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 underline hover:text-green-900 font-medium"
+                  >
+                    Open Presentation <ExternalLink className="h-3 w-3" />
+                  </a>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Preview Panel */}
+            {slideGenerated ? (
+              <div className="w-full flex flex-col items-center">
+                <SEMSlide
+                  isSEMEditModalOpen={isSEMEditModalOpen}
+                  setIsSEMEditModalOpen={setIsSEMEditModalOpen}
+                />
+              </div>
+            ) : (
+              <Card className="h-96 flex items-center justify-center">
+                <CardContent className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+                    <Presentation className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-muted-foreground">
+                      No slides generated yet
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                      Click the sidebar toggle button in the top-left corner to
+                      open the configuration panel. Enter a valid Google Sheets
+                      URL and click "Generate Slides" to create your
+                      presentation preview.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </main>
       </div>
-
-      {/* Debug Info (remove in production) */}
-      {/* {process.env.NODE_ENV === "development" && (
-        <div className="mt-8 p-4 bg-gray-100 rounded text-sm">
-          <h3 className="font-semibold mb-2">Debug Info:</h3>
-          <p>
-            Backend URL: http://localhost:8000/data-sheets/create-presentation
-          </p>
-          <p>Component ID: overall-component</p>
-          <p>Presentation URL: {presentationUrl || "None created yet"}</p>
-        </div>
-      )} */}
     </div>
   );
 }

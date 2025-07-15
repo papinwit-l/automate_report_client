@@ -8,15 +8,13 @@ import SEMDataTable from "../charts-tables/SEMDataTable";
 
 function SEMSlide({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   const {
-    totalData,
-    channelData,
     loading,
     error,
-    metrics,
     refetch,
     SEMData,
     SEMTotals,
     SEMMetrics,
+    SEMComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -131,31 +129,94 @@ function SEMSlide({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
         '<span class="text-sm text-gray-600">$1</span>'
       );
   };
-
+  console.log(SEMComparison);
   return (
     <div
       id="overall-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4"
     >
       <SlideHeader title={"SEM"} />
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
-          <h4 className="text-lg font-semibold">Performance by Keywords</h4>
-          {/* <PerformanceDataTable
-            channelData={channelData}
-            totalData={totalData}
-            metrics={metrics}
-            formatValue={formatValue}
-          /> */}
-          <SEMDataTable
-            channelData={SEMData}
-            totalData={SEMTotals}
-            metrics={SEMMetrics}
-            formatValue={formatValue}
-          />
+      <div className="grid grid-cols-4">
+        <div className="col-span-3 flex flex-col gap-2">
+          <div className="grid grid-cols-7 gap-2">
+            <NumberDisplayBox
+              title={"Impression"}
+              value={convertToBMK(SEMTotals.Impressions)}
+              compareValue={
+                SEMComparison.Impressions &&
+                `${SEMComparison.Impressions.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.Impressions < 0}
+            />
+            <NumberDisplayBox
+              title={"Clicks"}
+              value={convertToBMK(SEMTotals.Clicks)}
+              compareValue={
+                SEMComparison.Clicks && `${SEMComparison.Clicks.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.Clicks < 0}
+            />
+            <NumberDisplayBox
+              title={"%CTR"}
+              value={`${SEMTotals.ctr?.toFixed(2)}%`}
+              compareValue={
+                SEMComparison.ctr && `${SEMComparison.ctr.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.ctr < 0}
+            />
+            <NumberDisplayBox
+              title={"Conversions"}
+              value={SEMTotals.Conversions?.toLocaleString() || "0"}
+              isConversion={true}
+              compareValue={
+                SEMComparison.Conversions &&
+                `${SEMComparison.Conversions.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.Conversions < 0}
+            />
+            <NumberDisplayBox
+              title={"%Con Rate"}
+              value={`${SEMTotals.conRate?.toFixed(2)}%`}
+              isConversion={true}
+              compareValue={
+                SEMComparison.conRate && `${SEMComparison.conRate.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.conRate < 0}
+            />
+            <NumberDisplayBox
+              title={"CPL"}
+              value={convertToBMK(SEMTotals.cpl)}
+              isConversion={true}
+              compareValue={
+                SEMComparison.cpl && `${SEMComparison.cpl.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.cpl < 0}
+            />
+            <NumberDisplayBox
+              title={"Spent"}
+              value={convertToBMK(SEMTotals.Spent)}
+              isConversion={true}
+              compareValue={
+                SEMComparison.Spent && `${SEMComparison.Spent.toFixed(2)}%`
+              }
+              isNegative={SEMComparison?.Spent < 0}
+            />
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold">Performance by Keywords</h4>
+            <SEMDataTable
+              channelData={SEMData}
+              totalData={SEMTotals}
+              metrics={SEMMetrics}
+              formatValue={formatValue}
+            />
+          </div>
         </div>
-
-        <div className="mt-4 border-1 rounded-xl shadow-lg p-4">
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2"></div>
+        {/* Summary */}
+        {/* <div className="mt-4 border-1 rounded-xl shadow-lg p-4">
           <h4 className="text-lg font-semibold">Summary</h4>
           <ul className="list-disc pl-6">
             <div
@@ -164,7 +225,7 @@ function SEMSlide({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
               }}
             />
           </ul>
-        </div>
+        </div> */}
       </div>
 
       <TextEditorModal

@@ -1,220 +1,304 @@
+import DateRangePicker from "@/components/slides/DateRangePicker";
+import Overall from "@/components/slides/Overall";
+import SEMSlide from "@/components/slides/SEMSlide";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useData } from "@/contexts/dataContext";
+import domtoimage from "dom-to-image";
 import React from "react";
-import { Download, FileText } from "lucide-react";
 
-// Google Slides dimensions (16:9 aspect ratio)
-const SLIDE_WIDTH = 1200; // Half of 1920 for better screen display
-const SLIDE_HEIGHT = 675; // Half of 1080 for better screen display
+function SlideReport() {
+  // const [isOverallEditModalOpen, setIsOverallEditModalOpen] =
+  //   React.useState(false);
+  const [isSEMEditModalOpen, setIsSEMEditModalOpen] = React.useState(false);
+  const [isExporting, setIsExporting] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [presentationUrl, setPresentationUrl] = React.useState(null);
+  const [sheetsID, setSheetsID] = React.useState(
+    "Please enter a Google Sheets link"
+  );
 
-// Individual slide components
-const Slide1 = () => (
-  <div className="w-full h-full bg-white p-8 border border-gray-200 flex flex-col">
-    <h1 className="text-3xl font-bold text-gray-800 mb-6">Company Overview</h1>
-    <div className="flex-1 grid grid-cols-2 gap-6">
-      <div>
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-blue-50">
-              <th className="border border-gray-300 p-2 text-left">Metric</th>
-              <th className="border border-gray-300 p-2 text-left">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-300 p-2">Revenue</td>
-              <td className="border border-gray-300 p-2">$10M</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-300 p-2">Growth</td>
-              <td className="border border-gray-300 p-2">25%</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-300 p-2">Employees</td>
-              <td className="border border-gray-300 p-2">150</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="bg-gray-50 p-4 rounded flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-24 h-24 bg-blue-500 rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Chart Placeholder</p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  const [ableToGenerate, setAbleToGenerate] = React.useState(false);
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [slideGernerated, setSlideGenerated] = React.useState(false);
+  const [enableDateRange, setEnableDateRange] = React.useState(false);
 
-const Slide2 = () => (
-  <div className="w-full h-full bg-white p-8 border border-gray-200 flex flex-col">
-    <h1 className="text-3xl font-bold text-gray-800 mb-6">
-      Financial Performance
-    </h1>
-    <div className="flex-1 flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-64 rounded-lg flex items-center justify-center">
-          <div className="text-white text-center">
-            <div className="text-4xl font-bold mb-2">📊</div>
-            <p className="text-lg">Interactive Chart</p>
-            <p className="text-sm opacity-80">Q1-Q4 Performance</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  const { fetchData } = useData();
 
-const Slide3 = () => (
-  <div className="w-full h-full bg-white p-8 border border-gray-200 flex flex-col">
-    <h1 className="text-3xl font-bold text-gray-800 mb-6">Future Roadmap</h1>
-    <div className="flex-1 grid grid-cols-3 gap-4">
-      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-        <h3 className="font-semibold text-green-800 mb-2">Q1 2025</h3>
-        <ul className="text-sm text-green-700">
-          <li>• Product Launch</li>
-          <li>• Team Expansion</li>
-          <li>• Market Research</li>
-        </ul>
-      </div>
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-800 mb-2">Q2 2025</h3>
-        <ul className="text-sm text-blue-700">
-          <li>• Scale Operations</li>
-          <li>• Partnership</li>
-          <li>• Technology Upgrade</li>
-        </ul>
-      </div>
-      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-        <h3 className="font-semibold text-purple-800 mb-2">Q3 2025</h3>
-        <ul className="text-sm text-purple-700">
-          <li>• Global Expansion</li>
-          <li>• New Features</li>
-          <li>• IPO Preparation</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-);
+  const handleExportToSlides = async () => {
+    setIsExporting(true);
+    setError(null);
 
-function SlideRport() {
-  const slidesRef = React.useRef(null);
+    try {
+      console.log("Starting export process...");
 
-  const exportToPDF = () => {
-    // This would integrate with a PDF generation library
-    // For demonstration, we'll show an alert
-    alert(
-      "PDF export functionality would be implemented here using libraries like jsPDF or Puppeteer"
-    );
+      // Step 1: Capture component as image
+      const element = document.getElementById("overall-component");
+      if (!element) {
+        throw new Error(
+          "Component not found. Make sure the Overall component has id='overall-component'"
+        );
+      }
+
+      console.log("Capturing component...");
+      const imageData = await domtoimage.toPng(element, {
+        quality: 0.95,
+        bgcolor: "#ffffff",
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        // style: {
+        //   transform: "scale(2)",
+        //   transformOrigin: "top left",
+        //   width: element.offsetWidth + "px",
+        //   height: element.offsetHeight + "px",
+        // },
+        filter: (node) => {
+          // Filter out any problematic nodes if needed
+          return true;
+        },
+      });
+
+      console.log("Component captured successfully");
+
+      // Step 2: Send to backend
+      console.log("Sending to backend...");
+      const response = await fetch(
+        "http://localhost:8000/data-sheets/create-presentation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            imageData: imageData,
+            title: "Monthly Report",
+            slideTitle: "Overall Performance",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP ${response.status}: ${response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+      console.log("Backend response:", result);
+
+      // Step 3: Open presentation
+      setPresentationUrl(result.presentationUrl);
+      window.open(result.presentationUrl, "_blank");
+
+      alert("Presentation created successfully! Opening in new tab...");
+    } catch (error) {
+      console.error("Export failed:", error);
+      setError(error.message);
+      alert(`Failed to create presentation: ${error.message}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
-  const exportToGoogleSlides = () => {
-    // This would integrate with Google Slides API
-    // For demonstration, we'll show an alert
-    alert("Google Slides export would require Google Slides API integration");
+  const handleAddSlide = async () => {
+    if (!presentationUrl) {
+      alert("Please create a presentation first");
+      return;
+    }
+
+    setIsExporting(true);
+    setError(null);
+
+    try {
+      // Extract presentation ID from URL
+      const urlMatch = presentationUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (!urlMatch) {
+        throw new Error("Invalid presentation URL");
+      }
+      const presentationId = urlMatch[1];
+
+      // Capture component
+      const element = document.getElementById("overall-component");
+      const imageData = await domtoimage.toPng(element, {
+        quality: 0.95,
+        bgcolor: "#ffffff",
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        style: {
+          transform: "scale(2)",
+          transformOrigin: "top left",
+          width: element.offsetWidth + "px",
+          height: element.offsetHeight + "px",
+        },
+      });
+
+      // Add slide to existing presentation
+      const response = await fetch(
+        "http://localhost:8000/data-sheets/add-slide",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            presentationId: presentationId,
+            imageData: imageData,
+            slideTitle: "Additional Slide",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP ${response.status}: ${response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+      alert("Slide added successfully!");
+    } catch (error) {
+      console.error("Add slide failed:", error);
+      setError(error.message);
+      alert(`Failed to add slide: ${error.message}`);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleSheetsLinkChange = (event) => {
+    const value = event.target.value;
+    const match = value.match(
+      /^(https:\/\/docs\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9-_]+)/
+    );
+    if (!match) {
+      setSheetsID("Invalid Sheets Link");
+      setAbleToGenerate(false);
+      return;
+    }
+    const sheetsId = match[2];
+    setSheetsID(sheetsId);
+    setAbleToGenerate(true);
+  };
+
+  const handleGenerate = async () => {
+    if (!ableToGenerate) {
+      alert("Please enter a valid Google Sheets link");
+      return;
+    }
+    try {
+      await fetchData(sheetsID);
+      setSlideGenerated(true);
+    } catch (error) {
+      alert("Failed to generate slides: " + error.message);
+    }
+  };
+
+  const handleEnableDateRangeChange = (event) => {
+    setEnableDateRange(event.target.checked);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              Company Presentation
-            </h1>
-            <p className="text-gray-600">Google Slides Template Format</p>
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={exportToPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+    <div className="flex flex-col gap-4 w-full p-4">
+      <h1 className="text-2xl font-bold mb-4">Slide Report</h1>
+
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {/* Success Display */}
+      {presentationUrl && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          <strong>Success:</strong> Presentation created!
+          <a
+            href={presentationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 underline hover:text-green-800"
+          >
+            Open Presentation
+          </a>
+        </div>
+      )}
+
+      <div className="flex flex-col w-full items-center gap-4">
+        {/* Controls */}
+        <div className="flex flex-col gap-2 w-full max-w-[500px]">
+          <div className="flex gap-2">
+            <Input
+              id="sheet-link"
+              type="text"
+              placeholder="Please enter a Google Sheets link"
+              onChange={handleSheetsLinkChange}
+            />
+            <Button
+              disabled={isGenerating || !ableToGenerate}
+              onClick={handleGenerate}
             >
-              <Download size={20} />
-              Export PDF
-            </button>
-            <button
-              onClick={exportToGoogleSlides}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <FileText size={20} />
-              Export to Google Slides
-            </button>
+              Generate Google Slide
+            </Button>
           </div>
+          <div className="flex flex-col">
+            <Label>
+              <input
+                type="checkbox"
+                name="date-range-enable"
+                value={enableDateRange}
+                onChange={handleEnableDateRangeChange}
+              />
+              Date Range
+            </Label>
+            {enableDateRange && <DateRangePicker />}
+          </div>
+          <p>ID: {sheetsID}</p>
+        </div>
+        <div className="flex gap-2 mb-4">
+          <Button
+            onClick={handleExportToSlides}
+            disabled={isExporting || !slideGernerated}
+            className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+          >
+            {isExporting
+              ? "Creating Presentation..."
+              : "Export to Google Slides"}
+          </Button>
+
+          <Button
+            onClick={handleAddSlide}
+            disabled={isExporting || !presentationUrl}
+            variant="outline"
+            className="disabled:opacity-50"
+          >
+            {isExporting ? "Adding Slide..." : "Add Another Slide"}
+          </Button>
+
+          <Button onClick={() => setIsSEMEditModalOpen(true)} variant="outline">
+            Edit Summary
+          </Button>
         </div>
 
-        {/* Slides Container */}
-        <div ref={slidesRef} className="space-y-8">
-          {/* Slide 1 */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b">
-              <span className="text-sm font-medium text-gray-600">Slide 1</span>
-            </div>
-            <div
-              style={{
-                width: `${SLIDE_WIDTH}px`,
-                height: `${SLIDE_HEIGHT}px`,
-              }}
-              className="mx-auto"
-            >
-              <Slide1 />
-            </div>
+        {/* Component to be exported */}
+        {/* Google Slides Preview */}
+        {slideGernerated && (
+          <div className="w-full flex justify-center">
+            {/* <Overall
+              isOverallEditModalOpen={isOverallEditModalOpen}
+              setIsOverallEditModalOpen={setIsOverallEditModalOpen}
+            /> */}
+            <SEMSlide
+              isSEMEditModalOpen={isSEMEditModalOpen}
+              setIsSEMEditModalOpen={setIsSEMEditModalOpen}
+            />
           </div>
-
-          {/* Slide 2 */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b">
-              <span className="text-sm font-medium text-gray-600">Slide 2</span>
-            </div>
-            <div
-              style={{
-                width: `${SLIDE_WIDTH}px`,
-                height: `${SLIDE_HEIGHT}px`,
-              }}
-              className="mx-auto"
-            >
-              <Slide2 />
-            </div>
-          </div>
-
-          {/* Slide 3 */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b">
-              <span className="text-sm font-medium text-gray-600">Slide 3</span>
-            </div>
-            <div
-              style={{
-                width: `${SLIDE_WIDTH}px`,
-                height: `${SLIDE_HEIGHT}px`,
-              }}
-              className="mx-auto"
-            >
-              <Slide3 />
-            </div>
-          </div>
-        </div>
-
-        {/* Info Panel */}
-        <div className="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
-          <h3 className="font-semibold text-blue-800 mb-2">
-            Template Information
-          </h3>
-          <div className="text-sm text-blue-700 space-y-1">
-            <p>
-              <strong>Dimensions:</strong> 960x540px (16:9 aspect ratio, scaled
-              for display)
-            </p>
-            <p>
-              <strong>Full Resolution:</strong> 1920x1080px (Google Slides
-              standard)
-            </p>
-            <p>
-              <strong>Export Options:</strong> PDF, Google Slides API
-              integration
-            </p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default SlideRport;
+export default SlideReport;
