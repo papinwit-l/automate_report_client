@@ -9,6 +9,22 @@ import axios from "axios";
 
 const DataContext = createContext();
 
+const NON_NUMERIC_COLUMNS = [
+  "Updated Date",
+  "Project",
+  "Channel",
+  "Gender",
+  "Year & month",
+  "Year & week (Mon-Sun)",
+  "Date",
+  "Updated Month",
+  "Updated Week",
+  "Updated Date",
+  "Campaign name",
+  "Keyword",
+  "Device",
+];
+
 export const useData = () => {
   const context = useContext(DataContext);
   if (!context) {
@@ -28,13 +44,25 @@ export const DataProvider = ({ children }) => {
   const [SEMData, setSEMData] = useState({});
   const [SEMTotals, setSEMTotals] = useState({});
   const [SEMMetrics, setSEMMetrics] = useState([
-    "Keywords",
+    "Keyword",
     "Impressions",
     "Clicks",
     "Conversions",
     "Spent",
   ]);
   const [SEMComparison, setSEMComparison] = useState({});
+
+  const [GGDemographicData, setGGDemographicData] = useState({});
+  const [GGDemographicTotals, setGGDemographicTotals] = useState({});
+  const [GGDemographicMetrics, setGGDemographicMetrics] = useState([
+    "Channel",
+    "Conversions",
+    "Campaign name",
+    "Gender",
+    "Device",
+    "Impressions",
+    "Clicks",
+  ]);
 
   // Helper function to calculate date difference in days
   const getDateDifference = (from, to) => {
@@ -151,12 +179,14 @@ export const DataProvider = ({ children }) => {
       const conRate =
         data.Clicks > 0 ? (data.Conversions / data.Clicks) * 100 : 0;
       const cpl = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
+      const cpc = data.Clicks > 0 ? data.Spent / data.Clicks : 0;
 
       enhancedFieldData[fieldValue] = {
         ...data,
         ctr: Number(ctr.toFixed(2)),
         conRate: Number(conRate.toFixed(2)),
         cpl: Number(cpl.toFixed(2)),
+        cpc: Number(cpc.toFixed(2)),
       };
     });
 
@@ -175,12 +205,14 @@ export const DataProvider = ({ children }) => {
       totals.Clicks > 0 ? (totals.Conversions / totals.Clicks) * 100 : 0;
     const totalCpl =
       totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
+    const totalCpc = totals.Clicks > 0 ? totals.Spent / totals.Clicks : 0;
 
     const enhancedTotals = {
       ...totals,
       ctr: Number(totalCtr.toFixed(2)),
       conRate: Number(totalConRate.toFixed(2)),
       cpl: Number(totalCpl.toFixed(2)),
+      cpc: Number(totalCpc.toFixed(2)),
     };
 
     return {
@@ -188,6 +220,38 @@ export const DataProvider = ({ children }) => {
       enhancedTotals,
       allMetrics: finalMetrics,
     };
+  };
+
+  const cleanObjectData = (object, metrics) => {
+    return object.map((entry) => {
+      const cleaned = { ...entry };
+
+      // Clean numeric fields
+      for (const key of metrics) {
+        if (NON_NUMERIC_COLUMNS.includes(key)) continue;
+        cleaned[key] =
+          parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
+      }
+
+      // Clean all text fields that could be used for grouping
+      // This will handle any potential groupBy field
+      Object.keys(cleaned).forEach((key) => {
+        // Skip numeric fields and date fields
+        if (!metrics.includes(key) && key !== "Updated Date") {
+          if (cleaned[key] && typeof cleaned[key] === "string") {
+            cleaned[key] = cleaned[key].trim();
+          } else if (cleaned[key]) {
+            // Convert to string and trim if it's not already a string
+            cleaned[key] = cleaned[key].toString().trim();
+          }
+        }
+      });
+
+      // Keep the Updated Date as is
+      cleaned["Updated Date"] = entry["Updated Date"];
+
+      return cleaned;
+    });
   };
 
   const getSEMData = async (id) => {
@@ -203,37 +267,7 @@ export const DataProvider = ({ children }) => {
         Object.fromEntries(headers.map((header, index) => [header, row[index]]))
       );
 
-      // Define SEMMetrics if not already defined
-      const SEMMetrics = ["Impressions", "Clicks", "Conversions", "Spent"];
-
-      const cleanedData = dataObjects.map((entry) => {
-        const cleaned = { ...entry };
-
-        // Clean numeric fields
-        for (const key of SEMMetrics) {
-          cleaned[key] =
-            parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
-        }
-
-        // Clean all text fields that could be used for grouping
-        // This will handle any potential groupBy field
-        Object.keys(cleaned).forEach((key) => {
-          // Skip numeric fields and date fields
-          if (!SEMMetrics.includes(key) && key !== "Updated Date") {
-            if (cleaned[key] && typeof cleaned[key] === "string") {
-              cleaned[key] = cleaned[key].trim();
-            } else if (cleaned[key]) {
-              // Convert to string and trim if it's not already a string
-              cleaned[key] = cleaned[key].toString().trim();
-            }
-          }
-        });
-
-        // Keep the Updated Date as is
-        cleaned["Updated Date"] = entry["Updated Date"];
-
-        return cleaned;
-      });
+      const cleanedData = cleanObjectData(dataObjects, SEMMetrics);
 
       let currentPeriodData = cleanedData;
       let previousPeriodData = [];
@@ -241,9 +275,6 @@ export const DataProvider = ({ children }) => {
 
       // Apply date range filtering if enabled
       if (enableDateRange && dateRange.from && dateRange.to) {
-        // console.log("Date range filtering enabled:", dateRange);
-        // console.log("Original data count:", cleanedData.length);
-
         currentPeriodData = filterDataByDateRange(
           cleanedData,
           dateRange.from,
@@ -255,16 +286,12 @@ export const DataProvider = ({ children }) => {
           dateRange.from,
           dateRange.to
         );
-        // console.log("Previous period dates:", previousPeriodDates);
 
         previousPeriodData = filterDataByDateRange(
           cleanedData,
           previousPeriodDates.from,
           previousPeriodDates.to
         );
-
-        // console.log("Current period data count:", currentPeriodData.length);
-        // console.log("Previous period data count:", previousPeriodData.length);
       } else {
         // console.log("Date range filtering disabled or no date range provided");
       }
@@ -278,6 +305,7 @@ export const DataProvider = ({ children }) => {
           "Impressions",
           "Clicks",
           "ctr",
+          "cpc",
           "Conversions",
           "conRate",
           "cpl",
@@ -301,6 +329,7 @@ export const DataProvider = ({ children }) => {
             "Impressions",
             "Clicks",
             "ctr",
+            "cpc",
             "Conversions",
             "conRate",
             "cpl",
@@ -316,15 +345,43 @@ export const DataProvider = ({ children }) => {
         );
       }
 
-      // console.log("SEM Enhanced Data:", currentPeriodResults.enhancedFieldData);
-      // console.log("SEM Comparison:", comparison);
-
       setSEMData(currentPeriodResults.enhancedFieldData);
       setSEMTotals(currentPeriodResults.enhancedTotals);
       setSEMMetrics(currentPeriodResults.allMetrics);
       setSEMComparison(comparison);
     } catch (error) {
       console.error("Error fetching SEM data:", error);
+    }
+  };
+
+  const getGGDemographic = async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/data-sheets/gg-demographic/${id}`
+      );
+      const rawData = response.data.data;
+      const headers = rawData[0];
+      const dataRows = rawData.slice(1);
+      const dataObjects = dataRows.map((row) =>
+        Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+      );
+      const cleanedData = cleanObjectData(dataObjects, GGDemographicMetrics);
+
+      let currentPeriodData = cleanedData;
+      let previousPeriodData = [];
+      let comparison = {};
+
+      if (enableDateRange && dateRange.from && dateRange.to) {
+        currentPeriodData = filterDataByDateRange(
+          cleanedData,
+          dateRange.from,
+          dateRange.to
+        );
+      }
+
+      setGGDemographicData(currentPeriodData);
+    } catch (error) {
+      console.error("Error fetching GG Demographuc data:", error);
     }
   };
 
@@ -336,6 +393,7 @@ export const DataProvider = ({ children }) => {
 
         // Fetch SEM data
         await getSEMData(id);
+        await getGGDemographic(id);
       } catch (err) {
         console.error(err);
         const ErrMsg = err?.response?.data?.message;
@@ -360,6 +418,7 @@ export const DataProvider = ({ children }) => {
     setDateRange,
     enableDateRange,
     setEnableDateRange,
+    GGDemographicData,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

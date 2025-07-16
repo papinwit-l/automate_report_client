@@ -14,6 +14,8 @@ function SEMDataTable({ channelData, totalData, metrics, formatValue }) {
         return "Impressions";
       case "Clicks":
         return "Clicks";
+      case "cpc":
+        return "CPC";
       case "Conversions":
         return "Conversions";
       case "Spent":
@@ -81,12 +83,12 @@ function SEMDataTable({ channelData, totalData, metrics, formatValue }) {
                 ([, a], [, b]) =>
                   (b["Conversions"] || 0) - (a["Conversions"] || 0)
               )
-              // .slice(
-              //   0,
-              //   Object.entries(channelData).length > 12
-              //     ? 12
-              //     : Object.entries(channelData).length
-              // )
+              .slice(
+                0,
+                Object.entries(channelData).length > 13
+                  ? 13
+                  : Object.entries(channelData).length
+              )
               .map(([keyword, values]) => (
                 <tr key={keyword} className="hover:bg-gray-100">
                   <td className="px-2 py-1 border font-medium">{keyword}</td>
