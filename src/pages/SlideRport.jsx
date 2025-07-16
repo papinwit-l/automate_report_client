@@ -17,6 +17,7 @@ import {
   AlertCircle,
   ExternalLink,
 } from "lucide-react";
+import GDNSlide from "@/components/slides/GDNSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -278,6 +279,7 @@ function SlideReport() {
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center">
                 <SEMSlide />
+                <GDNSlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">
