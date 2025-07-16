@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 
 function SlideReport() {
-  const [isSEMEditModalOpen, setIsSEMEditModalOpen] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [presentationUrl, setPresentationUrl] = React.useState(null);
@@ -228,7 +227,6 @@ function SlideReport() {
         onEnableDateRangeChange={handleEnableDateRangeChange}
         onExportToSlides={handleExportToSlides}
         onAddSlide={handleAddSlide}
-        onEditSummary={() => setIsSEMEditModalOpen(true)}
       />
 
       {/* Main Content */}
@@ -279,10 +277,7 @@ function SlideReport() {
             {/* Preview Panel */}
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center">
-                <SEMSlide
-                  isSEMEditModalOpen={isSEMEditModalOpen}
-                  setIsSEMEditModalOpen={setIsSEMEditModalOpen}
-                />
+                <SEMSlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">

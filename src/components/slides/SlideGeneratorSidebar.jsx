@@ -33,7 +33,6 @@ const SlideGeneratorSidebar = ({
   onEnableDateRangeChange,
   onExportToSlides,
   onAddSlide,
-  onEditSummary,
 }) => {
   return (
     <>
@@ -198,7 +197,7 @@ const SlideGeneratorSidebar = ({
                     )}
                   </Button>
 
-                  <Button
+                  {/* <Button
                     onClick={onAddSlide}
                     disabled={isExporting || !presentationUrl}
                     variant="outline"
@@ -216,19 +215,9 @@ const SlideGeneratorSidebar = ({
                         Add Slide
                       </>
                     )}
-                  </Button>
+                  </Button> */}
 
                   <Separator />
-
-                  <Button
-                    onClick={onEditSummary}
-                    variant="outline"
-                    className="w-full"
-                    size="sm"
-                  >
-                    <Edit3 className="mr-2 h-4 w-4" />
-                    Edit Summary
-                  </Button>
                 </CardContent>
               </Card>
             </div>

@@ -8,7 +8,7 @@ import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
 
-function SEMSlide({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
+function SEMSlide() {
   const {
     loading,
     error,
@@ -178,7 +178,7 @@ function SEMSlide({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
       .replace(/\{\{(.*?)\}\}/g, '<span class="text-lg font-bold">$1</span>')
       .replace(
         /\(\((.*?)\)\)/g,
-        '<span class="text-sm text-gray-600">$1</span>'
+        '<span class="text-xs text-gray-600">$1</span>'
       );
   };
 
