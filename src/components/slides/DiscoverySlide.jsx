@@ -15,6 +15,7 @@ import {
   formatMetricsData,
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
 function DiscoverySlide() {
   const {
@@ -330,13 +331,16 @@ function DiscoverySlide() {
               <h4 className="text-lg font-semibold">
                 Performance by Ad Group Name
               </h4>
-              <DataTable
+              <AdvancedDataTable
                 firstMetric={"Ad group name"}
                 channelData={DiscData}
                 totalData={DiscTotals}
                 metrics={DiscMetrics}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows}
+                defaultSortBy="Clicks"
+                defaultSortDirection="desc"
+                enableSorting={true}
               />
             </div>
             <div className="grid grid-cols-2">

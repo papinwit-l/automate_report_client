@@ -10,33 +10,44 @@ function DataTable({
 }) {
   // Helper function to format metric names for display
   const formatMetricName = (metric) => {
-    switch (metric) {
-      case "Ad group name":
+    switch (metric.toLowerCase()) {
+      case "ad group name":
         return "Ad group name";
-      case "Channel":
+      case "ad set name":
+        return "Ad set name";
+      case "channel":
         return "Channel";
       case "ctr":
         return "CTR (%)";
-      case "conRate":
+      case "conrate":
+      case "cvr":
         return "Conv Rate (%)";
       case "cpl":
         return "CPL";
-      case "Impressions":
+      case "impressions":
         return "Impressions";
-      case "Clicks":
+      case "clicks":
         return "Clicks";
       case "cpc":
         return "CPC";
-      case "Conversions":
+      case "conversions":
         return "Conversions";
-      case "Spent":
+      case "spent":
         return "Spent";
-      case "Reach":
+      case "reach":
         return "Reach";
-      case "Keyword":
+      case "frequency":
+        return "Frequency";
+      case "cpr":
+        return "CPR";
+      case "keyword":
         return "Keyword";
       default:
-        return metric;
+        // Capitalize first letter of each word
+        return metric
+          .split(/(?=[A-Z])/)
+          .join(" ")
+          .replace(/\b\w/g, (l) => l.toUpperCase());
     }
   };
 
@@ -44,18 +55,24 @@ function DataTable({
   const defaultFormatValue = (value, metric) => {
     if (value === null || value === undefined) return "0";
 
-    switch (metric) {
+    const metricLower = metric.toLowerCase();
+    switch (metricLower) {
       case "ctr":
-      case "conRate":
+      case "conrate":
+      case "cvr":
         return `${Number(value).toFixed(2)}%`;
       case "cpl":
-      case "Spent":
-        return `$${Number(value).toFixed(2)}`;
-      case "Impressions":
-      case "Clicks":
-      case "Conversions":
-      case "Reach":
+      case "spent":
+      case "cpc":
+      case "cpr":
+        return `${Number(value).toFixed(2)}`;
+      case "impressions":
+      case "clicks":
+      case "conversions":
+      case "reach":
         return Number(value).toLocaleString();
+      case "frequency":
+        return Number(value).toFixed(2);
       default:
         return value.toString();
     }
@@ -64,10 +81,30 @@ function DataTable({
   const valueFormatter = formatValue || defaultFormatValue;
 
   // Filter out non-numeric metrics for the table display
-  const displayMetrics = metrics.filter(
-    (metric) =>
-      metric !== "Keyword" && metric !== "Channel" && metric !== "Ad group name"
-  );
+  const displayMetrics = metrics.filter((metric) => {
+    const metricLower = metric.toLowerCase();
+    return (
+      metricLower !== "keyword" &&
+      metricLower !== "channel" &&
+      metricLower !== "ad group name" &&
+      metricLower !== "ad set name" &&
+      metricLower !== "ad name"
+    );
+  });
+
+  // Helper function to get the sort key (handle both uppercase and lowercase)
+  const getSortKey = (data) => {
+    // Try different possible conversion keys
+    return (
+      data["conversions"] ||
+      data["Conversions"] ||
+      data["clicks"] ||
+      data["Clicks"] ||
+      data["impressions"] ||
+      data["Impressions"] ||
+      0
+    );
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -75,10 +112,9 @@ function DataTable({
         <thead>
           <tr className="bg-gray-200">
             <th className="px-2 py-1 border text-left font-semibold">
-              {firstMetric}
+              {formatMetricName(firstMetric)}
             </th>
             {displayMetrics.map((metric) => {
-              // console.log(metric);
               return (
                 <th
                   key={metric}
@@ -94,10 +130,12 @@ function DataTable({
           {/* Check if channelData exists and has entries */}
           {channelData && Object.keys(channelData).length > 0 ? (
             Object.entries(channelData)
-              .sort(
-                ([, a], [, b]) =>
-                  (b["Conversions"] || 0) - (a["Conversions"] || 0)
-              )
+              .sort(([, a], [, b]) => {
+                // Sort by conversions first, then clicks, then impressions
+                const aSort = getSortKey(a);
+                const bSort = getSortKey(b);
+                return bSort - aSort;
+              })
               .slice(
                 0,
                 Object.entries(channelData).length > maxRows && maxRows > 0

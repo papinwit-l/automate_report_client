@@ -7,6 +7,7 @@ import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
 import DataTable from "../charts-tables/DataTable";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
 function SEMSlide() {
   const {
@@ -276,13 +277,14 @@ function SEMSlide() {
           </div>
           <div>
             <h4 className="text-lg font-semibold">Performance by Keywords</h4>
-            <DataTable
+            <AdvancedDataTable
               firstMetric={"Keyword"}
               channelData={SEMData}
               totalData={SEMTotals}
               metrics={SEMMetrics}
               formatValue={formatValue}
               maxRows={maxTableRows}
+              defaultSortBy="Conversions"
             />
           </div>
         </div>

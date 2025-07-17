@@ -234,6 +234,12 @@ export const processSocialMediaData = (
     ...calculateEnhancedMetrics(creativeTotals, config.calculatedFields),
   };
 
+  console.log("Enhanced Audience Data:", enhancedAudienceData);
+  console.log("Enhanced Creative Data:", enhancedCreativeData);
+  console.log("Enhanced Audience Totals:", enhancedAudienceTotals);
+  console.log("Enhanced Creative Totals:", enhancedCreativeTotals);
+  console.log("Final Metrics:", finalMetrics);
+
   return {
     enhancedFieldData: enhancedAudienceData,
     enhancedTotals: enhancedAudienceTotals,

@@ -15,6 +15,7 @@ import {
   formatMetricsData,
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
 function FacebookAwarenessSlide() {
   const {
@@ -22,6 +23,12 @@ function FacebookAwarenessSlide() {
     error,
     refetch,
     GGDemographicData,
+    FacebookAudienceData,
+    FacebookAudienceTotals,
+    FacebookAudienceMetrics,
+    FacebookAudienceComparison,
+    FacebookCreativeData,
+    FacebookCreativeTotals,
     DiscData,
     DiscTotals,
     DiscMetrics,
@@ -32,14 +39,14 @@ function FacebookAwarenessSlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState(0);
+  const [maxTableRows, setMaxTableRows] = useState(5);
 
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      DiscTotals?.Clicks === "No Data" ||
-      !DiscTotals ||
-      Object.keys(DiscTotals).length === 0
+      FacebookAudienceTotals?.clicks === "No Data" ||
+      !FacebookAudienceTotals ||
+      Object.keys(FacebookAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
@@ -47,11 +54,11 @@ function FacebookAwarenessSlide() {
 
     let summaryTextTemp = "";
     const overallText = `Overall clicks: ** ${parseFloat(
-      DiscTotals?.Clicks?.toFixed(2) || 0
+      FacebookAudienceTotals?.clicks?.toFixed(2) || 0
     )?.toLocaleString()} clicks**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    const averageCPC = DiscTotals?.cpc;
+    const averageCPC = FacebookAudienceTotals?.cpc;
 
     summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
       undefined,
@@ -61,14 +68,14 @@ function FacebookAwarenessSlide() {
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
 
-    const channelEntries = Object.entries(DiscData || {});
+    const channelEntries = Object.entries(FacebookAudienceData || {});
     if (channelEntries.length === 0) {
       setSummaryText(summaryTextTemp);
       return;
     }
 
     const topConversionChannel = channelEntries.reduce((max, current) =>
-      current[1].Clicks > max[1].Clicks ? current : max
+      current[1].clicks > max[1].clicks ? current : max
     );
 
     const topConversionRateChannel = channelEntries.reduce((max, current) =>
@@ -78,7 +85,7 @@ function FacebookAwarenessSlide() {
     if (channelEntries.length > 1) {
       highestConversionChannelText = `Best perform Ad: **${
         topConversionChannel[0]
-      } with ${topConversionChannel[1].Clicks?.toLocaleString(undefined, {
+      } with ${topConversionChannel[1].clicks?.toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       })} clicks**`;
@@ -158,7 +165,7 @@ function FacebookAwarenessSlide() {
   useEffect(() => {
     summarizeData();
     prepareChartData();
-  }, [DiscTotals, DiscData, GGDemographicData]);
+  }, [FacebookAudienceTotals, FacebookAudienceData, GGDemographicData]);
 
   // Show loading state
   if (loading) {
@@ -205,49 +212,49 @@ function FacebookAwarenessSlide() {
   // Format display data with safe fallbacks
   // Using optional chaining to handle undefined/null values from useState
   const impressionData = formatDisplayData(
-    DiscTotals?.Impressions,
-    DiscComparison?.Impressions,
+    FacebookAudienceTotals?.impressions,
+    FacebookAudienceComparison?.impressions,
     "compact"
   );
   const clicksData = formatDisplayData(
-    DiscTotals?.Clicks,
-    DiscComparison?.Clicks,
+    FacebookAudienceTotals?.clicks,
+    FacebookAudienceComparison?.clicks,
     "compact"
   );
   const ctrData = formatDisplayData(
-    DiscTotals?.ctr,
-    DiscComparison?.ctr,
+    FacebookAudienceTotals?.ctr,
+    FacebookAudienceComparison?.ctr,
     "percentage"
   );
   const cpcData = formatDisplayData(
-    DiscTotals?.cpc,
-    DiscComparison?.cpc,
+    FacebookAudienceTotals?.cpc,
+    FacebookAudienceComparison?.cpc,
     "compact"
   );
   const conversionsData = formatDisplayData(
-    DiscTotals?.Conversions,
-    DiscComparison?.Conversions,
+    FacebookAudienceTotals?.conversions,
+    FacebookAudienceComparison?.conversions,
     "number"
   );
   const cplData = formatDisplayData(
-    DiscTotals?.cpl,
-    DiscComparison?.cpl,
+    FacebookAudienceTotals?.cpl,
+    FacebookAudienceComparison?.cpl,
     "compact"
   );
   const spentData = formatDisplayData(
-    DiscTotals?.Spent,
-    DiscComparison?.Spent,
+    FacebookAudienceTotals?.spent,
+    FacebookAudienceComparison?.spent,
     "compact"
   );
   const conRate = formatDisplayData(
-    DiscTotals?.conRate,
-    DiscComparison?.conRate,
+    FacebookAudienceTotals?.cvr, // Changed from conRate to cvr
+    FacebookAudienceComparison?.cvr,
     "percentage"
   );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
-
+  console.log("facebookMEtrics", FacebookAudienceMetrics);
   return (
     <div
       id="sem-component"
@@ -263,7 +270,7 @@ function FacebookAwarenessSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Discovery"} />
+      <SlideHeader title={"Facebook Awareness"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
@@ -327,16 +334,29 @@ function FacebookAwarenessSlide() {
               />
             </div>
             <div>
-              <h4 className="text-lg font-semibold">
-                Performance by Ad Group Name
-              </h4>
-              <DataTable
-                firstMetric={"Ad group name"}
-                channelData={DiscData}
-                totalData={DiscTotals}
-                metrics={DiscMetrics}
+              <h4 className="text-lg font-semibold">Performance by Audience</h4>
+
+              <AdvancedDataTable
+                firstMetric="Ad set name"
+                channelData={FacebookAudienceData}
+                totalData={FacebookAudienceTotals}
+                metrics={[
+                  "Ad set name",
+                  "impressions", // lowercase
+                  "reach", // lowercase
+                  "clicks", // lowercase
+                  "ctr",
+                  "cpc",
+                  "conversions", // lowercase
+                  "cvr",
+                  "cpl",
+                  "spent", // lowercase
+                ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows}
+                defaultSortBy="conversions"
+                defaultSortOrder="desc"
+                enableSorting={true} // Can disable sorting if needed
               />
             </div>
             <div className="grid grid-cols-2">

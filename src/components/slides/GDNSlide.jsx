@@ -15,6 +15,7 @@ import {
   formatMetricsData,
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
 function GDNSlide() {
   const {
@@ -325,13 +326,14 @@ function GDNSlide() {
               <h4 className="text-lg font-semibold">
                 Performance by Ad Group Name
               </h4>
-              <DataTable
+              <AdvancedDataTable
                 firstMetric={"Ad group name"}
                 channelData={GDNData}
                 totalData={GDNTotals}
                 metrics={GDNMetrics}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows}
+                defaultSortBy="Clicks"
               />
             </div>
           </div>
