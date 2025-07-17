@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
+import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -282,6 +283,7 @@ function SlideReport() {
                 <SEMSlide />
                 <GDNSlide />
                 <DiscoverySlide />
+                <FacebookAwarenessSlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">
