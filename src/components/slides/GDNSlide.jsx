@@ -317,7 +317,7 @@ function GDNSlide() {
               <DonutChart
                 data={clicksByGender}
                 title="Clicks by Gender"
-                width={200}
+                width={220}
                 height={160}
                 innerRadius={30}
                 outerRadius={60}
@@ -328,7 +328,7 @@ function GDNSlide() {
               <DonutChart
                 data={clicksByDevice}
                 title="Clicks by Device"
-                width={200}
+                width={220}
                 height={140}
                 innerRadius={30}
                 outerRadius={60}
