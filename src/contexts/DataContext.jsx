@@ -10,6 +10,7 @@ import axios from "axios";
 const DataContext = createContext();
 
 const NON_NUMERIC_COLUMNS = [
+  "Ad group name",
   "Updated Date",
   "Project",
   "Channel",
@@ -399,7 +400,7 @@ export const DataProvider = ({ children }) => {
   const getGDNDATA = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/data-sheets/gg-demographic/${id}`
+        `http://localhost:8000/data-sheets/gdn-data/${id}`
       );
       const rawData = response.data.data;
       const headers = rawData[0];
@@ -408,7 +409,7 @@ export const DataProvider = ({ children }) => {
         Object.fromEntries(headers.map((header, index) => [header, row[index]]))
       );
       const cleanedData = cleanObjectData(dataObjects, GDNMetrics);
-
+      console.log("GDNCleandata:", cleanedData);
       let currentPeriodData = cleanedData;
       let previousPeriodData = [];
       let comparison = {};
@@ -457,7 +458,7 @@ export const DataProvider = ({ children }) => {
       ) {
         const previousPeriodResults = processData(
           previousPeriodData,
-          SEMMetrics,
+          GDNMetrics,
           [
             "Ad group name",
             "Impressions",

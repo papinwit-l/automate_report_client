@@ -85,8 +85,8 @@ function SEMDataTable({ channelData, totalData, metrics, formatValue }) {
               )
               .slice(
                 0,
-                Object.entries(channelData).length > 13
-                  ? 13
+                Object.entries(channelData).length > 12
+                  ? 12
                   : Object.entries(channelData).length
               )
               .map(([keyword, values]) => (

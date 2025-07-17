@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 
 const TextEditorModal = ({
   isOpen,
@@ -8,6 +10,8 @@ const TextEditorModal = ({
   title = "Edit Text",
   placeholder = "Enter your text...",
   revertText,
+  maxTableRows,
+  setMaxTableRows,
 }) => {
   const [tempText, setTempText] = useState("");
   const textareaRef = useRef(null);
@@ -39,16 +43,13 @@ const TextEditorModal = ({
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = tempText.substring(start, end);
-
     const newText =
       tempText.substring(0, start) +
       startTag +
       selectedText +
       endTag +
       tempText.substring(end);
-
     setTempText(newText);
-
     // Restore cursor position
     setTimeout(() => {
       textarea.focus();
@@ -57,6 +58,11 @@ const TextEditorModal = ({
         end + startTag.length
       );
     }, 0);
+  };
+
+  const handleSetMaxTableRows = (e) => {
+    const value = Math.max(0, Number.parseInt(e.target.value));
+    setMaxTableRows(value);
   };
 
   const renderFormattedText = (text) => {
@@ -73,7 +79,7 @@ const TextEditorModal = ({
       )
       .replace(/\{\{(.*?)\}\}/g, '<span class="text-lg font-bold">$1</span>')
       .replace(
-        /\(\((.*?)\)\)/g,
+        /$$\((.*?)$$\)/g,
         '<span class="text-sm text-gray-600">$1</span>'
       );
   };
@@ -96,6 +102,44 @@ const TextEditorModal = ({
 
         {/* Content */}
         <div className="p-6 space-y-4">
+          {/* Table Controls */}
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <Label
+                  htmlFor="maxTableRows"
+                  className="text-sm font-medium text-gray-700 mb-1 block"
+                >
+                  Max Table Rows
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="maxTableRows"
+                    type="number"
+                    value={maxTableRows}
+                    onChange={handleSetMaxTableRows}
+                    className="w-full text-left font-mono"
+                    min="0"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span className="font-medium">
+                    {maxTableRows === 0
+                      ? "No limit"
+                      : `Limited to ${maxTableRows} rows`}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Set to 0 for unlimited table rows
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Formatting Toolbar */}
           <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border">
             <button
@@ -167,7 +211,6 @@ const TextEditorModal = ({
               className="w-full border rounded-lg px-4 py-3 min-h-[150px] font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
               placeholder={placeholder}
             />
-
             {/* Preview */}
             <div className="border rounded-lg p-4 bg-gray-50">
               <div className="text-sm font-medium text-gray-700 mb-2">
@@ -216,7 +259,6 @@ const TextEditorModal = ({
           >
             Reset to Original
           </button>
-
           <div className="flex gap-3">
             <button
               onClick={handleCancel}

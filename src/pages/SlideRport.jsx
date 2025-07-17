@@ -277,7 +277,7 @@ function SlideReport() {
 
             {/* Preview Panel */}
             {slideGenerated ? (
-              <div className="w-full flex flex-col items-center">
+              <div className="w-full flex flex-col items-center gap-10">
                 <SEMSlide />
                 <GDNSlide />
               </div>

@@ -7,6 +7,7 @@ import SEMDataTable from "../charts-tables/SEMDataTable";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
+import DataTable from "../charts-tables/DataTable";
 
 function SEMSlide() {
   const {
@@ -24,6 +25,7 @@ function SEMSlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [maxTableRows, setMaxTableRows] = useState(12);
 
   const formatValue = (value, metric) => {
     if (metric === "ctr" || metric === "conRate") {
@@ -201,6 +203,10 @@ function SEMSlide() {
       <div className="grid grid-cols-16">
         <div className="col-span-12 flex flex-col gap-2">
           <div className="grid grid-cols-8 gap-2">
+            <h4 className="col-span-4 text-lg font-semibold">
+              Awareness & Considerations
+            </h4>
+            <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
             <NumberDisplayBox
               title={"Impression"}
               value={convertToBMK(SEMTotals.Impressions)}
@@ -232,7 +238,7 @@ function SEMSlide() {
               compareValue={
                 SEMComparison.cpc && `${SEMComparison.cpc.toFixed(2)}%`
               }
-              isNegative={SEMComparison?.ctr < 0}
+              isNegative={SEMComparison?.cpc < 0}
             />
             <NumberDisplayBox
               title={"Conversions"}
@@ -274,11 +280,13 @@ function SEMSlide() {
           </div>
           <div>
             <h4 className="text-lg font-semibold">Performance by Keywords</h4>
-            <SEMDataTable
+            <DataTable
+              firstMetric={"Keyword"}
               channelData={SEMData}
               totalData={SEMTotals}
               metrics={SEMMetrics}
               formatValue={formatValue}
+              maxRows={maxTableRows}
             />
           </div>
         </div>
@@ -328,6 +336,8 @@ function SEMSlide() {
         revertText={summarizeData}
         title="Edit Summary Text"
         placeholder="Enter your summary text..."
+        maxTableRows={maxTableRows}
+        setMaxTableRows={setMaxTableRows}
       />
     </div>
   );
