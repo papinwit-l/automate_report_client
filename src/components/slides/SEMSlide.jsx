@@ -3,7 +3,6 @@ import SlideHeader from "./SlideHeader";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
 import { useData } from "@/contexts/dataContext";
-import SEMDataTable from "../charts-tables/SEMDataTable";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
@@ -50,7 +49,6 @@ function SEMSlide() {
 
   const summarizeData = () => {
     let summaryTextTemp = "";
-    console.log("SEMTotals:", SEMTotals);
     const overallText = `Overall converions: ** ${parseFloat(
       SEMTotals?.Conversions?.toFixed(2) || 0
     )?.toLocaleString()} conversions**`;
@@ -114,7 +112,6 @@ function SEMSlide() {
       },
       {}
     );
-    console.log(genderPercentages);
     setClicksByGender(genderPercentages);
     const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
       if (item.Device) {
@@ -129,7 +126,6 @@ function SEMSlide() {
       },
       {}
     );
-    console.log(devicePercentages);
     setClicksByDevice(devicePercentages);
   };
 

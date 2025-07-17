@@ -3,21 +3,24 @@ import SlideHeader from "./SlideHeader";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
 import { useData } from "@/contexts/dataContext";
-import SEMDataTable from "../charts-tables/SEMDataTable";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
 import DataTable from "../charts-tables/DataTable";
+
+// Import utility functions
+import {
+  formatDisplayData,
+  formatTableValue,
+  formatMetricsData,
+  METRIC_CONFIGS,
+} from "@/utils/dataDisplayUtils";
 
 function GDNSlide() {
   const {
     loading,
     error,
     refetch,
-    SEMData,
-    SEMTotals,
-    SEMMetrics,
-    SEMComparison,
     GGDemographicData,
     GDNData,
     GDNTotals,
@@ -31,33 +34,21 @@ function GDNSlide() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState(0);
 
-  const formatValue = (value, metric) => {
-    if (metric === "ctr" || metric === "conRate") {
-      return `${value.toFixed(2)}%`;
-    }
-    if (metric === "cpl") {
-      return parseFloat(value.toFixed(2)).toLocaleString();
-    }
-    return value?.toLocaleString();
-  };
-
-  const convertToBMK = (value) => {
-    if (!value || value === 0) return "0";
-    const suffixes = ["", "K", "M", "B", "T"];
-    let suffixIndex = 0;
-    while (value >= 1000 && suffixIndex < suffixes.length - 1) {
-      value /= 1000;
-      suffixIndex++;
-    }
-    return `${value?.toFixed(1)}${suffixes[suffixIndex]}`;
-  };
-
   const summarizeData = () => {
+    // Handle "No Data" case
+    if (
+      GDNTotals?.Clicks === "No Data" ||
+      !GDNTotals ||
+      Object.keys(GDNTotals).length === 0
+    ) {
+      setSummaryText("<li>No data available for the selected period</li>");
+      return;
+    }
+
     let summaryTextTemp = "";
-    console.log("GDNTotals:", GDNTotals);
     const overallText = `Overall clicks: ** ${parseFloat(
       GDNTotals?.Clicks?.toFixed(2) || 0
-    )?.toLocaleString()} ckicks**`;
+    )?.toLocaleString()} clicks**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
     const averageCPC = GDNTotals?.cpc;
@@ -70,8 +61,11 @@ function GDNSlide() {
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
 
-    const channelEntries = Object.entries(GDNData);
-    if (channelEntries.length === 0) return null;
+    const channelEntries = Object.entries(GDNData || {});
+    if (channelEntries.length === 0) {
+      setSummaryText(summaryTextTemp);
+      return;
+    }
 
     const topConversionChannel = channelEntries.reduce((max, current) =>
       current[1].Clicks > max[1].Clicks ? current : max
@@ -101,19 +95,40 @@ function GDNSlide() {
   };
 
   const prepareChartData = () => {
+    if (!GGDemographicData || GGDemographicData.length === 0) {
+      setClicksByGender({});
+      setClicksByDevice({});
+      return;
+    }
+
     const GDNDemographicData = GGDemographicData.filter((item) => {
       return item.Channel.trim() === "GDN";
     });
+
+    if (GDNDemographicData.length === 0) {
+      setClicksByGender({});
+      setClicksByDevice({});
+      return;
+    }
+
     const sumClicksByGender = GDNDemographicData.reduce((acc, item) => {
       if (item.Gender) {
         acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
       }
       return acc;
     }, {});
+
     const totalClicks = Object.values(sumClicksByGender).reduce(
       (a, b) => a + b,
       0
     );
+
+    if (totalClicks === 0) {
+      setClicksByGender({});
+      setClicksByDevice({});
+      return;
+    }
+
     const genderPercentages = Object.entries(sumClicksByGender).reduce(
       (acc, [gender, clicks]) => {
         acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
@@ -121,14 +136,15 @@ function GDNSlide() {
       },
       {}
     );
-    console.log(genderPercentages);
     setClicksByGender(genderPercentages);
+
     const sumClicksByDevice = GDNDemographicData.reduce((acc, item) => {
       if (item.Device) {
         acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
       }
       return acc;
     }, {});
+
     const devicePercentages = Object.entries(sumClicksByDevice).reduce(
       (acc, [device, clicks]) => {
         acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
@@ -136,18 +152,12 @@ function GDNSlide() {
       },
       {}
     );
-    console.log(devicePercentages);
     setClicksByDevice(devicePercentages);
   };
 
   useEffect(() => {
-    console.log("GDNTotals:", GDNTotals);
-    if (GDNTotals && Object.keys(GDNTotals).length > 0) {
-      summarizeData();
-    }
-    if (GGDemographicData && Object.keys(GGDemographicData).length > 0) {
-      prepareChartData();
-    }
+    summarizeData();
+    prepareChartData();
   }, [GDNTotals, GDNData, GGDemographicData]);
 
   // Show loading state
@@ -192,6 +202,47 @@ function GDNSlide() {
       );
   };
 
+  // Format display data with safe fallbacks
+  // Using optional chaining to handle undefined/null values from useState
+  const impressionData = formatDisplayData(
+    GDNTotals?.Impressions,
+    GDNComparison?.Impressions,
+    "compact"
+  );
+  const clicksData = formatDisplayData(
+    GDNTotals?.Clicks,
+    GDNComparison?.Clicks,
+    "compact"
+  );
+  const ctrData = formatDisplayData(
+    GDNTotals?.ctr,
+    GDNComparison?.ctr,
+    "percentage"
+  );
+  const cpcData = formatDisplayData(
+    GDNTotals?.cpc,
+    GDNComparison?.cpc,
+    "compact"
+  );
+  const conversionsData = formatDisplayData(
+    GDNTotals?.Conversions,
+    GDNComparison?.Conversions,
+    "number"
+  );
+  const cplData = formatDisplayData(
+    GDNTotals?.cpl,
+    GDNComparison?.cpl,
+    "compact"
+  );
+  const spentData = formatDisplayData(
+    GDNTotals?.Spent,
+    GDNComparison?.Spent,
+    "compact"
+  );
+
+  // Alternative: Batch formatting approach (safer for useState data)
+  // const formattedMetrics = formatMetricsData(GDNTotals, GDNComparison, METRIC_CONFIGS);
+
   return (
     <div
       id="sem-component"
@@ -216,67 +267,58 @@ function GDNSlide() {
                 Awareness & Considerations
               </h4>
               <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+
               <NumberDisplayBox
                 title={"Impression"}
-                value={convertToBMK(GDNTotals.Impressions)}
-                compareValue={
-                  GDNComparison.Impressions &&
-                  `${GDNComparison.Impressions.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.Impressions < 0}
+                value={impressionData.displayValue}
+                compareValue={impressionData.compareValue}
+                isNegative={impressionData.isNegative}
               />
+
               <NumberDisplayBox
                 title={"Clicks"}
-                value={convertToBMK(GDNTotals.Clicks)}
-                compareValue={
-                  GDNComparison.Clicks && `${GDNComparison.Clicks.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.Clicks < 0}
+                value={clicksData.displayValue}
+                compareValue={clicksData.compareValue}
+                isNegative={clicksData.isNegative}
               />
+
               <NumberDisplayBox
                 title={"%CTR"}
-                value={`${GDNTotals.ctr?.toFixed(2)}%`}
-                compareValue={
-                  GDNComparison.ctr && `${GDNComparison.ctr.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.ctr < 0}
+                value={ctrData.displayValue}
+                compareValue={ctrData.compareValue}
+                isNegative={ctrData.isNegative}
               />
+
               <NumberDisplayBox
                 title={"CPC"}
-                value={convertToBMK(GDNTotals.cpc)}
-                compareValue={
-                  GDNComparison.cpc && `${GDNComparison.cpc.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.cpc < 0}
+                value={cpcData.displayValue}
+                compareValue={cpcData.compareValue}
+                isNegative={cpcData.isNegative}
                 isConversion={true}
               />
+
               <NumberDisplayBox
                 title={"Conversions"}
-                value={GDNTotals.Conversions?.toLocaleString() || "0"}
+                value={conversionsData.displayValue}
                 isConversion={true}
-                compareValue={
-                  GDNComparison.Conversions &&
-                  `${GDNComparison.Conversions.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.Conversions < 0}
+                compareValue={conversionsData.compareValue}
+                isNegative={conversionsData.isNegative}
               />
+
               <NumberDisplayBox
                 title={"CPL"}
-                value={convertToBMK(GDNTotals.cpl)}
+                value={cplData.displayValue}
                 isConversion={true}
-                compareValue={
-                  GDNComparison.cpl && `${GDNComparison.cpl.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.cpl < 0}
+                compareValue={cplData.compareValue}
+                isNegative={cplData.isNegative}
               />
+
               <NumberDisplayBox
                 title={"Spent"}
-                value={convertToBMK(GDNTotals.Spent)}
+                value={spentData.displayValue}
                 isConversion={true}
-                compareValue={
-                  GDNComparison.Spent && `${GDNComparison.Spent.toFixed(2)}%`
-                }
-                isNegative={GDNComparison?.Spent < 0}
+                compareValue={spentData.compareValue}
+                isNegative={spentData.isNegative}
               />
             </div>
             <div>
@@ -288,7 +330,7 @@ function GDNSlide() {
                 channelData={GDNData}
                 totalData={GDNTotals}
                 metrics={GDNMetrics}
-                formatValue={formatValue}
+                formatValue={formatTableValue}
                 maxRows={maxTableRows}
               />
             </div>

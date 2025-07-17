@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import GDNSlide from "@/components/slides/GDNSlide";
+import DiscoverySlide from "@/components/slides/DiscoverySlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -280,6 +281,7 @@ function SlideReport() {
               <div className="w-full flex flex-col items-center gap-10">
                 <SEMSlide />
                 <GDNSlide />
+                <DiscoverySlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">

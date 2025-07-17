@@ -78,7 +78,7 @@ function DataTable({
               {firstMetric}
             </th>
             {displayMetrics.map((metric) => {
-              console.log(metric);
+              // console.log(metric);
               return (
                 <th
                   key={metric}

@@ -25,9 +25,32 @@ const DonutChart = ({
       return [];
     }
 
-    return Object.entries(dataObj).map(([key, percentage], index) => ({
+    // Filter out "No Data" values and convert percentages
+    const validEntries = Object.entries(dataObj).filter(([key, value]) => {
+      // Skip if value is "No Data" or similar
+      if (
+        value === "No Data" ||
+        value === "No data" ||
+        value === null ||
+        value === undefined
+      ) {
+        return false;
+      }
+
+      // For percentage strings, check if it's a valid number
+      if (typeof value === "string" && value.includes("%")) {
+        const numValue = parseFloat(value.replace("%", ""));
+        return !isNaN(numValue) && numValue > 0;
+      }
+
+      // For regular numbers
+      const numValue = parseFloat(value);
+      return !isNaN(numValue) && numValue > 0;
+    });
+
+    return validEntries.map(([key, percentage], index) => ({
       name: key,
-      value: parseFloat(percentage.replace("%", "")),
+      value: parseFloat(percentage.toString().replace("%", "")),
       color: defaultColors[key] || getDefaultColor(index),
     }));
   };
@@ -46,14 +69,49 @@ const DonutChart = ({
     return colors[index % colors.length];
   };
 
-  // Early return if no data or empty object
-  if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
+  // Check if data contains only "No Data" values
+  const hasValidData = (dataObj) => {
+    if (
+      !dataObj ||
+      typeof dataObj !== "object" ||
+      Object.keys(dataObj).length === 0
+    ) {
+      return false;
+    }
+
+    return Object.values(dataObj).some((value) => {
+      if (
+        value === "No Data" ||
+        value === "No data" ||
+        value === null ||
+        value === undefined
+      ) {
+        return false;
+      }
+
+      if (typeof value === "string" && value.includes("%")) {
+        const numValue = parseFloat(value.replace("%", ""));
+        return !isNaN(numValue) && numValue > 0;
+      }
+
+      const numValue = parseFloat(value);
+      return !isNaN(numValue) && numValue > 0;
+    });
+  };
+
+  // Early return if no valid data
+  if (!hasValidData(data)) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-6">
+      <div className="w-full flex flex-col items-center">
         {title && (
-          <h3 className="text-lg font-semibold mb-4 text-center">{title}</h3>
+          <h3 className="text-lg font-semibold text-center">{title}</h3>
         )}
-        <div className="text-center text-gray-500">Loading...</div>
+        <div
+          className="flex items-center justify-center text-gray-500 text-sm"
+          style={{ width, height }}
+        >
+          No data available
+        </div>
       </div>
     );
   }
@@ -62,7 +120,7 @@ const DonutChart = ({
   let chartData = [];
   if (Array.isArray(data)) {
     // Already formatted chart data
-    chartData = data;
+    chartData = data.filter((item) => item.value > 0);
   } else if (typeof data === "object") {
     // Object with percentage strings (your format)
     chartData = transformDataForChart(data);
@@ -109,15 +167,6 @@ const DonutChart = ({
           stroke={fill} // Use the same color as the chart segment
           strokeWidth={1}
         />
-        {/* Custom label line - second segment */}
-        {/* <line
-          x1={lineX}
-          y1={lineY}
-          x2={labelX}
-          y2={labelY}
-          stroke={fill} // Use the same color as the chart segment
-          strokeWidth={1}
-        /> */}
 
         {/* Label text */}
         <text
@@ -200,14 +249,19 @@ const DonutChart = ({
     );
   };
 
-  // Loading/empty state
+  // Final check - if no valid chart data after processing
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-6">
+      <div className="w-full flex flex-col items-center">
         {title && (
-          <h3 className="text-lg font-semibold mb-4 text-center">{title}</h3>
+          <h3 className="text-lg font-semibold text-center">{title}</h3>
         )}
-        <div className="text-center text-gray-500">No data available</div>
+        <div
+          className="flex items-center justify-center text-gray-500 text-sm"
+          style={{ width, height }}
+        >
+          No data available
+        </div>
       </div>
     );
   }
@@ -228,8 +282,6 @@ const DonutChart = ({
               outerRadius={outerRadius}
               paddingAngle={paddingAngle}
               dataKey="value"
-              //   label={isPercentage ? renderCustomizedLabel : { fontSize: 12 }}
-              //   labelLine={{ strokeWidth: 10 }}
               label={CustomLabel}
               labelLine={false}
             >

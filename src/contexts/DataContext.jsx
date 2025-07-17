@@ -75,6 +75,16 @@ export const DataProvider = ({ children }) => {
     "Spent",
   ]);
   const [GDNComparison, setGDNComparison] = useState({});
+  const [DiscData, setDiscData] = useState({});
+  const [DiscTotals, setDiscTotals] = useState({});
+  const [DiscMetrics, setDiscMetrics] = useState([
+    "Ad group name",
+    "Impressions",
+    "Clicks",
+    "Conversions",
+    "Spent",
+  ]);
+  const [DiscComparison, setDiscComparison] = useState({});
 
   // Helper function to calculate date difference in days
   const getDateDifference = (from, to) => {
@@ -170,6 +180,16 @@ export const DataProvider = ({ children }) => {
     finalMetrics,
     groupBy = "Keyword"
   ) => {
+    if (!cleanedData || cleanedData.length === 0) {
+      return {
+        enhancedFieldData: {},
+        enhancedTotals: Object.fromEntries(
+          finalMetrics.map((m) => [m, "No Data"])
+        ),
+        allMetrics: finalMetrics,
+      };
+    }
+
     // Group by the specified field
     const summaryByField = cleanedData.reduce((acc, item) => {
       const fieldValue = item[groupBy] || "Unknown";
@@ -397,7 +417,7 @@ export const DataProvider = ({ children }) => {
     }
   };
 
-  const getGDNDATA = async (id) => {
+  const getGDNData = async (id) => {
     try {
       const response = await axios.get(
         `http://localhost:8000/data-sheets/gdn-data/${id}`
@@ -409,7 +429,6 @@ export const DataProvider = ({ children }) => {
         Object.fromEntries(headers.map((header, index) => [header, row[index]]))
       );
       const cleanedData = cleanObjectData(dataObjects, GDNMetrics);
-      console.log("GDNCleandata:", cleanedData);
       let currentPeriodData = cleanedData;
       let previousPeriodData = [];
       let comparison = {};
@@ -486,6 +505,102 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const getDiscData = async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/data-sheets/disc-data/${id}`
+      );
+      const rawData = response.data.data;
+      const headers = rawData[0];
+      const dataRows = rawData.slice(1);
+      const dataObjects = dataRows.map((row) =>
+        Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+      );
+      const cleanedData = cleanObjectData(dataObjects, DiscMetrics);
+      console.log("DiscCleandata:", cleanedData);
+      let currentPeriodData = cleanedData;
+      let previousPeriodData = [];
+      let comparison = {};
+
+      if (enableDateRange && dateRange.from && dateRange.to) {
+        currentPeriodData = filterDataByDateRange(
+          cleanedData,
+          dateRange.from,
+          dateRange.to
+        );
+
+        // Get previous period data for comparison
+        const previousPeriodDates = getPreviousPeriodDates(
+          dateRange.from,
+          dateRange.to
+        );
+
+        previousPeriodData = filterDataByDateRange(
+          cleanedData,
+          previousPeriodDates.from,
+          previousPeriodDates.to
+        );
+      }
+      console.log("currentPeriodData:", currentPeriodData);
+      const currentPeriodResults = processData(
+        currentPeriodData,
+        DiscMetrics,
+        [
+          "Ad group name",
+          "Impressions",
+          "Clicks",
+          "ctr",
+          "cpc",
+          "Conversions",
+          "conRate",
+          "cpl",
+          "Spent",
+        ],
+        "Ad group name"
+      );
+
+      // Process previous period data if date range is enabled
+      if (
+        enableDateRange &&
+        dateRange.from &&
+        dateRange.to &&
+        previousPeriodData.length > 0
+      ) {
+        const previousPeriodResults = processData(
+          previousPeriodData,
+          DiscMetrics,
+          [
+            "Ad group name",
+            "Impressions",
+            "Clicks",
+            "ctr",
+            "cpc",
+            "Conversions",
+            "conRate",
+            "cpl",
+            "Spent",
+          ],
+          "Ad group name"
+        );
+
+        // Calculate comparison
+        comparison = calculateComparison(
+          currentPeriodResults.enhancedTotals,
+          previousPeriodResults.enhancedTotals
+        );
+      }
+      console.log("DiscData:", currentPeriodResults.enhancedFieldData);
+      console.log("DiscTotals:", currentPeriodResults.enhancedTotals);
+      console.log("DiscMetrics:", currentPeriodResults.allMetrics);
+      setDiscData(currentPeriodResults.enhancedFieldData);
+      setDiscTotals(currentPeriodResults.enhancedTotals);
+      setDiscMetrics(currentPeriodResults.allMetrics);
+      setDiscComparison(comparison);
+    } catch (error) {
+      console.error("Error fetching GDN data:", error);
+    }
+  };
+
   const fetchData = useCallback(
     async (id) => {
       try {
@@ -495,7 +610,8 @@ export const DataProvider = ({ children }) => {
         // Fetch SEM data
         await getSEMData(id);
         await getGGDemographic(id);
-        await getGDNDATA(id);
+        await getGDNData(id);
+        await getDiscData(id);
       } catch (err) {
         console.error(err);
         const ErrMsg = err?.response?.data?.message;
@@ -525,6 +641,10 @@ export const DataProvider = ({ children }) => {
     GDNTotals,
     GDNMetrics,
     GDNComparison,
+    DiscData,
+    DiscTotals,
+    DiscMetrics,
+    DiscComparison,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
