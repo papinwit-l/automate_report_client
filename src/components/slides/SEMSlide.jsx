@@ -187,7 +187,7 @@ function SEMSlide() {
   return (
     <div
       id="sem-component"
-      className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4 relative group"
+      className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4 relative group bg-white"
     >
       {/* EDIT BUTTON */}
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
