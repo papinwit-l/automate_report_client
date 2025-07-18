@@ -25,7 +25,7 @@ function SEMSlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState(12);
+  const [maxTableRows, setMaxTableRows] = useState([12]);
 
   const formatValue = (value, metric) => {
     if (metric === "ctr" || metric === "conRate") {
@@ -283,7 +283,7 @@ function SEMSlide() {
               totalData={SEMTotals}
               metrics={SEMMetrics}
               formatValue={formatValue}
-              maxRows={maxTableRows}
+              maxRows={maxTableRows[0]}
               defaultSortBy="Conversions"
             />
           </div>

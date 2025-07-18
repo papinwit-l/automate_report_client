@@ -29,17 +29,13 @@ function FacebookAwarenessSlide() {
     FacebookAudienceComparison,
     FacebookCreativeData,
     FacebookCreativeTotals,
-    DiscData,
-    DiscTotals,
-    DiscMetrics,
-    DiscComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState(5);
+  const [maxTableRows, setMaxTableRows] = useState([4, 4]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -53,51 +49,78 @@ function FacebookAwarenessSlide() {
     }
 
     let summaryTextTemp = "";
-    const overallText = `Overall clicks: ** ${parseFloat(
-      FacebookAudienceTotals?.clicks?.toFixed(2) || 0
-    )?.toLocaleString()} clicks**`;
+    const overallText = `Overall impression: ** ${parseFloat(
+      FacebookAudienceTotals?.impressions?.toFixed(2) || 0
+    )?.toLocaleString()} impressions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    const averageCPC = FacebookAudienceTotals?.cpc;
-
-    summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
+    summaryTextTemp += `<li>Average CPM: **${FacebookAudienceTotals.cpm?.toLocaleString(
       undefined,
       { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
+    )} THB (per 1000 impressions)**</li>`;
 
-    let highestConversionChannelText = ``;
-    let highestConversionRateChannelText = ``;
-
-    const channelEntries = Object.entries(FacebookAudienceData || {});
-    if (channelEntries.length === 0) {
-      setSummaryText(summaryTextTemp);
-      return;
-    }
-
-    const topConversionChannel = channelEntries.reduce((max, current) =>
-      current[1].clicks > max[1].clicks ? current : max
+    // Find top audience by impressions (simpler approach)
+    const topAudience = Object.entries(FacebookAudienceData).reduce(
+      (max, [key, value]) =>
+        (value.impressions || 0) > (max.value.impressions || 0)
+          ? { key, value }
+          : max,
+      { key: "", value: { impressions: 0 } }
     );
 
-    const topConversionRateChannel = channelEntries.reduce((max, current) =>
-      current[1].ctr > max[1].ctr ? current : max
+    const topAudienceText = `Top Audience: **${
+      topAudience.key
+    } (with ${topAudience.value.impressions?.toLocaleString()} Impressions)**`;
+    summaryTextTemp += `<li>${topAudienceText}</li>`;
+
+    // Find top creative by impressions (simpler approach)
+    const topCreative = Object.entries(FacebookCreativeData).reduce(
+      (max, [key, value]) =>
+        (value.impressions || 0) > (max.value.impressions || 0)
+          ? { key, value }
+          : max,
+      { key: "", value: { impressions: 0 } }
     );
+    const topCreativeText = `Top Creative: **${
+      topCreative.key
+    } (with ${topCreative.value.impressions?.toLocaleString()} Impressions**`;
+    summaryTextTemp += `<li>${topCreativeText}</li>`;
 
-    if (channelEntries.length > 1) {
-      highestConversionChannelText = `Best perform Ad: **${
-        topConversionChannel[0]
-      } with ${topConversionChannel[1].clicks?.toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })} clicks**`;
-      summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
-    }
+    // {
+    //   let highestConversionChannelText = ``;
+    //   let highestConversionRateChannelText = ``;
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential Ad: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
-    }
+    //   const channelEntries = Object.entries(FacebookAudienceData || {});
+    //   if (channelEntries.length === 0) {
+    //     setSummaryText(summaryTextTemp);
+    //     return;
+    //   }
+
+    //   const topConversionChannel = channelEntries.reduce((max, current) =>
+    //     current[1].clicks > max[1].clicks ? current : max
+    //   );
+
+    //   const topConversionRateChannel = channelEntries.reduce((max, current) =>
+    //     current[1].ctr > max[1].ctr ? current : max
+    //   );
+
+    //   if (channelEntries.length > 1) {
+    //     highestConversionChannelText = `Best perform Ad: **${
+    //       topConversionChannel[0]
+    //     } with ${topConversionChannel[1].clicks?.toLocaleString(undefined, {
+    //       minimumFractionDigits: 0,
+    //       maximumFractionDigits: 0,
+    //     })} clicks**`;
+    //     summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
+    //   }
+
+    //   if (topConversionChannel[0] != topConversionRateChannel[0]) {
+    //     highestConversionRateChannelText = `Potential Ad: **${
+    //       topConversionRateChannel[0]
+    //     } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
+    //     summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    //   }
+    // }
     setSummaryText(summaryTextTemp);
   };
 
@@ -251,6 +274,16 @@ function FacebookAwarenessSlide() {
     FacebookAudienceComparison?.cvr,
     "percentage"
   );
+  const cpmData = formatDisplayData(
+    FacebookAudienceTotals?.cpm,
+    FacebookAudienceComparison?.cpm,
+    "compact"
+  );
+  const reachData = formatDisplayData(
+    FacebookAudienceTotals?.reach,
+    FacebookAudienceComparison?.reach,
+    "compact"
+  );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
@@ -273,12 +306,11 @@ function FacebookAwarenessSlide() {
       <SlideHeader title={"Facebook Awareness"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
-          <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+          <div className="col-span-8 flex flex-col gap-2">
+            <div className="grid grid-cols-4 gap-2">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -288,41 +320,17 @@ function FacebookAwarenessSlide() {
               />
 
               <NumberDisplayBox
-                title={"Clicks"}
-                value={clicksData.displayValue}
-                compareValue={clicksData.compareValue}
-                isNegative={clicksData.isNegative}
+                title={"CPM"}
+                value={cpmData.displayValue}
+                compareValue={cpmData.compareValue}
+                isNegative={cpmData.isNegative}
               />
 
               <NumberDisplayBox
-                title={"%CTR"}
-                value={ctrData.displayValue}
-                compareValue={ctrData.compareValue}
-                isNegative={ctrData.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"Conversions"}
-                value={conversionsData.displayValue}
-                isConversion={true}
-                compareValue={conversionsData.compareValue}
-                isNegative={conversionsData.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"%Conv Rate"}
-                value={conRate.displayValue}
-                compareValue={conRate.compareValue}
-                isNegative={conRate.isNegative}
-                isConversion={true}
-              />
-
-              <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
-                isConversion={true}
-                compareValue={cplData.compareValue}
-                isNegative={cplData.isNegative}
+                title={"Reach"}
+                value={reachData.displayValue}
+                compareValue={reachData.compareValue}
+                isNegative={reachData.isNegative}
               />
 
               <NumberDisplayBox
@@ -343,18 +351,34 @@ function FacebookAwarenessSlide() {
                 metrics={[
                   "Ad set name",
                   "impressions", // lowercase
+                  "cpm",
                   "reach", // lowercase
-                  "clicks", // lowercase
-                  "ctr",
-                  "cpc",
-                  "conversions", // lowercase
-                  "cvr",
-                  "cpl",
                   "spent", // lowercase
                 ]}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows}
-                defaultSortBy="conversions"
+                maxRows={maxTableRows[0]}
+                defaultSortBy="impressions"
+                defaultSortOrder="desc"
+                enableSorting={true} // Can disable sorting if needed
+              />
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold">Performance by Creative</h4>
+
+              <AdvancedDataTable
+                firstMetric="Ad name"
+                channelData={FacebookCreativeData}
+                totalData={FacebookCreativeTotals}
+                metrics={[
+                  "Ad name",
+                  "impressions", // lowercase
+                  "cpm",
+                  "reach", // lowercase
+                  "spent", // lowercase
+                ]}
+                formatValue={formatTableValue}
+                maxRows={maxTableRows[1]}
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
               />
@@ -362,7 +386,7 @@ function FacebookAwarenessSlide() {
             <div className="grid grid-cols-2">
               <div className="col-span-1">
                 {/* Summary */}
-                <div className="px-4">
+                {/* <div className="px-4">
                   <h4 className="text-lg font-semibold">Summary</h4>
                   <ul className="list-disc pl-6">
                     <div
@@ -372,34 +396,23 @@ function FacebookAwarenessSlide() {
                       }}
                     />
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
-          <div className="col-span-4 flex flex-col ml-2 mt-8">
-            <div className="col-span-2 flex flex-col">
-              {clicksByGender && (
-                <DonutChart
-                  data={clicksByGender}
-                  title="Clicks by Gender"
-                  width={220}
-                  height={160}
-                  innerRadius={30}
-                  outerRadius={60}
-                  isPercentage={true}
+          <div className="col-span-8 flex flex-col ml-2 mt-8 justify-between items-center">
+            {/* Summary */}
+            <div></div>
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
                 />
-              )}
-              {clicksByDevice && (
-                <DonutChart
-                  data={clicksByDevice}
-                  title="Clicks by Device"
-                  width={220}
-                  height={140}
-                  innerRadius={30}
-                  outerRadius={60}
-                  isPercentage={true}
-                />
-              )}
+              </ul>
             </div>
           </div>
         </div>

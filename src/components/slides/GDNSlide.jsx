@@ -33,7 +33,7 @@ function GDNSlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState(0);
+  const [maxTableRows, setMaxTableRows] = useState([0]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -332,7 +332,7 @@ function GDNSlide() {
                 totalData={GDNTotals}
                 metrics={GDNMetrics}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows}
+                maxRows={maxTableRows[0]}
                 defaultSortBy="Clicks"
               />
             </div>

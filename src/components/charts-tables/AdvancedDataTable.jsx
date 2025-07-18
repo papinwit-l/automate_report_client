@@ -47,6 +47,8 @@ export const AdvancedDataTable = ({
         return "CPR";
       case "keyword":
         return "Keyword";
+      case "cpm":
+        return "CPM";
       default:
         return metric
           .split(/(?=[A-Z])/)
@@ -68,6 +70,7 @@ export const AdvancedDataTable = ({
       case "spent":
       case "cpc":
       case "cpr":
+      case "cpm":
         return `${Number(value).toFixed(2)}`;
       case "impressions":
       case "clicks":

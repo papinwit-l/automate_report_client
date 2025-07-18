@@ -60,9 +60,13 @@ const TextEditorModal = ({
     }, 0);
   };
 
-  const handleSetMaxTableRows = (e) => {
+  const handleSetMaxTableRows = (e, index) => {
     const value = Math.max(0, Number.parseInt(e.target.value));
-    setMaxTableRows(value);
+    setMaxTableRows((prev) => {
+      const newState = [...prev];
+      newState[index] = value;
+      return newState;
+    });
   };
 
   const renderFormattedText = (text) => {
@@ -104,39 +108,45 @@ const TextEditorModal = ({
         <div className="p-6 space-y-4">
           {/* Table Controls */}
           <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <Label
-                  htmlFor="maxTableRows"
-                  className="text-sm font-medium text-gray-700 mb-1 block"
-                >
-                  Max Table Rows
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="maxTableRows"
-                    type="number"
-                    value={maxTableRows}
-                    onChange={handleSetMaxTableRows}
-                    className="w-full text-left font-mono"
-                    min="0"
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  <span className="font-medium">
-                    {maxTableRows === 0
-                      ? "No limit"
-                      : `Limited to ${maxTableRows} rows`}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Set to 0 for unlimited table rows
-                </p>
-              </div>
+            <div className="flex flex-col gap-4">
+              {maxTableRows.length > 0 &&
+                maxTableRows.map((value, index) => (
+                  <div key={`table-${index}`} className="flex-1 flex gap-4">
+                    <div className="flex-1">
+                      <Label
+                        htmlFor={`maxTableRows-${index}`}
+                        className="text-sm font-medium text-gray-700 mb-1 block"
+                      >
+                        Max Table Rows{" "}
+                        {maxTableRows.length > 1 ? `(Table ${index + 1})` : ""}
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id={`maxTableRows-${index}`}
+                          type="number"
+                          value={value || 0}
+                          onChange={(e) => handleSetMaxTableRows(e, index)}
+                          className="w-full text-left font-mono"
+                          min="0"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                        <span className="font-medium">
+                          {(value || 0) === 0
+                            ? "No limit"
+                            : `Limited to ${value || 0} rows`}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Set to 0 for unlimited table rows
+                      </p>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
 

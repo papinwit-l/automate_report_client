@@ -164,6 +164,7 @@ export const METRIC_CONFIGS = {
   cpc: { valueType: "compact" },
   cpl: { valueType: "compact" },
   Reach: { valueType: "compact" },
+  cpm: { valueType: "compact" },
 };
 
 /**
@@ -176,7 +177,7 @@ export const formatTableValue = (value, metric) => {
   if (metric === "ctr" || metric === "conRate") {
     return `${value.toFixed(2)}%`;
   }
-  if (metric === "cpl") {
+  if (metric === "cpl" || metric === "cpm") {
     return parseFloat(value.toFixed(2)).toLocaleString();
   }
   return value?.toLocaleString();

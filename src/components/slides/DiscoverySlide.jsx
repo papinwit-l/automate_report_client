@@ -33,7 +33,7 @@ function DiscoverySlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState(0);
+  const [maxTableRows, setMaxTableRows] = useState([0]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -337,7 +337,7 @@ function DiscoverySlide() {
                 totalData={DiscTotals}
                 metrics={DiscMetrics}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows}
+                maxRows={maxTableRows[0]}
                 defaultSortBy="Clicks"
                 defaultSortDirection="desc"
                 enableSorting={true}
