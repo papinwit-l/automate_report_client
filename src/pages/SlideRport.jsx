@@ -20,6 +20,7 @@ import {
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
+import axios from "axios";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -42,7 +43,7 @@ function SlideReport() {
     try {
       console.log("Starting export process...");
 
-      const element = document.getElementById("overall-component");
+      const element = document.getElementById("sem-component");
       if (!element) {
         throw new Error(
           "Component not found. Make sure the Overall component has id='overall-component'"
@@ -114,7 +115,7 @@ function SlideReport() {
       }
       const presentationId = urlMatch[1];
 
-      const element = document.getElementById("overall-component");
+      const element = document.getElementById("sem-component");
       const imageData = await domtoimage.toPng(element, {
         quality: 0.95,
         bgcolor: "#ffffff",
@@ -211,6 +212,18 @@ function SlideReport() {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleTestAPI = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/data-sheets/test-oauth2"
+      );
+      const data = response.data;
+      console.log("API Response:", data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Sidebar Component */}
@@ -243,6 +256,9 @@ function SlideReport() {
             <h1 className="text-xl font-bold text-slate-900">
               Slide Report Generator
             </h1>
+            <button onClick={handleTestAPI} className="text-sm text-blue-500">
+              TEST
+            </button>
           </div>
           <div className="ml-auto text-sm text-slate-600">
             Transform your Google Sheets data into beautiful presentation slides
