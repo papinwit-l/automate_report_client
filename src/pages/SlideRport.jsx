@@ -213,6 +213,8 @@ function SlideReport() {
         { id: "gdn-component", title: "GDN Performance" },
         { id: "discovery-component", title: "Discovery Performance" },
         { id: "facebook-awareness-component", title: "Facebook Awareness" },
+        { id: "facebook-reach-component", title: "Facebook Reach" },
+        { id: "facebook-engagement-component", title: "Facebook Engagement" },
       ];
 
       // Capture all components
