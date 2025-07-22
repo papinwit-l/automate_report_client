@@ -9,6 +9,14 @@ import { Button } from "../ui/button";
 import DataTable from "../charts-tables/DataTable";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
+// Import utility functions
+import {
+  formatDisplayData,
+  formatTableValue,
+  formatMetricsData,
+  METRIC_CONFIGS,
+} from "@/utils/dataDisplayUtils";
+
 function SEMSlide() {
   const {
     loading,
@@ -23,28 +31,7 @@ function SEMSlide() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([12]);
-
-  const formatValue = (value, metric) => {
-    if (metric === "ctr" || metric === "conRate") {
-      return `${value.toFixed(2)}%`;
-    }
-    if (metric === "cpl") {
-      return parseFloat(value.toFixed(2)).toLocaleString();
-    }
-    return value?.toLocaleString();
-  };
-
-  const convertToBMK = (value) => {
-    if (!value || value === 0) return "0";
-    const suffixes = ["", "K", "M", "B", "T"];
-    let suffixIndex = 0;
-    while (value >= 1000 && suffixIndex < suffixes.length - 1) {
-      value /= 1000;
-      suffixIndex++;
-    }
-    return `${value?.toFixed(1)}${suffixes[suffixIndex]}`;
-  };
+  const [maxTableRows, setMaxTableRows] = useState([14]);
 
   // Memoize the chart data calculations to prevent unnecessary re-renders
   const { clicksByGender, clicksByDevice } = useMemo(() => {
@@ -72,13 +59,17 @@ function SEMSlide() {
       0
     );
 
-    const genderPercentages =
-      totalClicks > 0
-        ? Object.entries(sumClicksByGender).reduce((acc, [gender, clicks]) => {
-            acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-            return acc;
-          }, {})
-        : {};
+    if (totalClicks === 0) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const genderPercentages = Object.entries(sumClicksByGender).reduce(
+      (acc, [gender, clicks]) => {
+        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+        return acc;
+      },
+      {}
+    );
 
     const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
       if (item.Device) {
@@ -87,13 +78,13 @@ function SEMSlide() {
       return acc;
     }, {});
 
-    const devicePercentages =
-      totalClicks > 0
-        ? Object.entries(sumClicksByDevice).reduce((acc, [device, clicks]) => {
-            acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-            return acc;
-          }, {})
-        : {};
+    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
+      (acc, [device, clicks]) => {
+        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+        return acc;
+      },
+      {}
+    );
 
     return {
       clicksByGender: genderPercentages,
@@ -102,8 +93,18 @@ function SEMSlide() {
   }, [GGDemographicData]);
 
   const summarizeData = () => {
+    // Handle "No Data" case
+    if (
+      SEMTotals?.Conversions === "No Data" ||
+      !SEMTotals ||
+      Object.keys(SEMTotals).length === 0
+    ) {
+      setSummaryText("<li>No data available for the selected period</li>");
+      return;
+    }
+
     let summaryTextTemp = "";
-    const overallText = `Overall converions: ** ${parseFloat(
+    const overallText = `Overall conversions: ** ${parseFloat(
       SEMTotals?.Conversions?.toFixed(2) || 0
     )?.toLocaleString()} conversions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
@@ -118,8 +119,11 @@ function SEMSlide() {
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
 
-    const channelEntries = Object.entries(SEMData);
-    if (channelEntries.length === 0) return null;
+    const channelEntries = Object.entries(SEMData || {});
+    if (channelEntries.length === 0) {
+      setSummaryText(summaryTextTemp);
+      return;
+    }
 
     const topConversionChannel = channelEntries.reduce((max, current) =>
       current[1].Conversions > max[1].Conversions ? current : max
@@ -130,7 +134,12 @@ function SEMSlide() {
     );
 
     if (channelEntries.length > 1) {
-      highestConversionChannelText = `Best perform keywords: **${topConversionChannel[0]} with ${topConversionChannel[1].Conversions} conversions**`;
+      highestConversionChannelText = `Best perform keywords: **${
+        topConversionChannel[0]
+      } with ${topConversionChannel[1].Conversions?.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })} conversions**`;
       summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
 
@@ -146,9 +155,7 @@ function SEMSlide() {
   };
 
   useEffect(() => {
-    if (SEMTotals && Object.keys(SEMTotals).length > 0) {
-      summarizeData();
-    }
+    summarizeData();
   }, [SEMTotals, SEMData]);
 
   // Show loading state
@@ -193,6 +200,52 @@ function SEMSlide() {
       );
   };
 
+  // Format display data with safe fallbacks
+  // Using optional chaining to handle undefined/null values from useState
+  const impressionData = formatDisplayData(
+    SEMTotals?.Impressions,
+    SEMComparison?.Impressions,
+    "compact"
+  );
+  const clicksData = formatDisplayData(
+    SEMTotals?.Clicks,
+    SEMComparison?.Clicks,
+    "compact"
+  );
+  const ctrData = formatDisplayData(
+    SEMTotals?.ctr,
+    SEMComparison?.ctr,
+    "percentage"
+  );
+  const cpcData = formatDisplayData(
+    SEMTotals?.cpc,
+    SEMComparison?.cpc,
+    "compact"
+  );
+  const conversionsData = formatDisplayData(
+    SEMTotals?.Conversions,
+    SEMComparison?.Conversions,
+    "number"
+  );
+  const conRateData = formatDisplayData(
+    SEMTotals?.conRate,
+    SEMComparison?.conRate,
+    "percentage"
+  );
+  const cplData = formatDisplayData(
+    SEMTotals?.cpl,
+    SEMComparison?.cpl,
+    "compact"
+  );
+  const spentData = formatDisplayData(
+    SEMTotals?.Spent,
+    SEMComparison?.Spent,
+    "compact"
+  );
+
+  // Alternative: Batch formatting approach (safer for useState data)
+  // const formattedMetrics = formatMetricsData(SEMTotals, SEMComparison, METRIC_CONFIGS);
+
   return (
     <div
       id="sem-component"
@@ -216,75 +269,65 @@ function SEMSlide() {
               Awareness & Considerations
             </h4>
             <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+
             <NumberDisplayBox
               title={"Impression"}
-              value={convertToBMK(SEMTotals.Impressions)}
-              compareValue={
-                SEMComparison.Impressions &&
-                `${SEMComparison.Impressions.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.Impressions < 0}
+              value={impressionData.displayValue}
+              compareValue={impressionData.compareValue}
+              isNegative={impressionData.isNegative}
             />
+
             <NumberDisplayBox
               title={"Clicks"}
-              value={convertToBMK(SEMTotals.Clicks)}
-              compareValue={
-                SEMComparison.Clicks && `${SEMComparison.Clicks.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.Clicks < 0}
+              value={clicksData.displayValue}
+              compareValue={clicksData.compareValue}
+              isNegative={clicksData.isNegative}
             />
+
             <NumberDisplayBox
               title={"%CTR"}
-              value={`${SEMTotals.ctr?.toFixed(2)}%`}
-              compareValue={
-                SEMComparison.ctr && `${SEMComparison.ctr.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.ctr < 0}
+              value={ctrData.displayValue}
+              compareValue={ctrData.compareValue}
+              isNegative={ctrData.isNegative}
             />
+
             <NumberDisplayBox
               title={"CPC"}
-              value={convertToBMK(SEMTotals.cpc)}
-              compareValue={
-                SEMComparison.cpc && `${SEMComparison.cpc.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.cpc < 0}
+              value={cpcData.displayValue}
+              compareValue={cpcData.compareValue}
+              isNegative={cpcData.isNegative}
             />
+
             <NumberDisplayBox
               title={"Conversions"}
-              value={SEMTotals.Conversions?.toLocaleString() || "0"}
+              value={conversionsData.displayValue}
               isConversion={true}
-              compareValue={
-                SEMComparison.Conversions &&
-                `${SEMComparison.Conversions.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.Conversions < 0}
+              compareValue={conversionsData.compareValue}
+              isNegative={conversionsData.isNegative}
             />
+
             <NumberDisplayBox
               title={"%Con Rate"}
-              value={`${SEMTotals.conRate?.toFixed(2)}%`}
+              value={conRateData.displayValue}
               isConversion={true}
-              compareValue={
-                SEMComparison.conRate && `${SEMComparison.conRate.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.conRate < 0}
+              compareValue={conRateData.compareValue}
+              isNegative={conRateData.isNegative}
             />
+
             <NumberDisplayBox
               title={"CPL"}
-              value={convertToBMK(SEMTotals.cpl)}
+              value={cplData.displayValue}
               isConversion={true}
-              compareValue={
-                SEMComparison.cpl && `${SEMComparison.cpl.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.cpl < 0}
+              compareValue={cplData.compareValue}
+              isNegative={cplData.isNegative}
             />
+
             <NumberDisplayBox
               title={"Spent"}
-              value={convertToBMK(SEMTotals.Spent)}
+              value={spentData.displayValue}
               isConversion={true}
-              compareValue={
-                SEMComparison.Spent && `${SEMComparison.Spent.toFixed(2)}%`
-              }
-              isNegative={SEMComparison?.Spent < 0}
+              compareValue={spentData.compareValue}
+              isNegative={spentData.isNegative}
             />
           </div>
           <div>
@@ -294,9 +337,11 @@ function SEMSlide() {
               channelData={SEMData}
               totalData={SEMTotals}
               metrics={SEMMetrics}
-              formatValue={formatValue}
+              formatValue={formatTableValue}
               maxRows={maxTableRows[0]}
               defaultSortBy="Conversions"
+              defaultSortDirection="desc"
+              enableSorting={true}
             />
           </div>
         </div>

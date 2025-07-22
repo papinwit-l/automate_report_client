@@ -42,6 +42,10 @@ export const processAdvertisingData = (
     const cpc = data.Clicks > 0 ? data.Spent / data.Clicks : 0;
     const cpm =
       data.Impressions > 0 ? (data.Spent * 1000) / data.Impressions : 0;
+    const cpv = data.Views > 0 ? data.Spent / data.Views : 0;
+    const cpe = data.Engagements > 0 ? data.Spent / data.Engagements : 0;
+    const engagementRate =
+      data.Reach > 0 ? (data.Engagements / data.Reach) * 100 : 0;
 
     enhancedFieldData[fieldValue] = {
       ...data,
@@ -50,6 +54,9 @@ export const processAdvertisingData = (
       cpl: Number(cpl.toFixed(2)),
       cpc: Number(cpc.toFixed(2)),
       cpm: Number(cpm.toFixed(2)),
+      cpv: Number(cpv.toFixed(2)),
+      cpe: Number(cpe.toFixed(2)),
+      engagementRate: Number(engagementRate.toFixed(2)),
     };
   });
 
@@ -71,6 +78,11 @@ export const processAdvertisingData = (
   const totalCpc = totals.Clicks > 0 ? totals.Spent / totals.Clicks : 0;
   const totalCpm =
     totals.Impressions > 0 ? (totals.Spent * 1000) / totals.Impressions : 0;
+  const totalCpv = totals.Views > 0 ? totals.Spent / totals.Views : 0;
+  const totalCpe =
+    totals.Engagements > 0 ? totals.Spent / totals.Engagements : 0;
+  const totalEngagementRate =
+    totals.Reach > 0 ? (totals.Engagements / totals.Reach) * 100 : 0;
 
   const enhancedTotals = {
     ...totals,
@@ -79,6 +91,9 @@ export const processAdvertisingData = (
     cpl: Number(totalCpl.toFixed(2)),
     cpc: Number(totalCpc.toFixed(2)),
     cpm: Number(totalCpm.toFixed(2)),
+    cpv: Number(totalCpv.toFixed(2)),
+    cpe: Number(totalCpe.toFixed(2)),
+    engagementRate: Number(totalEngagementRate.toFixed(2)),
   };
 
   return {
@@ -124,7 +139,9 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         break;
       case "cpr":
         enhanced[field.key] =
-          data.reach > 0 ? Number((data.cost / data.reach).toFixed(2)) : 0;
+          data.reach > 0
+            ? Number(((data.cost * 1000) / data.reach).toFixed(2))
+            : 0;
         break;
       case "cpl":
         enhanced[field.key] =
@@ -136,6 +153,22 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         enhanced[field.key] =
           data.impressions > 0
             ? Number(((data.cost * 1000) / data.impressions).toFixed(2))
+            : 0;
+        break;
+      case "cpv":
+        enhanced[field.key] =
+          data.views > 0 ? Number((data.cost / data.views).toFixed(2)) : 0;
+        break;
+      case "cpe":
+        enhanced[field.key] =
+          data.engagements > 0
+            ? Number((data.cost / data.engagements).toFixed(2))
+            : 0;
+        break;
+      case "engagementRate":
+        enhanced[field.key] =
+          data.reach > 0
+            ? Number(((data.engagements / data.reach) * 100).toFixed(2))
             : 0;
         break;
       case "custom":
@@ -166,6 +199,11 @@ export const processSocialMediaData = (
     };
   }
 
+  // 🔍 DEBUG: Log the first few rows of raw data
+  // console.log("Raw data sample:", cleanedData.slice(0, 2));
+  // console.log("Available columns:", Object.keys(cleanedData[0] || {}));
+  // console.log("Config fields:", config.fields);
+
   // Process data for Performance by Audiences table
   const audienceData = cleanedData.reduce((acc, item) => {
     const audienceKey = item[config.audienceGroupBy] || "Unknown";
@@ -178,11 +216,24 @@ export const processSocialMediaData = (
     }
 
     config.fields.forEach((field) => {
-      acc[audienceKey][field.key] += item[field.sourceField] || 0;
+      const value = item[field.sourceField] || 0;
+      acc[audienceKey][field.key] += value;
+
+      // 🔍 DEBUG: Log engagement field specifically
+      // if (field.key === "engagements") {
+      //   console.log(
+      //     `Engagement debug - sourceField: ${
+      //       field.sourceField
+      //     }, value: ${value}, item value: ${item[field.sourceField]}`
+      //   );
+      // }
     });
 
     return acc;
   }, {});
+
+  // 🔍 DEBUG: Log processed audience data
+  // console.log("Processed audience data (before enhancement):", audienceData);
 
   // Process data for Performance by Creatives table
   const creativeData = cleanedData.reduce((acc, item) => {
@@ -246,11 +297,11 @@ export const processSocialMediaData = (
     ...calculateEnhancedMetrics(creativeTotals, config.calculatedFields),
   };
 
-  console.log("Enhanced Audience Data:", enhancedAudienceData);
-  console.log("Enhanced Creative Data:", enhancedCreativeData);
-  console.log("Enhanced Audience Totals:", enhancedAudienceTotals);
-  console.log("Enhanced Creative Totals:", enhancedCreativeTotals);
-  console.log("Final Metrics:", finalMetrics);
+  // console.log("Enhanced Audience Data:", enhancedAudienceData);
+  // console.log("Enhanced Creative Data:", enhancedCreativeData);
+  // console.log("Enhanced Audience Totals:", enhancedAudienceTotals);
+  // console.log("Enhanced Creative Totals:", enhancedCreativeTotals);
+  // console.log("Final Metrics:", finalMetrics);
 
   return {
     enhancedFieldData: enhancedAudienceData,

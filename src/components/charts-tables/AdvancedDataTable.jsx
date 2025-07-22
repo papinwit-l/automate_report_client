@@ -217,9 +217,14 @@ export const AdvancedDataTable = ({
               .slice(0, maxRows > 0 ? maxRows : sortedData.length)
               .map(([keyword, values]) => (
                 <tr key={keyword} className="hover:bg-gray-100">
-                  <td className="px-2 py-1 border font-medium">{keyword}</td>
+                  <td className="px-2 py-[2px] border font-medium">
+                    {keyword}
+                  </td>
                   {displayMetrics.map((metric) => (
-                    <td key={metric} className="px-2 py-1 border text-right">
+                    <td
+                      key={metric}
+                      className="px-2 py-[2px] border text-right"
+                    >
                       {valueFormatter(values[metric] || 0, metric)}
                     </td>
                   ))}

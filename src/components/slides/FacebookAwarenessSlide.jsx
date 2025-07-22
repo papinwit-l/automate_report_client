@@ -35,7 +35,7 @@ function FacebookAwarenessSlide() {
   const [clicksByGender, setClicksByGender] = useState({});
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([4, 4]);
+  const [maxTableRows, setMaxTableRows] = useState([5, 5]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -287,7 +287,7 @@ function FacebookAwarenessSlide() {
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
-  console.log("facebookMEtrics", FacebookAudienceMetrics);
+  // console.log("facebookMEtrics", FacebookAudienceMetrics);
   return (
     <div
       id="facebook-awareness-component"
