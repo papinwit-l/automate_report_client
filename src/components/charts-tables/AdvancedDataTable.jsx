@@ -49,6 +49,12 @@ export const AdvancedDataTable = ({
         return "Keyword";
       case "cpm":
         return "CPM";
+      case "engagements":
+        return "Post Engagements";
+      case "engagementrate":
+        return "Engagement Rate (%)";
+      case "cpe":
+        return "CPE";
       default:
         return metric
           .split(/(?=[A-Z])/)
@@ -65,17 +71,20 @@ export const AdvancedDataTable = ({
       case "ctr":
       case "conrate":
       case "cvr":
+      case "engagementrate": // ✅ ADDED: Format engagement rate as percentage
         return `${Number(value).toFixed(2)}%`;
       case "cpl":
       case "spent":
       case "cpc":
       case "cpr":
       case "cpm":
+      case "cpe": // ✅ ADDED: CPE formatting
         return `${Number(value).toFixed(2)}`;
       case "impressions":
       case "clicks":
       case "conversions":
       case "reach":
+      case "engagements": // ✅ ADDED: Format engagements as number
         return Number(value).toLocaleString();
       case "frequency":
         return Number(value).toFixed(2);

@@ -165,6 +165,11 @@ export const METRIC_CONFIGS = {
   cpl: { valueType: "compact" },
   Reach: { valueType: "compact" },
   cpm: { valueType: "compact" },
+  engagementRate: { valueType: "percentage" }, // ✅ ADDED
+  cpe: { valueType: "compact" }, // ✅ ADDED
+  cpr: { valueType: "compact" }, // ✅ ADDED
+  frequency: { valueType: "number" }, // ✅ ADDED
+  engagements: { valueType: "number" }, // ✅ ADDED
 };
 
 /**
@@ -174,11 +179,28 @@ export const METRIC_CONFIGS = {
 export const formatTableValue = (value, metric) => {
   if (value === "No Data") return "No Data";
 
-  if (metric === "ctr" || metric === "conRate") {
-    return `${value.toFixed(2)}%`;
+  const metricLower = metric.toLowerCase();
+
+  // ✅ UPDATED: Added more percentage cases
+  if (
+    metricLower === "ctr" ||
+    metricLower === "conrate" ||
+    metricLower === "engagementrate" ||
+    metricLower === "cvr"
+  ) {
+    return `${Number(value).toFixed(2)}%`;
   }
-  if (metric === "cpl" || metric === "cpm") {
+
+  // ✅ UPDATED: Added more currency/cost cases
+  if (
+    metricLower === "cpl" ||
+    metricLower === "cpm" ||
+    metricLower === "cpe" ||
+    metricLower === "cpr" ||
+    metricLower === "cpc"
+  ) {
     return parseFloat(value.toFixed(2)).toLocaleString();
   }
+
   return value?.toLocaleString();
 };

@@ -22,6 +22,7 @@ import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
 import axios from "axios";
 import FacebookReachSlide from "@/components/slides/FacebookReachSlide";
+import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -348,6 +349,7 @@ function SlideReport() {
                 <DiscoverySlide />
                 <FacebookAwarenessSlide />
                 <FacebookReachSlide />
+                <FacebookEngagementSlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">
