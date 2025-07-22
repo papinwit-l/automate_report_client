@@ -20,6 +20,7 @@ import {
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
+import axios from "axios";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -63,36 +64,28 @@ function SlideReport() {
       console.log("Component captured successfully");
 
       console.log("Sending to backend...");
-      const response = await fetch(
+      const response = await axios.post(
         "http://localhost:8000/data-sheets/create-presentation",
         {
-          method: "POST",
+          imageData: imageData,
+          title: "Monthly Report",
+          slideTitle: "Overall Performance",
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            imageData: imageData,
-            title: "Monthly Report",
-            slideTitle: "Overall Performance",
-          }),
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: ${response.statusText}`
-        );
-      }
-
-      const result = await response.json();
+      const result = response.data;
       console.log("Backend response:", result);
 
       setPresentationUrl(result.presentationUrl);
       window.open(result.presentationUrl, "_blank");
     } catch (error) {
       console.error("Export failed:", error);
-      setError(error.message);
+      setError(error.response?.data?.error || error.message);
     } finally {
       setIsExporting(false);
     }
@@ -128,32 +121,24 @@ function SlideReport() {
         },
       });
 
-      const response = await fetch(
+      const response = await axios.post(
         "http://localhost:8000/data-sheets/add-slide",
         {
-          method: "POST",
+          presentationId: presentationId,
+          imageData: imageData,
+          slideTitle: "Additional Slide",
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            presentationId: presentationId,
-            imageData: imageData,
-            slideTitle: "Additional Slide",
-          }),
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: ${response.statusText}`
-        );
-      }
-
-      const result = await response.json();
+      const result = response.data;
     } catch (error) {
       console.error("Add slide failed:", error);
-      setError(error.message);
+      setError(error.response?.data?.error || error.message);
     } finally {
       setIsExporting(false);
     }
@@ -211,6 +196,79 @@ function SlideReport() {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleExportAllSlides = async () => {
+    setIsExporting(true);
+    setError(null);
+
+    try {
+      console.log("Starting multi-slide export process...");
+
+      // Define all your slide components with their IDs and titles
+      const slideComponents = [
+        { id: "sem-component", title: "SEM Performance" },
+        { id: "gdn-component", title: "GDN Performance" },
+        { id: "discovery-component", title: "Discovery Performance" },
+        { id: "facebook-awareness-component", title: "Facebook Awareness" },
+      ];
+
+      // Capture all components
+      const slideData = [];
+
+      for (const slide of slideComponents) {
+        const element = document.getElementById(slide.id);
+        if (!element) {
+          console.warn(`Component ${slide.id} not found, skipping...`);
+          continue;
+        }
+
+        console.log(`Capturing ${slide.title}...`);
+        const imageData = await domtoimage.toPng(element, {
+          quality: 0.95,
+          bgcolor: "#ffffff",
+          width: element.offsetWidth,
+          height: element.offsetHeight,
+          filter: (node) => true,
+        });
+
+        slideData.push({
+          imageData: imageData,
+          title: slide.title,
+        });
+      }
+
+      if (slideData.length === 0) {
+        throw new Error("No slide components found to export");
+      }
+
+      console.log(`Captured ${slideData.length} slides, sending to backend...`);
+
+      // Send all slides to backend
+      const response = await axios.post(
+        "http://localhost:8000/data-sheets/create-multi-slide-presentation",
+        {
+          slides: slideData,
+          presentationTitle: "Monthly Performance Report",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = response.data;
+      console.log("Backend response:", result);
+
+      setPresentationUrl(result.presentationUrl);
+      window.open(result.presentationUrl, "_blank");
+    } catch (error) {
+      console.error("Multi-slide export failed:", error);
+      setError(error.response?.data?.error || error.message);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Sidebar Component */}
@@ -228,8 +286,10 @@ function SlideReport() {
         onSheetsLinkChange={handleSheetsLinkChange}
         onGenerate={handleGenerate}
         onEnableDateRangeChange={handleEnableDateRangeChange}
-        onExportToSlides={handleExportToSlides}
+        // onExportToSlides={handleExportToSlides}
+        onExportAllSlides={handleExportAllSlides}
         onAddSlide={handleAddSlide}
+        handleExportAllSlides={handleExportAllSlides}
       />
 
       {/* Main Content */}

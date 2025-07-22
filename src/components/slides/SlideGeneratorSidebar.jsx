@@ -33,6 +33,7 @@ const SlideGeneratorSidebar = ({
   onEnableDateRangeChange,
   onExportToSlides,
   onAddSlide,
+  handleExportAllSlides,
 }) => {
   return (
     <>
@@ -179,7 +180,7 @@ const SlideGeneratorSidebar = ({
               <Card className="shadow-sm py-1">
                 <CardContent className="p-4 space-y-3">
                   <Button
-                    onClick={onExportToSlides}
+                    onClick={handleExportAllSlides}
                     disabled={isExporting}
                     className="w-full bg-green-600 hover:bg-green-700"
                     size="sm"
