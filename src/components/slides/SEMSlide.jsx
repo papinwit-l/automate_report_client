@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import SlideHeader from "./SlideHeader";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
@@ -22,8 +22,6 @@ function SEMSlide() {
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
-  const [clicksByGender, setClicksByGender] = useState({});
-  const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([12]);
 
@@ -47,6 +45,61 @@ function SEMSlide() {
     }
     return `${value?.toFixed(1)}${suffixes[suffixIndex]}`;
   };
+
+  // Memoize the chart data calculations to prevent unnecessary re-renders
+  const { clicksByGender, clicksByDevice } = useMemo(() => {
+    if (!GGDemographicData || !Array.isArray(GGDemographicData)) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const SEMDemographicData = GGDemographicData.filter((item) => {
+      return item.Channel.trim() === "SEM";
+    });
+
+    if (SEMDemographicData.length === 0) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const sumClicksByGender = SEMDemographicData.reduce((acc, item) => {
+      if (item.Gender) {
+        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
+      }
+      return acc;
+    }, {});
+
+    const totalClicks = Object.values(sumClicksByGender).reduce(
+      (a, b) => a + b,
+      0
+    );
+
+    const genderPercentages =
+      totalClicks > 0
+        ? Object.entries(sumClicksByGender).reduce((acc, [gender, clicks]) => {
+            acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+            return acc;
+          }, {})
+        : {};
+
+    const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
+      if (item.Device) {
+        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
+      }
+      return acc;
+    }, {});
+
+    const devicePercentages =
+      totalClicks > 0
+        ? Object.entries(sumClicksByDevice).reduce((acc, [device, clicks]) => {
+            acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+            return acc;
+          }, {})
+        : {};
+
+    return {
+      clicksByGender: genderPercentages,
+      clicksByDevice: devicePercentages,
+    };
+  }, [GGDemographicData]);
 
   const summarizeData = () => {
     let summaryTextTemp = "";
@@ -92,52 +145,11 @@ function SEMSlide() {
     setSummaryText(summaryTextTemp);
   };
 
-  const prepareChartData = () => {
-    const SEMDemographicData = GGDemographicData.filter((item) => {
-      return item.Channel.trim() === "SEM";
-    });
-    const sumClicksByGender = SEMDemographicData.reduce((acc, item) => {
-      if (item.Gender) {
-        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-    const totalClicks = Object.values(sumClicksByGender).reduce(
-      (a, b) => a + b,
-      0
-    );
-    const genderPercentages = Object.entries(sumClicksByGender).reduce(
-      (acc, [gender, clicks]) => {
-        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByGender(genderPercentages);
-    const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
-      if (item.Device) {
-        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
-      (acc, [device, clicks]) => {
-        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByDevice(devicePercentages);
-  };
-
   useEffect(() => {
     if (SEMTotals && Object.keys(SEMTotals).length > 0) {
       summarizeData();
     }
-    if (GGDemographicData && Object.keys(GGDemographicData).length > 0) {
-      prepareChartData();
-    }
-  }, [SEMTotals, SEMData, GGDemographicData]);
+  }, [SEMTotals, SEMData]);
 
   // Show loading state
   if (loading) {

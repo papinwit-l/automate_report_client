@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 const DonutChart = ({
@@ -99,6 +99,86 @@ const DonutChart = ({
     });
   };
 
+  // Memoize chart data to prevent unnecessary recalculations
+  const chartData = useMemo(() => {
+    if (!hasValidData(data)) {
+      return [];
+    }
+
+    // Handle different data formats
+    if (Array.isArray(data)) {
+      // Already formatted chart data
+      return data.filter((item) => item.value > 0);
+    } else if (typeof data === "object") {
+      // Object with percentage strings (your format)
+      return transformDataForChart(data);
+    }
+
+    return [];
+  }, [data]);
+
+  // Your original CustomLabel with stability improvements
+  const CustomLabel = useCallback(
+    ({
+      cx,
+      cy,
+      midAngle,
+      innerRadius,
+      outerRadius,
+      percent,
+      name,
+      value,
+      fill,
+    }) => {
+      const RADIAN = Math.PI / 180;
+      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+      // Adjustable label line length
+      const lineLength1 = 7; // First segment length (shortened)
+      const lineLength2 = 7; // Second segment length (shortened)
+
+      // Calculate label position (outside the pie)
+      const labelRadius = outerRadius + lineLength1 + lineLength2;
+      const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
+      const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
+
+      // Calculate line points
+      const lineRadius = outerRadius + lineLength1;
+      const lineX = cx + lineRadius * Math.cos(-midAngle * RADIAN);
+      const lineY = cy + lineRadius * Math.sin(-midAngle * RADIAN);
+
+      return (
+        <g key={`label-${name}-${value}`}>
+          {/* Custom label line - first segment */}
+          <line
+            x1={x}
+            y1={y}
+            x2={lineX}
+            y2={lineY}
+            stroke={fill} // Use the same color as the chart segment
+            strokeWidth={1}
+          />
+
+          {/* Label text */}
+          <text
+            x={labelX}
+            y={labelY}
+            fill={fill}
+            textAnchor={labelX > cx ? "start" : "end"}
+            dominantBaseline="central"
+            fontSize="10"
+            fontWeight="500"
+          >
+            {`${value}${isPercentage ? "%" : ""}`}
+          </text>
+        </g>
+      );
+    },
+    [isPercentage]
+  );
+
   // Early return if no valid data
   if (!hasValidData(data)) {
     return (
@@ -115,139 +195,6 @@ const DonutChart = ({
       </div>
     );
   }
-
-  // Handle different data formats
-  let chartData = [];
-  if (Array.isArray(data)) {
-    // Already formatted chart data
-    chartData = data.filter((item) => item.value > 0);
-  } else if (typeof data === "object") {
-    // Object with percentage strings (your format)
-    chartData = transformDataForChart(data);
-  }
-
-  const CustomLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-    name,
-    value,
-    fill,
-  }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    // Adjustable label line length
-    const lineLength1 = 7; // First segment length (shortened)
-    const lineLength2 = 7; // Second segment length (shortened)
-
-    // Calculate label position (outside the pie)
-    const labelRadius = outerRadius + lineLength1 + lineLength2;
-    const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
-    const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
-
-    // Calculate line points
-    const lineRadius = outerRadius + lineLength1;
-    const lineX = cx + lineRadius * Math.cos(-midAngle * RADIAN);
-    const lineY = cy + lineRadius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <g>
-        {/* Custom label line - first segment */}
-        <line
-          x1={x}
-          y1={y}
-          x2={lineX}
-          y2={lineY}
-          stroke={fill} // Use the same color as the chart segment
-          strokeWidth={1}
-        />
-
-        {/* Label text */}
-        <text
-          x={labelX}
-          y={labelY}
-          fill={fill}
-          textAnchor={labelX > cx ? "start" : "end"}
-          dominantBaseline="central"
-          fontSize="10"
-          fontWeight="500"
-        >
-          {`${value}${isPercentage ? "%" : ""}`}
-        </text>
-      </g>
-    );
-  };
-
-  const renderCustomizedLabel = ({ percent, x, y, index }) => {
-    const color = chartData[index].color;
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill={color}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={12}
-      >
-        {(percent * 100).toFixed(0)}%
-      </text>
-    );
-  };
-
-  const RenderCustomizedLabelLine = (props) => {
-    const { points, stroke } = props;
-
-    // Add safety checks for points
-    if (!points || !Array.isArray(points) || points.length < 3) {
-      return null;
-    }
-
-    // Ensure each point has x and y properties
-    const [start, mid, end] = points;
-    if (
-      !start ||
-      !mid ||
-      !end ||
-      typeof start.x !== "number" ||
-      typeof start.y !== "number" ||
-      typeof mid.x !== "number" ||
-      typeof mid.y !== "number" ||
-      typeof end.x !== "number" ||
-      typeof end.y !== "number"
-    ) {
-      return null;
-    }
-
-    // Calculate center from the pie chart context
-    const cx = width / 2;
-    const cy = height / 2;
-
-    const shortenedMid = {
-      x: mid.x,
-      y: mid.y,
-    };
-
-    const shortenedEnd = {
-      x: end.x > cx ? cx + outerRadius + 20 : cx - outerRadius - 20,
-      y: end.y,
-    };
-
-    return (
-      <polyline
-        stroke={stroke}
-        strokeWidth={1}
-        fill="black"
-        points={`${start.x},${start.y} ${shortenedMid.x},${shortenedMid.y} ${shortenedEnd.x},${shortenedEnd.y}`}
-      />
-    );
-  };
 
   // Final check - if no valid chart data after processing
   if (!chartData || chartData.length === 0) {
@@ -284,6 +231,7 @@ const DonutChart = ({
               dataKey="value"
               label={CustomLabel}
               labelLine={false}
+              isAnimationActive={false}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />

@@ -197,6 +197,8 @@ function SlideReport() {
   };
 
   const handleExportAllSlides = async () => {
+    //add await 5 seconds delay
+    // await new Promise((resolve) => setTimeout(resolve, 5000));
     setIsExporting(true);
     setError(null);
 

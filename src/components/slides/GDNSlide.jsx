@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import SlideHeader from "./SlideHeader";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
@@ -30,10 +30,67 @@ function GDNSlide() {
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
-  const [clicksByGender, setClicksByGender] = useState({});
-  const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0]);
+
+  // Memoize the chart data calculations to prevent unnecessary re-renders
+  const { clicksByGender, clicksByDevice } = useMemo(() => {
+    if (!GGDemographicData || !Array.isArray(GGDemographicData)) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const GDNDemographicData = GGDemographicData.filter((item) => {
+      return item.Channel.trim() === "GDN";
+    });
+
+    if (GDNDemographicData.length === 0) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const sumClicksByGender = GDNDemographicData.reduce((acc, item) => {
+      if (item.Gender) {
+        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
+      }
+      return acc;
+    }, {});
+
+    const totalClicks = Object.values(sumClicksByGender).reduce(
+      (a, b) => a + b,
+      0
+    );
+
+    if (totalClicks === 0) {
+      return { clicksByGender: {}, clicksByDevice: {} };
+    }
+
+    const genderPercentages = Object.entries(sumClicksByGender).reduce(
+      (acc, [gender, clicks]) => {
+        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+        return acc;
+      },
+      {}
+    );
+
+    const sumClicksByDevice = GDNDemographicData.reduce((acc, item) => {
+      if (item.Device) {
+        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
+      }
+      return acc;
+    }, {});
+
+    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
+      (acc, [device, clicks]) => {
+        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      clicksByGender: genderPercentages,
+      clicksByDevice: devicePercentages,
+    };
+  }, [GGDemographicData]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -95,71 +152,9 @@ function GDNSlide() {
     setSummaryText(summaryTextTemp);
   };
 
-  const prepareChartData = () => {
-    if (!GGDemographicData || GGDemographicData.length === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
-
-    const GDNDemographicData = GGDemographicData.filter((item) => {
-      return item.Channel.trim() === "GDN";
-    });
-
-    if (GDNDemographicData.length === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
-
-    const sumClicksByGender = GDNDemographicData.reduce((acc, item) => {
-      if (item.Gender) {
-        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-
-    const totalClicks = Object.values(sumClicksByGender).reduce(
-      (a, b) => a + b,
-      0
-    );
-
-    if (totalClicks === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
-
-    const genderPercentages = Object.entries(sumClicksByGender).reduce(
-      (acc, [gender, clicks]) => {
-        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByGender(genderPercentages);
-
-    const sumClicksByDevice = GDNDemographicData.reduce((acc, item) => {
-      if (item.Device) {
-        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-
-    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
-      (acc, [device, clicks]) => {
-        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByDevice(devicePercentages);
-  };
-
   useEffect(() => {
     summarizeData();
-    prepareChartData();
-  }, [GDNTotals, GDNData, GGDemographicData]);
+  }, [GDNTotals, GDNData]);
 
   // Show loading state
   if (loading) {
