@@ -324,6 +324,7 @@ function DiscoverySlide() {
                 isConversion={true}
                 compareValue={cplData.compareValue}
                 isNegative={cplData.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox

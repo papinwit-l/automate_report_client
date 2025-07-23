@@ -5,6 +5,7 @@
  * Handles edge cases and "No Data" strings
  */
 export const convertToBMK = (value, decimals = 1) => {
+  // ✅ FIXED: Changed default to 1 decimals
   // Handle "No Data" case
   if (value === "No Data") return "No Data";
 
@@ -44,14 +45,24 @@ export const formatPercentage = (value, decimals = 2) => {
 };
 
 /**
- * Formats currency values
+ * Formats decimal values with specified decimal places
  */
-export const formatCurrency = (value, decimals = 2, currency = "$") => {
+export const formatDecimal = (value, decimals = 2) => {
   if (value === "No Data") return "No Data";
-  if (!value && value !== 0) return `${currency}0.00`;
+  if (!value && value !== 0) return "0.00";
 
   const numValue = Number(value);
-  if (isNaN(numValue)) return `${currency}0.00`;
+  if (isNaN(numValue)) return "0.00";
+
+  return numValue.toFixed(decimals);
+};
+export const formatCurrency = (value, decimals = 0, currency = "$") => {
+  // ✅ FIXED: Changed default to 0 decimals
+  if (value === "No Data") return "No Data";
+  if (!value && value !== 0) return `${currency}0`;
+
+  const numValue = Number(value);
+  if (isNaN(numValue)) return `${currency}0`;
 
   return `${currency}${numValue.toFixed(decimals)}`;
 };
@@ -78,13 +89,16 @@ export const formatDisplayData = (
   let displayValue;
   switch (valueType) {
     case "compact":
-      displayValue = convertToBMK(value, 1);
+      displayValue = convertToBMK(value, 1); // 1 decimal places for compact
       break;
     case "percentage":
       displayValue = formatPercentage(value, 2);
       break;
     case "currency":
-      displayValue = formatCurrency(value, 2);
+      displayValue = formatCurrency(value, 0); // 0 decimal places for currency
+      break;
+    case "decimal":
+      displayValue = formatDecimal(value, 2); // ✅ NEW: Decimal format with 2 decimal places
       break;
     case "number":
       displayValue = value?.toLocaleString() || "0";
@@ -155,21 +169,22 @@ export const formatMetricsData = (
  * Define how each metric should be formatted
  */
 export const METRIC_CONFIGS = {
-  Impressions: { valueType: "compact" },
-  Clicks: { valueType: "compact" },
+  Impressions: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  Clicks: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
   Conversions: { valueType: "number" },
-  Spent: { valueType: "compact" },
+  Spent: { valueType: "currency" }, // Currency - no decimal places
+  Cost: { valueType: "currency" }, // Currency - no decimal places
   ctr: { valueType: "percentage" },
   conRate: { valueType: "percentage" },
-  cpc: { valueType: "compact" },
-  cpl: { valueType: "compact" },
-  Reach: { valueType: "compact" },
-  cpm: { valueType: "compact" },
-  engagementRate: { valueType: "percentage" }, // ✅ ADDED
-  cpe: { valueType: "compact" }, // ✅ ADDED
-  cpr: { valueType: "compact" }, // ✅ ADDED
-  frequency: { valueType: "number" }, // ✅ ADDED
-  engagements: { valueType: "number" }, // ✅ ADDED
+  cpc: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpl: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpm: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpe: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpr: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  Reach: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  engagementRate: { valueType: "percentage" },
+  frequency: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  engagements: { valueType: "number" },
 };
 
 /**
@@ -181,7 +196,7 @@ export const formatTableValue = (value, metric) => {
 
   const metricLower = metric.toLowerCase();
 
-  // ✅ UPDATED: Added more percentage cases
+  // Percentage cases
   if (
     metricLower === "ctr" ||
     metricLower === "conrate" ||
@@ -191,15 +206,25 @@ export const formatTableValue = (value, metric) => {
     return `${Number(value).toFixed(2)}%`;
   }
 
-  // ✅ UPDATED: Added more currency/cost cases
+  // Currency cases - no decimal places (only Spent and Cost)
+  if (metricLower === "spent" || metricLower === "cost") {
+    return `${Math.round(value).toLocaleString()}`; // ✅ FIXED: Only Spent and Cost as currency
+  }
+
+  // Metrics starting with "cp" and frequency - decimal format
+  if (metricLower.startsWith("cp") || metricLower === "frequency") {
+    return formatDecimal(value, 2); // ✅ CHANGED: All "cp" metrics now use decimal format
+  }
+
+  // Number format for impressions, clicks, reach, etc.
   if (
-    metricLower === "cpl" ||
-    metricLower === "cpm" ||
-    metricLower === "cpe" ||
-    metricLower === "cpr" ||
-    metricLower === "cpc"
+    metricLower === "impressions" ||
+    metricLower === "clicks" ||
+    metricLower === "reach" ||
+    metricLower === "conversions" ||
+    metricLower === "engagements"
   ) {
-    return parseFloat(value.toFixed(2)).toLocaleString();
+    return value?.toLocaleString(); // ✅ FIXED: Removed frequency from number format
   }
 
   return value?.toLocaleString();

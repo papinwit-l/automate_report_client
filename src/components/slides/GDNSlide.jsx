@@ -291,6 +291,7 @@ function GDNSlide() {
                 compareValue={cpcData.compareValue}
                 isNegative={cpcData.isNegative}
                 isConversion={true}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox
@@ -307,6 +308,7 @@ function GDNSlide() {
                 isConversion={true}
                 compareValue={cplData.compareValue}
                 isNegative={cplData.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox

@@ -271,6 +271,7 @@ function FacebookEngagementSlide() {
                 value={cpeData.displayValue}
                 compareValue={cpeData.compareValue}
                 isNegative={cpeData.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox

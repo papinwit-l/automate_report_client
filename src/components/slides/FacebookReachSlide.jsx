@@ -29,6 +29,12 @@ function FacebookReachSlide() {
     FacebookAudienceComparison,
     FacebookCreativeData,
     FacebookCreativeTotals,
+    FacebookReachAudienceData,
+    FacebookReachAudienceTotals,
+    FacebookReachAudienceMetrics,
+    FacebookReachAudienceComparison,
+    FacebookReachCreativeData,
+    FacebookReachCreativeTotals,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -38,9 +44,9 @@ function FacebookReachSlide() {
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      FacebookAudienceTotals?.clicks === "No Data" ||
-      !FacebookAudienceTotals ||
-      Object.keys(FacebookAudienceTotals).length === 0
+      FacebookReachAudienceTotals?.clicks === "No Data" ||
+      !FacebookReachAudienceTotals ||
+      Object.keys(FacebookReachAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
@@ -48,17 +54,17 @@ function FacebookReachSlide() {
 
     let summaryTextTemp = "";
     const overallText = `Overall Reach: ** ${parseFloat(
-      FacebookAudienceTotals?.reach?.toFixed(2) || 0
+      FacebookReachAudienceTotals?.reach?.toFixed(2) || 0
     )?.toLocaleString()} reaches**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    summaryTextTemp += `<li>Average CPR: **${FacebookAudienceTotals.cpr?.toLocaleString(
+    summaryTextTemp += `<li>Average CPR: **${FacebookReachAudienceTotals.cpr?.toLocaleString(
       undefined,
       { minimumFractionDigits: 2, maximumFractionDigits: 2 }
     )} THB (per 1000 reaches)**</li>`;
 
     // Find top audience by reach (simpler approach)
-    const topAudience = Object.entries(FacebookAudienceData).reduce(
+    const topAudience = Object.entries(FacebookReachAudienceData).reduce(
       (max, [key, value]) =>
         (value.reach || 0) > (max.value.reach || 0) ? { key, value } : max,
       { key: "", value: { reach: 0 } }
@@ -70,7 +76,7 @@ function FacebookReachSlide() {
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
-    const topCreative = Object.entries(FacebookCreativeData).reduce(
+    const topCreative = Object.entries(FacebookReachCreativeData).reduce(
       (max, [key, value]) =>
         (value.reach || 0) > (max.value.reach || 0) ? { key, value } : max,
       { key: "", value: { reach: 0 } }
@@ -85,7 +91,11 @@ function FacebookReachSlide() {
 
   useEffect(() => {
     summarizeData();
-  }, [FacebookAudienceTotals, FacebookAudienceData, GGDemographicData]);
+  }, [
+    FacebookReachAudienceTotals,
+    FacebookReachAudienceData,
+    GGDemographicData,
+  ]);
 
   // Show loading state
   if (loading) {
@@ -111,6 +121,8 @@ function FacebookReachSlide() {
     );
   }
 
+  console.log("FacebookReachAudienceData", FacebookReachAudienceData);
+
   const renderFormattedText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
@@ -132,63 +144,63 @@ function FacebookReachSlide() {
   // Format display data with safe fallbacks
   // Using optional chaining to handle undefined/null values from useState
   const impressionData = formatDisplayData(
-    FacebookAudienceTotals?.impressions,
-    FacebookAudienceComparison?.impressions,
+    FacebookReachAudienceTotals?.impressions,
+    FacebookReachAudienceComparison?.impressions,
     "compact"
   );
   const clicksData = formatDisplayData(
-    FacebookAudienceTotals?.clicks,
-    FacebookAudienceComparison?.clicks,
+    FacebookReachAudienceTotals?.clicks,
+    FacebookReachAudienceComparison?.clicks,
     "compact"
   );
   const ctrData = formatDisplayData(
-    FacebookAudienceTotals?.ctr,
-    FacebookAudienceComparison?.ctr,
+    FacebookReachAudienceTotals?.ctr,
+    FacebookReachAudienceComparison?.ctr,
     "percentage"
   );
   const cpcData = formatDisplayData(
-    FacebookAudienceTotals?.cpc,
-    FacebookAudienceComparison?.cpc,
+    FacebookReachAudienceTotals?.cpc,
+    FacebookReachAudienceComparison?.cpc,
     "compact"
   );
   const conversionsData = formatDisplayData(
-    FacebookAudienceTotals?.conversions,
-    FacebookAudienceComparison?.conversions,
+    FacebookReachAudienceTotals?.conversions,
+    FacebookReachAudienceComparison?.conversions,
     "number"
   );
   const cplData = formatDisplayData(
-    FacebookAudienceTotals?.cpl,
-    FacebookAudienceComparison?.cpl,
+    FacebookReachAudienceTotals?.cpl,
+    FacebookReachAudienceComparison?.cpl,
     "compact"
   );
   const spentData = formatDisplayData(
-    FacebookAudienceTotals?.spent,
-    FacebookAudienceComparison?.spent,
+    FacebookReachAudienceTotals?.spent,
+    FacebookReachAudienceComparison?.spent,
     "compact"
   );
   const conRate = formatDisplayData(
-    FacebookAudienceTotals?.cvr, // Changed from conRate to cvr
-    FacebookAudienceComparison?.cvr,
+    FacebookReachAudienceTotals?.cvr, // Changed from conRate to cvr
+    FacebookReachAudienceComparison?.cvr,
     "percentage"
   );
   const cpmData = formatDisplayData(
-    FacebookAudienceTotals?.cpm,
-    FacebookAudienceComparison?.cpm,
+    FacebookReachAudienceTotals?.cpm,
+    FacebookReachAudienceComparison?.cpm,
     "compact"
   );
   const reachData = formatDisplayData(
-    FacebookAudienceTotals?.reach,
-    FacebookAudienceComparison?.reach,
+    FacebookReachAudienceTotals?.reach,
+    FacebookReachAudienceComparison?.reach,
     "compact"
   );
   const frequencyData = formatDisplayData(
-    FacebookAudienceTotals?.frequency,
-    FacebookAudienceComparison?.frequency,
+    FacebookReachAudienceTotals?.frequency,
+    FacebookReachAudienceComparison?.frequency,
     "compact"
   );
   const cprData = formatDisplayData(
-    FacebookAudienceTotals?.cpr,
-    FacebookAudienceComparison?.cpr,
+    FacebookReachAudienceTotals?.cpr,
+    FacebookReachAudienceComparison?.cpr,
     "compact"
   );
 
@@ -244,6 +256,7 @@ function FacebookReachSlide() {
                 value={cprData.displayValue}
                 compareValue={cprData.compareValue}
                 isNegative={cprData.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox
@@ -267,8 +280,8 @@ function FacebookReachSlide() {
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookAudienceData}
-                totalData={FacebookAudienceTotals}
+                channelData={FacebookReachAudienceData}
+                totalData={FacebookReachAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
@@ -293,8 +306,8 @@ function FacebookReachSlide() {
 
             <AdvancedDataTable
               firstMetric="Ad name"
-              channelData={FacebookCreativeData}
-              totalData={FacebookCreativeTotals}
+              channelData={FacebookReachCreativeData}
+              totalData={FacebookReachCreativeTotals}
               metrics={[
                 "Ad set name",
                 "impressions",

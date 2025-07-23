@@ -33,7 +33,34 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "clicks", sourceField: "Link clicks" },
       { key: "conversions", sourceField: "Website conversions" },
       { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" }, // ✅ FIXED: Added sourceField
+      { key: "engagements", sourceField: "Post engagements" },
+      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+    ],
+    calculatedFields: [
+      { key: "frequency", type: "frequency" },
+      { key: "cpr", type: "cpr" },
+      { key: "ctr", type: "ctr" },
+      { key: "cpc", type: "cpc" },
+      { key: "cvr", type: "cvr" },
+      { key: "cpl", type: "cpl" },
+      { key: "cpm", type: "cpm" },
+      { key: "cpv", type: "cpv" },
+      { key: "cpe", type: "cpe" },
+      { key: "engagementRate", type: "engagementRate" },
+      { key: "spent", type: "custom", calculate: (data) => data.cost },
+    ],
+  },
+
+  FacebookReach: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: [
+      { key: "impressions", sourceField: "Impressions" },
+      { key: "reach", sourceField: "Reach" },
+      { key: "clicks", sourceField: "Link clicks" },
+      { key: "conversions", sourceField: "Website conversions" },
+      { key: "cost", sourceField: "Cost" },
+      { key: "engagements", sourceField: "Post engagements" },
       { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
     ],
     calculatedFields: [
@@ -60,7 +87,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "clicks", sourceField: "Clicks" },
       { key: "conversions", sourceField: "Conversions" },
       { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Engagements" }, // ✅ ADDED: Engagement field
+      { key: "engagements", sourceField: "Engagements" },
     ],
     calculatedFields: [
       { key: "frequency", type: "frequency" },
@@ -70,8 +97,8 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpa", type: "cpa" },
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" }, // ✅ ADDED: CPR calculation
-      { key: "engagementRate", type: "engagementRate" }, // ✅ ADDED: Engagement rate
+      { key: "cpr", type: "cpr" },
+      { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
   },
@@ -85,7 +112,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "clicks", sourceField: "Link clicks" },
       { key: "conversions", sourceField: "Conversions" },
       { key: "cost", sourceField: "Amount spent" },
-      { key: "engagements", sourceField: "Engagements" }, // ✅ ADDED: Engagement field
+      { key: "engagements", sourceField: "Engagements" },
     ],
     calculatedFields: [
       { key: "frequency", type: "frequency" },
@@ -95,8 +122,8 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpa", type: "cpa" },
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" }, // ✅ ADDED: CPR calculation
-      { key: "engagementRate", type: "engagementRate" }, // ✅ ADDED: Engagement rate
+      { key: "cpr", type: "cpr" },
+      { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
   },
@@ -197,6 +224,26 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAudience,
   },
 
+  FacebookReach: {
+    endpoint: "facebook-data", // ✅ Same endpoint as FacebookAudience
+    processFields: [
+      "Channel", // ✅ FIXED: Added Channel field for filtering
+      "Ad set name",
+      "Impressions",
+      "Reach",
+      "Link clicks",
+      "Website conversions",
+      "Cost",
+      "Video watches at 25%",
+      "Post engagements",
+    ],
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookReach,
+  },
+
   TikTokAudience: {
     endpoint: "tiktok-data",
     processFields: [
@@ -255,7 +302,19 @@ export const DEFAULT_METRICS = {
     "Website conversions",
     "Cost",
     "Video watches at 25%",
-    "Post engagements", // ✅ This should match the sourceField name
+    "Post engagements",
+  ],
+  FacebookReach: [
+    "Channel", // ✅ FIXED: Added Channel field
+    "Ad set name",
+    "Ad name",
+    "Impressions",
+    "Reach",
+    "Link clicks",
+    "Website conversions",
+    "Cost",
+    "Video watches at 25%",
+    "Post engagements",
   ],
   TikTokAudience: [
     "Ad group name",
@@ -265,7 +324,7 @@ export const DEFAULT_METRICS = {
     "Clicks",
     "Conversions",
     "Cost",
-    "Engagements", // ✅ ADDED: Engagement field
+    "Engagements",
   ],
   InstagramAudience: [
     "Ad set name",
@@ -275,6 +334,6 @@ export const DEFAULT_METRICS = {
     "Link clicks",
     "Conversions",
     "Amount spent",
-    "Engagements", // ✅ ADDED: Engagement field
+    "Engagements",
   ],
 };

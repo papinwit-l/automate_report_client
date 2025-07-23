@@ -324,6 +324,7 @@ function FacebookAwarenessSlide() {
                 value={cpmData.displayValue}
                 compareValue={cpmData.compareValue}
                 isNegative={cpmData.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox

@@ -19,6 +19,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     dateRange = { from: null, to: null },
     metricsMap = {},
     settersMap = {},
+    filterBy = null, // ✅ Field to filter by (e.g., 'Channel', 'Campaign objective')
+    filterValue = null, // ✅ Value to filter for (e.g., 'Lead', 'LEAD_GENERATION')
   } = options;
 
   try {
@@ -77,13 +79,21 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       let currentPeriodResults;
       let previousPeriodResults;
 
+      // Prepare filter options for processing
+      const filterOptions = {};
+      if (filterBy && filterValue) {
+        filterOptions.filterBy = filterBy;
+        filterOptions.filterValue = filterValue;
+      }
+
       // Choose processor based on type
       if (config.processorType === "social") {
         currentPeriodResults = processSocialMediaData(
           currentPeriodData,
           metrics,
           config.processFields,
-          config.socialConfig
+          config.socialConfig,
+          filterOptions
         );
 
         if (config.hasComparison && previousPeriodData.length > 0) {
@@ -91,7 +101,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
             previousPeriodData,
             metrics,
             config.processFields,
-            config.socialConfig
+            config.socialConfig,
+            filterOptions
           );
           comparison = calculateComparison(
             currentPeriodResults.enhancedTotals,
@@ -151,6 +162,45 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     }
   } catch (error) {
     console.error(`Error fetching ${dataType} data:`, error);
+    throw error;
+  }
+};
+
+// Helper function to get unique filter values from data
+export const getFilterValues = async (dataType, id, filterField) => {
+  try {
+    const config = DATA_CONFIGS[dataType];
+    if (!config) {
+      throw new Error(`Configuration for ${dataType} not found`);
+    }
+
+    // Fetch data from API
+    const response = await axios.get(
+      `http://localhost:8000/data-sheets/${config.endpoint}/${id}`
+    );
+
+    const rawData = response.data.data;
+    const headers = rawData[0];
+    const dataRows = rawData.slice(1);
+
+    // Transform raw data to objects
+    const dataObjects = dataRows.map((row) =>
+      Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+    );
+
+    // Extract unique values for the filter field
+    const uniqueValues = [
+      ...new Set(
+        dataObjects
+          .map((item) => item[filterField])
+          .filter((value) => value && value.toString().trim() !== "")
+          .map((value) => value.toString().trim())
+      ),
+    ].sort();
+
+    return uniqueValues;
+  } catch (error) {
+    console.error(`Error fetching filter values for ${dataType}:`, error);
     throw error;
   }
 };

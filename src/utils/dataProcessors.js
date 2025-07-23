@@ -180,12 +180,26 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
   return enhanced;
 };
 
+// Helper function to filter data by specific field and value
+const filterDataByField = (data, filterBy, filterValue) => {
+  if (!filterBy || !filterValue) return data;
+
+  return data.filter((item) => {
+    const itemValue = item[filterBy];
+    return (
+      itemValue &&
+      itemValue.toString().toLowerCase() === filterValue.toLowerCase()
+    );
+  });
+};
+
 // Universal processor for social media platforms
 export const processSocialMediaData = (
   cleanedData,
   metrics,
   finalMetrics,
-  config
+  config,
+  filterOptions = {}
 ) => {
   if (!cleanedData || cleanedData.length === 0) {
     return {
@@ -199,13 +213,31 @@ export const processSocialMediaData = (
     };
   }
 
-  // 🔍 DEBUG: Log the first few rows of raw data
-  // console.log("Raw data sample:", cleanedData.slice(0, 2));
-  // console.log("Available columns:", Object.keys(cleanedData[0] || {}));
-  // console.log("Config fields:", config.fields);
+  // Apply filtering if specified
+  let processedData = cleanedData;
+  if (filterOptions.filterBy && filterOptions.filterValue) {
+    processedData = filterDataByField(
+      cleanedData,
+      filterOptions.filterBy,
+      filterOptions.filterValue
+    );
+
+    // If no data after filtering, return empty results
+    if (processedData.length === 0) {
+      return {
+        enhancedFieldData: {},
+        enhancedTotals: Object.fromEntries(
+          finalMetrics.map((m) => [m, "No Data"])
+        ),
+        allMetrics: finalMetrics,
+        audienceData: {},
+        creativeData: {},
+      };
+    }
+  }
 
   // Process data for Performance by Audiences table
-  const audienceData = cleanedData.reduce((acc, item) => {
+  const audienceData = processedData.reduce((acc, item) => {
     const audienceKey = item[config.audienceGroupBy] || "Unknown";
 
     if (!acc[audienceKey]) {
@@ -218,25 +250,13 @@ export const processSocialMediaData = (
     config.fields.forEach((field) => {
       const value = item[field.sourceField] || 0;
       acc[audienceKey][field.key] += value;
-
-      // 🔍 DEBUG: Log engagement field specifically
-      // if (field.key === "engagements") {
-      //   console.log(
-      //     `Engagement debug - sourceField: ${
-      //       field.sourceField
-      //     }, value: ${value}, item value: ${item[field.sourceField]}`
-      //   );
-      // }
     });
 
     return acc;
   }, {});
 
-  // 🔍 DEBUG: Log processed audience data
-  // console.log("Processed audience data (before enhancement):", audienceData);
-
   // Process data for Performance by Creatives table
-  const creativeData = cleanedData.reduce((acc, item) => {
+  const creativeData = processedData.reduce((acc, item) => {
     const creativeKey = item[config.creativeGroupBy] || "Unknown";
 
     if (!acc[creativeKey]) {
@@ -296,12 +316,6 @@ export const processSocialMediaData = (
     ...creativeTotals,
     ...calculateEnhancedMetrics(creativeTotals, config.calculatedFields),
   };
-
-  // console.log("Enhanced Audience Data:", enhancedAudienceData);
-  // console.log("Enhanced Creative Data:", enhancedCreativeData);
-  // console.log("Enhanced Audience Totals:", enhancedAudienceTotals);
-  // console.log("Enhanced Creative Totals:", enhancedCreativeTotals);
-  // console.log("Final Metrics:", finalMetrics);
 
   return {
     enhancedFieldData: enhancedAudienceData,

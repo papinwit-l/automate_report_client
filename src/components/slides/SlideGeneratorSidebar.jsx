@@ -31,9 +31,11 @@ const SlideGeneratorSidebar = ({
   onSheetsLinkChange,
   onGenerate,
   onEnableDateRangeChange,
-  onExportToSlides,
-  onAddSlide,
   handleExportAllSlides,
+  projectName,
+  onProjectNameChange,
+  reportType,
+  onReportTypeChange,
 }) => {
   return (
     <>
@@ -83,6 +85,32 @@ const SlideGeneratorSidebar = ({
 
             <Card className="shadow-sm py-1">
               <CardContent className="p-4 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="project-name" className="text-sm font-medium">
+                    Project Name
+                  </Label>
+                  <Input
+                    id="project-name"
+                    type="text"
+                    placeholder="Project Name..."
+                    value={projectName}
+                    onChange={onProjectNameChange}
+                    className="font-mono text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="report-type" className="text-sm font-medium">
+                    Report Type
+                  </Label>
+                  <Input
+                    id="report-type"
+                    type="text"
+                    placeholder="Monthly Report/Weekly Report..."
+                    value={reportType}
+                    onChange={onReportTypeChange}
+                    className="font-mono text-sm"
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="sheet-link" className="text-sm font-medium">
                     Google Sheets URL

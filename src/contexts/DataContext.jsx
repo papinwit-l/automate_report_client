@@ -61,6 +61,24 @@ export const DataProvider = ({ children }) => {
     {}
   );
 
+  // Facebook Reach Data (separate state for filtered data)
+  const [FacebookReachAudienceData, setFacebookReachAudienceData] = useState(
+    {}
+  );
+  const [FacebookReachAudienceTotals, setFacebookReachAudienceTotals] =
+    useState({});
+  const [FacebookReachCreativeData, setFacebookReachCreativeData] = useState(
+    {}
+  );
+  const [FacebookReachCreativeTotals, setFacebookReachCreativeTotals] =
+    useState({});
+  const [FacebookReachAudienceMetrics, setFacebookReachAudienceMetrics] =
+    useState(
+      DEFAULT_METRICS.FacebookAudience // ✅ FIXED: Use FacebookAudience instead of FacebookReach
+    );
+  const [FacebookReachAudienceComparison, setFacebookReachAudienceComparison] =
+    useState({});
+
   // TikTok Data
   const [TikTokAudienceData, setTikTokAudienceData] = useState({});
   const [TikTokAudienceTotals, setTikTokAudienceTotals] = useState({});
@@ -89,6 +107,7 @@ export const DataProvider = ({ children }) => {
     GDN: GDNMetrics,
     Disc: DiscMetrics,
     FacebookAudience: FacebookAudienceMetrics,
+    FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
@@ -116,6 +135,12 @@ export const DataProvider = ({ children }) => {
     setFacebookCreativeTotals,
     setFacebookAudienceMetrics,
     setFacebookAudienceComparison,
+    setFacebookReachAudienceData,
+    setFacebookReachAudienceTotals,
+    setFacebookReachCreativeData,
+    setFacebookReachCreativeTotals,
+    setFacebookReachAudienceMetrics,
+    setFacebookReachAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -130,68 +155,94 @@ export const DataProvider = ({ children }) => {
     setInstagramAudienceComparison,
   });
 
+  // Helper function to build fetch options
+  const buildFetchOptions = (filterBy = null, filterValue = null) => ({
+    enableDateRange,
+    dateRange,
+    metricsMap,
+    settersMap,
+    filterBy,
+    filterValue,
+  });
+
   // Individual data fetching functions
-  const getSEMData = async (id) => {
-    return await fetchDataSheet("SEM", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getSEMData = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "SEM",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
   };
 
-  const getGGDemographic = async (id) => {
-    return await fetchDataSheet("GGDemographic", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getGGDemographic = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "GGDemographic",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
   };
 
-  const getGDNData = async (id) => {
-    return await fetchDataSheet("GDN", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getGDNData = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "GDN",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
   };
 
-  const getDiscData = async (id) => {
-    return await fetchDataSheet("Disc", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getDiscData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "Disc",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getDiscData result:", result);
+    return result;
   };
 
-  const getFacebookData = async (id) => {
-    return await fetchDataSheet("FacebookAudience", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getFacebookData = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "FacebookAudience",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
   };
 
-  const getTikTokData = async (id) => {
-    return await fetchDataSheet("TikTokAudience", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
+  const getFacebookReachData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    console.log("🎯 getFacebookReachData called with:", {
+      id,
+      filterBy,
+      filterValue,
     });
+
+    const result = await fetchDataSheet(
+      "FacebookReach",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+
+    console.log("📊 getFacebookReachData result:", result);
+    return result;
   };
 
-  const getInstagramData = async (id) => {
-    return await fetchDataSheet("InstagramAudience", id, {
-      enableDateRange,
-      dateRange,
-      metricsMap,
-      settersMap,
-    });
+  const getTikTokData = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "TikTokAudience",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+  };
+
+  const getInstagramData = async (id, filterBy = null, filterValue = null) => {
+    return await fetchDataSheet(
+      "InstagramAudience",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
   };
 
   // Main fetch function
@@ -208,6 +259,7 @@ export const DataProvider = ({ children }) => {
           getGDNData(id),
           getDiscData(id),
           getFacebookData(id),
+          getFacebookReachData(id, "Channel", "FB Reach"),
           // getTikTokData(id),
           // getInstagramData(id),
         ];
@@ -227,9 +279,9 @@ export const DataProvider = ({ children }) => {
     [enableDateRange, dateRange, metricsMap]
   );
 
-  // Fetch individual data type
+  // ✅ FIXED: Updated fetchDataType to support filtering
   const fetchDataType = useCallback(
-    async (dataType, id) => {
+    async (dataType, id, filterBy = null, filterValue = null) => {
       try {
         setLoading(true);
         setError(null);
@@ -240,6 +292,7 @@ export const DataProvider = ({ children }) => {
           GDN: getGDNData,
           Disc: getDiscData,
           FacebookAudience: getFacebookData,
+          FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -248,7 +301,7 @@ export const DataProvider = ({ children }) => {
           throw new Error(`Unknown data type: ${dataType}`);
         }
 
-        return await fetchFunction(id);
+        return await fetchFunction(id, filterBy, filterValue); // ✅ FIXED: Pass filter parameters
       } catch (err) {
         console.error(`Error fetching ${dataType} data:`, err);
         const errorMessage =
@@ -306,6 +359,14 @@ export const DataProvider = ({ children }) => {
     FacebookCreativeTotals,
     FacebookAudienceMetrics,
     FacebookAudienceComparison,
+
+    // Facebook Reach (filtered data)
+    FacebookReachAudienceData,
+    FacebookReachAudienceTotals,
+    FacebookReachCreativeData,
+    FacebookReachCreativeTotals,
+    FacebookReachAudienceMetrics,
+    FacebookReachAudienceComparison,
 
     // TikTok
     TikTokAudienceData,

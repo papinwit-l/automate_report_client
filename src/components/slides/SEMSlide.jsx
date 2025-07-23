@@ -296,6 +296,7 @@ function SEMSlide() {
               value={cpcData.displayValue}
               compareValue={cpcData.compareValue}
               isNegative={cpcData.isNegative}
+              invertCompareColor={true}
             />
 
             <NumberDisplayBox
@@ -320,6 +321,7 @@ function SEMSlide() {
               isConversion={true}
               compareValue={cplData.compareValue}
               isNegative={cplData.isNegative}
+              invertCompareColor={true}
             />
 
             <NumberDisplayBox

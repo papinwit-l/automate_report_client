@@ -23,6 +23,7 @@ import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
 import axios from "axios";
 import FacebookReachSlide from "@/components/slides/FacebookReachSlide";
 import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide";
+import TitleSlide from "@/components/slides/TitleSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -33,117 +34,19 @@ function SlideReport() {
   const [ableToGenerate, setAbleToGenerate] = React.useState(false);
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [slideGenerated, setSlideGenerated] = React.useState(false);
+  const [projectName, setProjectName] = React.useState("");
+  const [reportType, setReportType] = React.useState("");
 
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const { fetchData, enableDateRange, setEnableDateRange } = useData();
 
-  const handleExportToSlides = async () => {
-    setIsExporting(true);
-    setError(null);
-
-    try {
-      console.log("Starting export process...");
-
-      const element = document.getElementById("sem-component");
-      if (!element) {
-        throw new Error(
-          "Component not found. Make sure the Overall component has id='overall-component'"
-        );
-      }
-
-      console.log("Capturing component...");
-      const imageData = await domtoimage.toPng(element, {
-        quality: 0.95,
-        bgcolor: "#ffffff",
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        filter: (node) => {
-          return true;
-        },
-      });
-
-      console.log("Component captured successfully");
-
-      console.log("Sending to backend...");
-      const response = await axios.post(
-        "http://localhost:8000/data-sheets/create-presentation",
-        {
-          imageData: imageData,
-          title: "Monthly Report",
-          slideTitle: "Overall Performance",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = response.data;
-      console.log("Backend response:", result);
-
-      setPresentationUrl(result.presentationUrl);
-      window.open(result.presentationUrl, "_blank");
-    } catch (error) {
-      console.error("Export failed:", error);
-      setError(error.response?.data?.error || error.message);
-    } finally {
-      setIsExporting(false);
-    }
+  const handleProjectNameChange = (event) => {
+    setProjectName(event.target.value);
   };
 
-  const handleAddSlide = async () => {
-    if (!presentationUrl) {
-      setError("Please create a presentation first");
-      return;
-    }
-
-    setIsExporting(true);
-    setError(null);
-
-    try {
-      const urlMatch = presentationUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (!urlMatch) {
-        throw new Error("Invalid presentation URL");
-      }
-      const presentationId = urlMatch[1];
-
-      const element = document.getElementById("sem-component");
-      const imageData = await domtoimage.toPng(element, {
-        quality: 0.95,
-        bgcolor: "#ffffff",
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        style: {
-          transform: "scale(2)",
-          transformOrigin: "top left",
-          width: element.offsetWidth + "px",
-          height: element.offsetHeight + "px",
-        },
-      });
-
-      const response = await axios.post(
-        "http://localhost:8000/data-sheets/add-slide",
-        {
-          presentationId: presentationId,
-          imageData: imageData,
-          slideTitle: "Additional Slide",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = response.data;
-    } catch (error) {
-      console.error("Add slide failed:", error);
-      setError(error.response?.data?.error || error.message);
-    } finally {
-      setIsExporting(false);
-    }
+  const handleReportTypeChange = (event) => {
+    setReportType(event.target.value);
   };
 
   const handleSheetsLinkChange = (event) => {
@@ -292,10 +195,12 @@ function SlideReport() {
         onSheetsLinkChange={handleSheetsLinkChange}
         onGenerate={handleGenerate}
         onEnableDateRangeChange={handleEnableDateRangeChange}
-        // onExportToSlides={handleExportToSlides}
         onExportAllSlides={handleExportAllSlides}
-        onAddSlide={handleAddSlide}
         handleExportAllSlides={handleExportAllSlides}
+        projectName={projectName}
+        onProjectNameChange={handleProjectNameChange}
+        reportType={reportType}
+        onReportTypeChange={handleReportTypeChange}
       />
 
       {/* Main Content */}
@@ -346,6 +251,7 @@ function SlideReport() {
             {/* Preview Panel */}
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center gap-10">
+                <TitleSlide projectName={projectName} reportType={reportType} />
                 <SEMSlide />
                 <GDNSlide />
                 <DiscoverySlide />
