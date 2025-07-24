@@ -21,9 +21,11 @@ import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
 import axios from "axios";
-import FacebookReachSlide from "@/components/slides/FacebookReachSlide";
+import FacebookReachSlide from "@/components/slides/FacebookReachSlide01";
 import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide";
 import TitleSlide from "@/components/slides/TitleSlide";
+import FacebookReachSlide01 from "@/components/slides/FacebookReachSlide01";
+import FacebookReachSlide02 from "@/components/slides/FacebookReachSlide02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -262,7 +264,8 @@ function SlideReport() {
                 <GDNSlide />
                 <DiscoverySlide />
                 <FacebookAwarenessSlide />
-                <FacebookReachSlide />
+                <FacebookReachSlide01 />
+                <FacebookReachSlide02 />
                 <FacebookEngagementSlide />
               </div>
             ) : (

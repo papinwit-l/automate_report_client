@@ -119,6 +119,12 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setFacebookAudienceMetrics,
       setComparison: stateSetter.setFacebookAudienceComparison,
     },
+    FBDemographic: {
+      setData: stateSetter.setFBDemographicData,
+      setTotals: stateSetter.setFBDemographicTotals,
+      setMetrics: stateSetter.setFBDemographicMetrics,
+      setComparison: null,
+    },
     FacebookReach: {
       setAudienceData: stateSetter.setFacebookReachAudienceData,
       setAudienceTotals: stateSetter.setFacebookReachAudienceTotals,

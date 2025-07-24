@@ -315,7 +315,6 @@ function FacebookAwarenessSlide() {
               <NumberDisplayBox
                 title={"Spent"}
                 value={spentData.displayValue}
-                isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
               />
@@ -385,7 +384,7 @@ function FacebookAwarenessSlide() {
               <img
                 src={adsPicture}
                 alt="ads preview"
-                className="max-h-[250px]"
+                className="max-h-[300px] max-w-full object-contain w-auto"
               />
               <p className="mx-auto">{topAds}</p>
             </div>

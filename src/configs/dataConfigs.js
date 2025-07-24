@@ -5,6 +5,7 @@ export const NON_NUMERIC_COLUMNS = [
   "Date",
   "Project",
   "Channel",
+  "Age",
   "Gender",
   "Year & month",
   "Year & week (Mon-Sun)",
@@ -224,6 +225,29 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAudience,
   },
 
+  FBDemographic: {
+    endpoint: "fb-demographic",
+    processFields: [
+      "Project",
+      "Channel",
+      "Conversion",
+      "Spent",
+      "Updated Date",
+      "Campaign name",
+      "Campaign objective",
+      "Age",
+      "Gender",
+      "Impressions",
+      "Reach",
+      "Link clicks",
+      "Website conversions",
+    ],
+    groupBy: "Channel",
+    hasComparison: false,
+    processData: false,
+    processorType: "none",
+  },
+
   FacebookReach: {
     endpoint: "facebook-data", // ✅ Same endpoint as FacebookAudience
     processFields: [
@@ -303,6 +327,21 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
+  ],
+  FBDemographic: [
+    "Project",
+    "Channel",
+    "Conversion",
+    "Spent",
+    "Updated Date",
+    "Campaign name",
+    "Campaign objective",
+    "Age",
+    "Gender",
+    "Impressions",
+    "Reach",
+    "Link clicks",
+    "Website conversions",
   ],
   FacebookReach: [
     "Channel", // ✅ FIXED: Added Channel field

@@ -62,6 +62,12 @@ export const DataProvider = ({ children }) => {
     {}
   );
 
+  const [FBDemographicData, setFBDemographicData] = useState({});
+  const [FBDemographicTotals, setFBDemographicTotals] = useState({});
+  const [FBDemographicMetrics, setFBDemographicMetrics] = useState(
+    DEFAULT_METRICS.FBDemographic
+  );
+
   // Facebook Reach Data (separate state for filtered data)
   const [FacebookReachAudienceData, setFacebookReachAudienceData] = useState(
     {}
@@ -138,6 +144,9 @@ export const DataProvider = ({ children }) => {
     setFacebookCreativeTotals,
     setFacebookAudienceMetrics,
     setFacebookAudienceComparison,
+    setFBDemographicData,
+    setFBDemographicMetrics,
+    setFBDemographicTotals,
     setFacebookReachAudienceData,
     setFacebookReachAudienceTotals,
     setFacebookReachCreativeData,
@@ -199,7 +208,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getDiscData result:", result);
+    // console.log("🎯 getDiscData result:", result);
     return result;
   };
 
@@ -216,11 +225,11 @@ export const DataProvider = ({ children }) => {
     filterBy = null,
     filterValue = null
   ) => {
-    console.log("🎯 getFacebookReachData called with:", {
-      id,
-      filterBy,
-      filterValue,
-    });
+    // console.log("🎯 getFacebookReachData called with:", {
+    //   id,
+    //   filterBy,
+    //   filterValue,
+    // });
 
     const result = await fetchDataSheet(
       "FacebookReach",
@@ -228,7 +237,7 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue)
     );
 
-    console.log("📊 getFacebookReachData result:", result);
+    // console.log("📊 getFacebookReachData result:", result);
     return result;
   };
 
@@ -248,6 +257,20 @@ export const DataProvider = ({ children }) => {
     );
   };
 
+  const getFBDemographicData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FBDemographic",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("FB Demo", result);
+    return result;
+  };
+
   // Main fetch function
   const fetchData = useCallback(
     async (id) => {
@@ -263,6 +286,7 @@ export const DataProvider = ({ children }) => {
           getDiscData(id),
           getFacebookData(id),
           getFacebookReachData(id, "Channel", "FB Reach"),
+          getFBDemographicData(id),
           fetchFacebookPicture(id),
           // getTikTokData(id),
           // getInstagramData(id),
@@ -320,6 +344,24 @@ export const DataProvider = ({ children }) => {
     [enableDateRange, dateRange, metricsMap]
   );
 
+  // const getFBDemographic = async (id) => {
+  //   const rawData = await fetchDemographic(id, "fb-demographic");
+  // };
+
+  // const fetchDemographic = async (id, endpoint) => {
+  //   const response = await axios.get(
+  //     `http://localhost:8000/data-sheets/${endpoint}/${id}`
+  //   );
+  //   const rawData = response.data.data;
+  //   const headers = rawData[0];
+  //   const dataRows = rawData.slice(1);
+  //   const dataObjects = dataRows.map((row) =>
+  //     Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+  //   );
+  //   const dateFilteredData = filterDataByDate(dataObjects, dateRange);
+  //   return dateFilteredData;
+  // };
+
   const fetchFacebookPicture = async (id) => {
     const response = await axios.get(
       `http://localhost:8000/data-sheets/facebook-picture/${id}`
@@ -338,6 +380,17 @@ export const DataProvider = ({ children }) => {
     const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
     // console.log("resultData:", resultData);
     setFacebookAdsPicture(resultData);
+  };
+
+  const filterDataByColumn = (data, column, columnValue, options = {}) => {
+    if (!Array.isArray(data)) return [];
+
+    return data.filter((item) => {
+      const value = item?.[column];
+      return options.strictEquality
+        ? value === columnValue
+        : value == columnValue;
+    });
   };
 
   function filterDataByDate(data, dateRange) {
@@ -421,6 +474,7 @@ export const DataProvider = ({ children }) => {
     FacebookAudienceMetrics,
     FacebookAudienceComparison,
     FacebookAdsPicture,
+    FBDemographicData,
 
     // Facebook Reach (filtered data)
     FacebookReachAudienceData,
