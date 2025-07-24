@@ -80,12 +80,33 @@ export const DataProvider = ({ children }) => {
   const [FacebookReachCreativeTotals, setFacebookReachCreativeTotals] =
     useState({});
   const [FacebookReachAudienceMetrics, setFacebookReachAudienceMetrics] =
-    useState(
-      DEFAULT_METRICS.FacebookAudience // ✅ FIXED: Use FacebookAudience instead of FacebookReach
-    );
+    useState(DEFAULT_METRICS.FacebookAudience);
   const [FacebookReachAudienceComparison, setFacebookReachAudienceComparison] =
     useState({});
 
+  //Facebook Engagement Data
+  const [FacebookEngagementAudienceData, setFacebookEngagementAudienceData] =
+    useState({});
+  const [
+    FacebookEngagementAudienceTotals,
+    setFacebookEngagementAudienceTotals,
+  ] = useState({});
+  const [FacebookEngagementCreativeData, setFacebookEngagementCreativeData] =
+    useState({});
+  const [
+    FacebookEngagementCreativeTotals,
+    setFacebookEngagementCreativeTotals,
+  ] = useState({});
+  const [
+    FacebookEngagementAudienceMetrics,
+    setFacebookEngagementAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookAudience);
+  const [
+    FacebookEngagementAudienceComparison,
+    setFacebookEngagementAudienceComparison,
+  ] = useState({});
+
+  // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
   // TikTok Data
@@ -117,6 +138,7 @@ export const DataProvider = ({ children }) => {
     Disc: DiscMetrics,
     FacebookAudience: FacebookAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
+    FacebookEngagement: FacebookEngagementAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
@@ -153,6 +175,12 @@ export const DataProvider = ({ children }) => {
     setFacebookReachCreativeTotals,
     setFacebookReachAudienceMetrics,
     setFacebookReachAudienceComparison,
+    setFacebookEngagementAudienceData,
+    setFacebookEngagementAudienceTotals,
+    setFacebookEngagementCreativeData,
+    setFacebookEngagementCreativeTotals,
+    setFacebookEngagementAudienceMetrics,
+    setFacebookEngagementAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -241,6 +269,27 @@ export const DataProvider = ({ children }) => {
     return result;
   };
 
+  const getFacebookEngagementData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    // console.log("🎯 getFacebookReachData called with:", {
+    //   id,
+    //   filterBy,
+    //   filterValue,
+    // });
+
+    const result = await fetchDataSheet(
+      "FacebookEngagement",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+
+    // console.log("📊 getFacebookReachData result:", result);
+    return result;
+  };
+
   const getTikTokData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "TikTokAudience",
@@ -286,6 +335,7 @@ export const DataProvider = ({ children }) => {
           getDiscData(id),
           getFacebookData(id),
           getFacebookReachData(id, "Channel", "FB Reach"),
+          getFacebookEngagementData(id, "Channel", "FB Engagement"),
           getFBDemographicData(id),
           fetchFacebookPicture(id),
           // getTikTokData(id),
@@ -321,6 +371,7 @@ export const DataProvider = ({ children }) => {
           Disc: getDiscData,
           FacebookAudience: getFacebookData,
           FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
+          FacebookEngagement: getFacebookEngagementData,
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -483,6 +534,14 @@ export const DataProvider = ({ children }) => {
     FacebookReachCreativeTotals,
     FacebookReachAudienceMetrics,
     FacebookReachAudienceComparison,
+
+    // Facebook Engagement
+    FacebookEngagementAudienceData,
+    FacebookEngagementAudienceTotals,
+    FacebookEngagementCreativeData,
+    FacebookEngagementCreativeTotals,
+    FacebookEngagementAudienceMetrics,
+    FacebookEngagementAudienceComparison,
 
     // TikTok
     TikTokAudienceData,

@@ -22,11 +22,12 @@ import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
 import axios from "axios";
 import FacebookReachSlide from "@/components/slides/FacebookReachSlide01";
-import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide";
+import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide01";
 import TitleSlide from "@/components/slides/TitleSlide";
 import FacebookReachSlide01 from "@/components/slides/FacebookReachSlide01";
 import FacebookReachSlide02 from "@/components/slides/FacebookReachSlide02";
 import SectionSlide from "@/components/slides/SectionSlide";
+import FacebookEngagementSlide01 from "@/components/slides/FacebookEngagementSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -269,7 +270,7 @@ function SlideReport() {
                 <FacebookAwarenessSlide />
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
-                <FacebookEngagementSlide />
+                <FacebookEngagementSlide01 />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">

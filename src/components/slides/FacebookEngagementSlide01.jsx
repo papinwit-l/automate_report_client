@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SlideHeader from "./SlideHeader";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
@@ -17,18 +17,18 @@ import {
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
-function FacebookEngagementSlide() {
+function FacebookEngagementSlide01() {
   const {
     loading,
     error,
     refetch,
-    GGDemographicData,
-    FacebookAudienceData,
-    FacebookAudienceTotals,
-    FacebookAudienceMetrics,
-    FacebookAudienceComparison,
-    FacebookCreativeData,
-    FacebookCreativeTotals,
+    FBDemographicData,
+    FacebookEngagementAudienceData,
+    FacebookEngagementAudienceTotals,
+    FacebookEngagementCreativeData,
+    FacebookEngagementCreativeTotals,
+    FacebookEngagementAudienceMetrics,
+    FacebookEngagementAudienceComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -38,9 +38,9 @@ function FacebookEngagementSlide() {
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      FacebookAudienceTotals?.clicks === "No Data" ||
-      !FacebookAudienceTotals ||
-      Object.keys(FacebookAudienceTotals).length === 0
+      FacebookEngagementAudienceTotals?.clicks === "No Data" ||
+      !FacebookEngagementAudienceTotals ||
+      Object.keys(FacebookEngagementAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
@@ -48,17 +48,17 @@ function FacebookEngagementSlide() {
 
     let summaryTextTemp = "";
     const overallText = `Overall Engagements: ** ${parseFloat(
-      FacebookAudienceTotals?.engagements?.toFixed(2) || 0
+      FacebookEngagementAudienceTotals?.engagements?.toFixed(2) || 0
     )?.toLocaleString()} post engagements**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    summaryTextTemp += `<li>Average CPE: **${FacebookAudienceTotals.cpe?.toLocaleString(
+    summaryTextTemp += `<li>Average CPE: **${FacebookEngagementAudienceTotals.cpe?.toLocaleString(
       undefined,
       { minimumFractionDigits: 2, maximumFractionDigits: 2 }
     )} THB**</li>`;
 
     // Find top audience by engagements (simpler approach)
-    const topAudience = Object.entries(FacebookAudienceData).reduce(
+    const topAudience = Object.entries(FacebookEngagementAudienceData).reduce(
       (max, [key, value]) =>
         (value.engagements || 0) > (max.value.engagements || 0)
           ? { key, value }
@@ -72,7 +72,7 @@ function FacebookEngagementSlide() {
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
-    const topCreative = Object.entries(FacebookCreativeData).reduce(
+    const topCreative = Object.entries(FacebookEngagementCreativeData).reduce(
       (max, [key, value]) =>
         (value.engagements || 0) > (max.value.engagements || 0)
           ? { key, value }
@@ -87,9 +87,118 @@ function FacebookEngagementSlide() {
     setSummaryText(summaryTextTemp);
   };
 
+  //Demographic for chart
+  const { impressionsByGender, impressionsByAge } = useMemo(() => {
+    try {
+      if (!FBDemographicData || FBDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Filter for FB Reach data
+      const filteredDemographicData = FBDemographicData.filter((item) => {
+        return item?.Channel?.trim() === "FB Reach";
+      });
+
+      if (filteredDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Helper function for consistent parsing
+      const parseImpressions = (value) => {
+        if (value === null || value === undefined || value === "") return 0;
+        const parsed = parseInt(value);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      // Gender impressions
+      const sumImpressionsByGender = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Gender && item?.Impressions !== undefined) {
+            acc[item.Gender] =
+              (acc[item.Gender] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalGenderImpressions = Object.values(
+        sumImpressionsByGender
+      ).reduce((a, b) => a + b, 0);
+
+      // Age impressions
+      const sumImpressionsByAge = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Age && item?.Impressions !== undefined) {
+            acc[item.Age] =
+              (acc[item.Age] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalAgeImpressions = Object.values(sumImpressionsByAge).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Early return if no impressions
+      if (totalGenderImpressions === 0 && totalAgeImpressions === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Calculate percentages with correct totals
+      const genderPercentages =
+        totalGenderImpressions > 0
+          ? Object.entries(sumImpressionsByGender).reduce(
+              (acc, [gender, impressions]) => {
+                acc[gender] =
+                  ((impressions / totalGenderImpressions) * 100).toFixed(2) +
+                  "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      const agePercentages =
+        totalAgeImpressions > 0
+          ? Object.entries(sumImpressionsByAge).reduce(
+              (acc, [age, impressions]) => {
+                acc[age] =
+                  ((impressions / totalAgeImpressions) * 100).toFixed(2) + "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      return {
+        impressionsByGender: genderPercentages,
+        impressionsByAge: agePercentages,
+      };
+    } catch (error) {
+      console.error("Error processing demographic data:", error);
+      return {
+        impressionsByGender: {},
+        impressionsByAge: {},
+      };
+    }
+  }, [FBDemographicData]);
+
   useEffect(() => {
     summarizeData();
-  }, [FacebookAudienceTotals, FacebookAudienceData, GGDemographicData]);
+  }, [FacebookEngagementAudienceTotals, FacebookEngagementAudienceData]);
 
   // Show loading state
   if (loading) {
@@ -136,78 +245,78 @@ function FacebookEngagementSlide() {
   // Format display data with safe fallbacks
   // Using optional chaining to handle undefined/null values from useState
   const impressionData = formatDisplayData(
-    FacebookAudienceTotals?.impressions,
-    FacebookAudienceComparison?.impressions,
+    FacebookEngagementAudienceTotals?.impressions,
+    FacebookEngagementAudienceComparison?.impressions,
     "compact"
   );
   const clicksData = formatDisplayData(
-    FacebookAudienceTotals?.clicks,
-    FacebookAudienceComparison?.clicks,
+    FacebookEngagementAudienceTotals?.clicks,
+    FacebookEngagementAudienceComparison?.clicks,
     "compact"
   );
   const ctrData = formatDisplayData(
-    FacebookAudienceTotals?.ctr,
-    FacebookAudienceComparison?.ctr,
+    FacebookEngagementAudienceTotals?.ctr,
+    FacebookEngagementAudienceComparison?.ctr,
     "percentage"
   );
   const cpcData = formatDisplayData(
-    FacebookAudienceTotals?.cpc,
-    FacebookAudienceComparison?.cpc,
+    FacebookEngagementAudienceTotals?.cpc,
+    FacebookEngagementAudienceComparison?.cpc,
     "compact"
   );
   const conversionsData = formatDisplayData(
-    FacebookAudienceTotals?.conversions,
-    FacebookAudienceComparison?.conversions,
+    FacebookEngagementAudienceTotals?.conversions,
+    FacebookEngagementAudienceComparison?.conversions,
     "number"
   );
   const cplData = formatDisplayData(
-    FacebookAudienceTotals?.cpl,
-    FacebookAudienceComparison?.cpl,
+    FacebookEngagementAudienceTotals?.cpl,
+    FacebookEngagementAudienceComparison?.cpl,
     "compact"
   );
   const spentData = formatDisplayData(
-    FacebookAudienceTotals?.spent,
-    FacebookAudienceComparison?.spent,
+    FacebookEngagementAudienceTotals?.spent,
+    FacebookEngagementAudienceComparison?.spent,
     "compact"
   );
   const conRate = formatDisplayData(
-    FacebookAudienceTotals?.cvr, // Changed from conRate to cvr
-    FacebookAudienceComparison?.cvr,
+    FacebookEngagementAudienceTotals?.cvr, // Changed from conRate to cvr
+    FacebookEngagementAudienceComparison?.cvr,
     "percentage"
   );
   const cpmData = formatDisplayData(
-    FacebookAudienceTotals?.cpm,
-    FacebookAudienceComparison?.cpm,
+    FacebookEngagementAudienceTotals?.cpm,
+    FacebookEngagementAudienceComparison?.cpm,
     "compact"
   );
   const reachData = formatDisplayData(
-    FacebookAudienceTotals?.reach,
-    FacebookAudienceComparison?.reach,
+    FacebookEngagementAudienceTotals?.reach,
+    FacebookEngagementAudienceComparison?.reach,
     "compact"
   );
   const frequencyData = formatDisplayData(
-    FacebookAudienceTotals?.frequency,
-    FacebookAudienceComparison?.frequency,
+    FacebookEngagementAudienceTotals?.frequency,
+    FacebookEngagementAudienceComparison?.frequency,
     "compact"
   );
   const cprData = formatDisplayData(
-    FacebookAudienceTotals?.cpr,
-    FacebookAudienceComparison?.cpr,
+    FacebookEngagementAudienceTotals?.cpr,
+    FacebookEngagementAudienceComparison?.cpr,
     "compact"
   );
   const engagementData = formatDisplayData(
-    FacebookAudienceTotals?.engagements,
-    FacebookAudienceComparison?.engagements,
+    FacebookEngagementAudienceTotals?.engagements,
+    FacebookEngagementAudienceComparison?.engagements,
     "compact"
   );
   const engagementRateData = formatDisplayData(
-    FacebookAudienceTotals?.engagementRate,
-    FacebookAudienceComparison?.engagementRate,
+    FacebookEngagementAudienceTotals?.engagementRate,
+    FacebookEngagementAudienceComparison?.engagementRate,
     "percentage"
   );
   const cpeData = formatDisplayData(
-    FacebookAudienceTotals?.cpe,
-    FacebookAudienceComparison?.cpe,
+    FacebookEngagementAudienceTotals?.cpe,
+    FacebookEngagementAudienceComparison?.cpe,
     "compact"
   );
 
@@ -233,11 +342,12 @@ function FacebookEngagementSlide() {
       <SlideHeader title={"Facebook Engagement"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
-          <div className="col-span-13 flex flex-col gap-2">
+          <div className="col-span-12 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-7 text-lg font-semibold">
+              <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
+              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -295,8 +405,8 @@ function FacebookEngagementSlide() {
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookAudienceData}
-                totalData={FacebookAudienceTotals}
+                channelData={FacebookEngagementAudienceData}
+                totalData={FacebookEngagementAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
@@ -315,34 +425,29 @@ function FacebookEngagementSlide() {
               />
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-16">
-          <div className="col-span-11">
-            <h4 className="text-lg font-semibold">Performance by Creative</h4>
-
-            <AdvancedDataTable
-              firstMetric="Ad name"
-              channelData={FacebookCreativeData}
-              totalData={FacebookCreativeTotals}
-              metrics={[
-                "Ad set name",
-                "impressions",
-                "reach",
-                "engagements",
-                "engagementRate",
-                "cpe",
-                "conversions",
-                "spent",
-              ]}
-              formatValue={formatTableValue}
-              maxRows={maxTableRows[1]}
-              defaultSortBy="reach"
-              defaultSortOrder="desc"
-              enableSorting={true} // Can disable sorting if needed
+          {/* Chart */}
+          <div className="col-span-3">
+            <DonutChart
+              data={impressionsByGender}
+              title="Impression By Gender"
+              width={220}
+              height={160}
+              innerRadius={30}
+              outerRadius={60}
+              isPercentage={true}
+            />
+            <DonutChart
+              data={impressionsByAge}
+              title="Impression By Age"
+              width={220}
+              height={160}
+              innerRadius={30}
+              outerRadius={60}
+              isPercentage={true}
             />
           </div>
-          <div className="col-span-5">
-            {/* Summary */}
+          {/* Summary */}
+          <div className="col-span-16">
             <div className="px-4 mt-6">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
@@ -372,4 +477,4 @@ function FacebookEngagementSlide() {
   );
 }
 
-export default FacebookEngagementSlide;
+export default FacebookEngagementSlide01;
