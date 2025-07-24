@@ -26,6 +26,7 @@ import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide
 import TitleSlide from "@/components/slides/TitleSlide";
 import FacebookReachSlide01 from "@/components/slides/FacebookReachSlide01";
 import FacebookReachSlide02 from "@/components/slides/FacebookReachSlide02";
+import SectionSlide from "@/components/slides/SectionSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -260,9 +261,11 @@ function SlideReport() {
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center gap-10">
                 <TitleSlide projectName={projectName} reportType={reportType} />
+                <SectionSlide title={"Google"} />
                 <SEMSlide />
                 <GDNSlide />
                 <DiscoverySlide />
+                <SectionSlide title={"Facebook"} />
                 <FacebookAwarenessSlide />
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
