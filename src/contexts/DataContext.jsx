@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { fetchDataSheet } from "../services/dataServices";
 import { createStateSettersMap } from "../utils/dataUtils";
 import { DEFAULT_METRICS } from "../configs/dataConfigs";
+import axios from "axios";
 
 const DataContext = createContext();
 
@@ -78,6 +79,8 @@ export const DataProvider = ({ children }) => {
     );
   const [FacebookReachAudienceComparison, setFacebookReachAudienceComparison] =
     useState({});
+
+  const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
   // TikTok Data
   const [TikTokAudienceData, setTikTokAudienceData] = useState({});
@@ -260,6 +263,7 @@ export const DataProvider = ({ children }) => {
           getDiscData(id),
           getFacebookData(id),
           getFacebookReachData(id, "Channel", "FB Reach"),
+          fetchFacebookPicture(id),
           // getTikTokData(id),
           // getInstagramData(id),
         ];
@@ -316,6 +320,63 @@ export const DataProvider = ({ children }) => {
     [enableDateRange, dateRange, metricsMap]
   );
 
+  const fetchFacebookPicture = async (id) => {
+    const response = await axios.get(
+      `http://localhost:8000/data-sheets/facebook-picture/${id}`
+    );
+    const rawData = response.data.data;
+    const headers = rawData[0];
+    const dataRows = rawData.slice(1);
+
+    // Transform raw data to objects
+    const dataObjects = dataRows.map((row) =>
+      Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+    );
+    // console.log("dataObjects", dataObjects);
+    const dateFilteredData = filterDataByDate(dataObjects, dateRange);
+    // console.log("data:", dateFilteredData);
+    const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+    // console.log("resultData:", resultData);
+    setFacebookAdsPicture(resultData);
+  };
+
+  function filterDataByDate(data, dateRange) {
+    const { from, to } = dateRange;
+    if (!from || !to) {
+      return data;
+    }
+
+    // Convert filter dates from UTC to UTC+7 for comparison
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    // Add 7 hours to convert UTC to UTC+7
+    const fromDateUTC7 = new Date(fromDate.getTime() + 7 * 60 * 60 * 1000);
+    const toDateUTC7 = new Date(toDate.getTime() + 7 * 60 * 60 * 1000);
+
+    // Format to YYYY-MM-DD for comparison
+    const fromDateStr = fromDateUTC7.toISOString().split("T")[0];
+    const toDateStr = toDateUTC7.toISOString().split("T")[0];
+
+    return data.filter((item) => {
+      const itemDate = item["Updated Date"];
+      return itemDate >= fromDateStr && itemDate <= toDateStr;
+    });
+  }
+
+  const removeDuplicateByColumnMap = (data, column) => {
+    const map = new Map();
+
+    for (const item of data) {
+      const key = item[column];
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+    }
+
+    return Array.from(map.values());
+  };
+
   const value = {
     // Global state
     loading,
@@ -359,6 +420,7 @@ export const DataProvider = ({ children }) => {
     FacebookCreativeTotals,
     FacebookAudienceMetrics,
     FacebookAudienceComparison,
+    FacebookAdsPicture,
 
     // Facebook Reach (filtered data)
     FacebookReachAudienceData,
@@ -383,6 +445,9 @@ export const DataProvider = ({ children }) => {
     InstagramCreativeTotals,
     InstagramAudienceMetrics,
     InstagramAudienceComparison,
+
+    //function
+    fetchFacebookPicture,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

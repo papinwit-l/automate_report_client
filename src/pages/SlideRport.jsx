@@ -39,7 +39,12 @@ function SlideReport() {
 
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  const { fetchData, enableDateRange, setEnableDateRange } = useData();
+  const {
+    fetchData,
+    enableDateRange,
+    setEnableDateRange,
+    fetchFacebookPicture,
+  } = useData();
 
   const handleProjectNameChange = (event) => {
     setProjectName(event.target.value);
@@ -214,6 +219,7 @@ function SlideReport() {
             <h1 className="text-xl font-bold text-slate-900">
               Slide Report Generator
             </h1>
+            <button onClick={() => fetchFacebookPicture(sheetsID)}>TEST</button>
           </div>
           <div className="ml-auto text-sm text-slate-600">
             Transform your Google Sheets data into beautiful presentation slides

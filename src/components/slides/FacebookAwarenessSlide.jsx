@@ -29,6 +29,7 @@ function FacebookAwarenessSlide() {
     FacebookAudienceComparison,
     FacebookCreativeData,
     FacebookCreativeTotals,
+    FacebookAdsPicture,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -36,6 +37,8 @@ function FacebookAwarenessSlide() {
   const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([5, 5]);
+  const [adsPicture, setAdsPicture] = useState(null);
+  const [topAds, setTopAds] = useState(null);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -86,42 +89,17 @@ function FacebookAwarenessSlide() {
     } (with ${topCreative.value.impressions?.toLocaleString()} Impressions**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
-    // {
-    //   let highestConversionChannelText = ``;
-    //   let highestConversionRateChannelText = ``;
-
-    //   const channelEntries = Object.entries(FacebookAudienceData || {});
-    //   if (channelEntries.length === 0) {
-    //     setSummaryText(summaryTextTemp);
-    //     return;
-    //   }
-
-    //   const topConversionChannel = channelEntries.reduce((max, current) =>
-    //     current[1].clicks > max[1].clicks ? current : max
-    //   );
-
-    //   const topConversionRateChannel = channelEntries.reduce((max, current) =>
-    //     current[1].ctr > max[1].ctr ? current : max
-    //   );
-
-    //   if (channelEntries.length > 1) {
-    //     highestConversionChannelText = `Best perform Ad: **${
-    //       topConversionChannel[0]
-    //     } with ${topConversionChannel[1].clicks?.toLocaleString(undefined, {
-    //       minimumFractionDigits: 0,
-    //       maximumFractionDigits: 0,
-    //     })} clicks**`;
-    //     summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
-    //   }
-
-    //   if (topConversionChannel[0] != topConversionRateChannel[0]) {
-    //     highestConversionRateChannelText = `Potential Ad: **${
-    //       topConversionRateChannel[0]
-    //     } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-    //     summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
-    //   }
-    // }
+    prepareAdsPicture(topCreative.key);
     setSummaryText(summaryTextTemp);
+  };
+
+  const prepareAdsPicture = (adsName) => {
+    const adsPicture = FacebookAdsPicture.filter((item) => {
+      return item["Ad name"] == adsName;
+    });
+    console.log("Ads Picture", adsPicture[0]["Ads"]);
+    setAdsPicture(adsPicture[0]["Ads"]);
+    setTopAds(adsName);
   };
 
   const prepareChartData = () => {
@@ -402,8 +380,16 @@ function FacebookAwarenessSlide() {
             </div>
           </div>
           <div className="col-span-8 flex flex-col ml-2 mt-8 justify-between items-center">
+            {/* Ads Preview */}
+            <div className="p-6 flex flex-col gap-2">
+              <img
+                src={adsPicture}
+                alt="ads preview"
+                className="max-h-[250px]"
+              />
+              <p className="mx-auto">{topAds}</p>
+            </div>
             {/* Summary */}
-            <div></div>
             <div className="px-4">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
