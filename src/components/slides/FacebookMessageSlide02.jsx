@@ -431,6 +431,7 @@ function FacebookMessageSlide02() {
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>

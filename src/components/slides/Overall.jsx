@@ -365,6 +365,7 @@ function Overall() {
                 compareValue={spentData.compareValue}
                 isConversion={true}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>

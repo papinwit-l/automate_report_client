@@ -408,9 +408,10 @@ function FacebookAwarenessSlide02() {
               <NumberDisplayBox
                 title={"Spent"}
                 value={spentData.displayValue}
-                compareValue={spentData.compareValue}
                 isConversion={true}
+                compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             {/* <div>
