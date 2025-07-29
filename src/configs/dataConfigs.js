@@ -47,6 +47,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
+      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -74,6 +75,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
+      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -101,6 +103,39 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
+      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
+      { key: "engagementRate", type: "engagementRate" },
+      { key: "spent", type: "custom", calculate: (data) => data.cost },
+    ],
+  },
+
+  FacebookMessage: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: [
+      { key: "impressions", sourceField: "Impressions" },
+      { key: "reach", sourceField: "Reach" },
+      { key: "clicks", sourceField: "Link clicks" },
+      { key: "conversions", sourceField: "Website conversions" },
+      { key: "cost", sourceField: "Cost" },
+      { key: "engagements", sourceField: "Post engagements" },
+      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+      {
+        key: "messages",
+        sourceField: "New messaging conversations within 7 days",
+      },
+    ],
+    calculatedFields: [
+      { key: "frequency", type: "frequency" },
+      { key: "cpr", type: "cpr" },
+      { key: "ctr", type: "ctr" },
+      { key: "cpc", type: "cpc" },
+      { key: "cvr", type: "cvr" },
+      { key: "cpl", type: "cpl" },
+      { key: "cpm", type: "cpm" },
+      { key: "cpv", type: "cpv" },
+      { key: "cpe", type: "cpe" },
+      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -122,7 +157,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "ctr", type: "ctr" },
       { key: "cpc", type: "cpc" },
       { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
+      { key: "cpa", type: "cpa" }, // ✅ ALREADY EXISTS
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
       { key: "cpr", type: "cpr" },
@@ -147,7 +182,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "ctr", type: "ctr" },
       { key: "cpc", type: "cpc" },
       { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
+      { key: "cpa", type: "cpa" }, // ✅ ALREADY EXISTS
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
       { key: "cpr", type: "cpr" },
@@ -160,6 +195,24 @@ export const SOCIAL_MEDIA_CONFIGS = {
 // Main Data Configurations
 export const DATA_CONFIGS = {
   // Search/Advertising platforms
+  overall: {
+    endpoint: "overall-data",
+    processFields: [
+      "Channel",
+      "Impressions",
+      "Reach",
+      "Clicks",
+      "ctr",
+      "Conversions",
+      "conRate",
+      "cpl",
+      "Spent",
+    ],
+    groupBy: "Channel",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
   SEM: {
     endpoint: "sem-data",
     processFields: [
@@ -268,6 +321,7 @@ export const DATA_CONFIGS = {
       "Reach",
       "Link clicks",
       "Website conversions",
+      "New messaging conversations within 7 days",
     ],
     groupBy: "Channel",
     hasComparison: false,
@@ -315,6 +369,27 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookEngagement,
   },
 
+  FacebookMessage: {
+    endpoint: "facebook-data", // Same endpoint as other Facebook data
+    processFields: [
+      "Channel", // For filtering
+      "Ad set name",
+      "Impressions",
+      "Reach",
+      "Link clicks",
+      "Website conversions",
+      "Cost",
+      "Video watches at 25%",
+      "Post engagements",
+      "New messaging conversations within 7 days", // Add message-specific field
+    ],
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookMessage,
+  },
+
   TikTokAudience: {
     endpoint: "tiktok-data",
     processFields: [
@@ -352,6 +427,14 @@ export const DATA_CONFIGS = {
 
 // Default metrics for each data type
 export const DEFAULT_METRICS = {
+  overall: [
+    "Channel",
+    "Impressions",
+    "Reach",
+    "Clicks",
+    "Conversions",
+    "Spent",
+  ],
   SEM: ["Keyword", "Impressions", "Clicks", "Conversions", "Spent"],
   GGDemographic: [
     "Channel",
@@ -389,6 +472,7 @@ export const DEFAULT_METRICS = {
     "Reach",
     "Link clicks",
     "Website conversions",
+    "New messaging conversations within 7 days",
   ],
   FacebookReach: [
     "Channel", // ✅ FIXED: Added Channel field
@@ -413,6 +497,19 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
+  ],
+  FacebookMessage: [
+    "Channel",
+    "Ad set name",
+    "Ad name",
+    "Impressions",
+    "Reach",
+    "Link clicks",
+    "Website conversions",
+    "Cost",
+    "Video watches at 25%",
+    "Post engagements",
+    "New messaging conversations within 7 days", // Add message-specific field
   ],
   TikTokAudience: [
     "Ad group name",

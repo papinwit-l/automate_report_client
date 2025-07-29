@@ -25,6 +25,12 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  //Overall Data
+  const [overallData, setOverallData] = useState({});
+  const [overallTotals, setOverallTotals] = useState({});
+  const [overallMetrics, setOverallMetrics] = useState(DEFAULT_METRICS.overall);
+  const [overallComparison, setOverallComparison] = useState({});
+
   // SEM Data
   const [SEMData, setSEMData] = useState({});
   const [SEMTotals, setSEMTotals] = useState({});
@@ -106,6 +112,22 @@ export const DataProvider = ({ children }) => {
     setFacebookEngagementAudienceComparison,
   ] = useState({});
 
+  // Facebook Message Data
+  const [FacebookMessageAudienceData, setFacebookMessageAudienceData] =
+    useState({});
+  const [FacebookMessageAudienceTotals, setFacebookMessageAudienceTotals] =
+    useState({});
+  const [FacebookMessageCreativeData, setFacebookMessageCreativeData] =
+    useState({});
+  const [FacebookMessageCreativeTotals, setFacebookMessageCreativeTotals] =
+    useState({});
+  const [FacebookMessageAudienceMetrics, setFacebookMessageAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookMessage);
+  const [
+    FacebookMessageAudienceComparison,
+    setFacebookMessageAudienceComparison,
+  ] = useState({});
+
   // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
@@ -132,6 +154,7 @@ export const DataProvider = ({ children }) => {
 
   // Create metrics map
   const metricsMap = {
+    overall: overallMetrics,
     SEM: SEMMetrics,
     GGDemographic: GGDemographicMetrics,
     GDN: GDNMetrics,
@@ -139,12 +162,17 @@ export const DataProvider = ({ children }) => {
     FacebookAudience: FacebookAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
     FacebookEngagement: FacebookEngagementAudienceMetrics,
+    FacebookMessage: FacebookMessageAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
 
   // Create setters map
   const settersMap = createStateSettersMap({
+    setOverallData,
+    setOverallTotals,
+    setOverallMetrics,
+    setOverallComparison,
     setSEMData,
     setSEMTotals,
     setSEMMetrics,
@@ -181,6 +209,12 @@ export const DataProvider = ({ children }) => {
     setFacebookEngagementCreativeTotals,
     setFacebookEngagementAudienceMetrics,
     setFacebookEngagementAudienceComparison,
+    setFacebookMessageAudienceData,
+    setFacebookMessageAudienceTotals,
+    setFacebookMessageCreativeData,
+    setFacebookMessageCreativeTotals,
+    setFacebookMessageAudienceMetrics,
+    setFacebookMessageAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -206,6 +240,16 @@ export const DataProvider = ({ children }) => {
   });
 
   // Individual data fetching functions
+  const getOverallData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "overall",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("Overall data", result);
+    return result;
+  };
+
   const getSEMData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "SEM",
@@ -290,6 +334,20 @@ export const DataProvider = ({ children }) => {
     return result;
   };
 
+  const getFacebookMessageData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FacebookMessage",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("Facebook Message", result);
+    return result;
+  };
+
   const getTikTokData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "TikTokAudience",
@@ -316,7 +374,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("FB Demo", result);
+    // console.log("FB Demo", result);
     return result;
   };
 
@@ -329,6 +387,7 @@ export const DataProvider = ({ children }) => {
 
         // Fetch all data types in parallel for better performance
         const promises = [
+          getOverallData(id),
           getSEMData(id),
           getGGDemographic(id),
           getGDNData(id),
@@ -336,6 +395,7 @@ export const DataProvider = ({ children }) => {
           getFacebookData(id),
           getFacebookReachData(id, "Channel", "FB Reach"),
           getFacebookEngagementData(id, "Channel", "FB Engagement"),
+          getFacebookMessageData(id, "Channel", "FB Messages"),
           getFBDemographicData(id),
           fetchFacebookPicture(id),
           // getTikTokData(id),
@@ -365,6 +425,7 @@ export const DataProvider = ({ children }) => {
         setError(null);
 
         const fetchFunction = {
+          overall: getOverallData,
           SEM: getSEMData,
           GGDemographic: getGGDemographic,
           GDN: getGDNData,
@@ -372,6 +433,7 @@ export const DataProvider = ({ children }) => {
           FacebookAudience: getFacebookData,
           FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
           FacebookEngagement: getFacebookEngagementData,
+          FacebookMessage: getFacebookMessageData,
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -494,6 +556,12 @@ export const DataProvider = ({ children }) => {
     fetchData,
     fetchDataType,
 
+    // Overall
+    overallData,
+    overallTotals,
+    overallMetrics,
+    overallComparison,
+
     // SEM
     SEMData,
     SEMTotals,
@@ -542,6 +610,14 @@ export const DataProvider = ({ children }) => {
     FacebookEngagementCreativeTotals,
     FacebookEngagementAudienceMetrics,
     FacebookEngagementAudienceComparison,
+
+    // Facebook Message
+    FacebookMessageAudienceData,
+    FacebookMessageAudienceTotals,
+    FacebookMessageCreativeData,
+    FacebookMessageCreativeTotals,
+    FacebookMessageAudienceMetrics,
+    FacebookMessageAudienceComparison,
 
     // TikTok
     TikTokAudienceData,

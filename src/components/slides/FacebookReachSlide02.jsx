@@ -114,7 +114,7 @@ function FacebookReachSlide02() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    console.log("Ads Picture", adsPicture[0]["Ads"]);
+    // console.log("Ads Picture", adsPicture[0]["Ads"]);
     setAdsPicture(adsPicture[0]["Ads"]);
     setTopAds(adsName);
   };

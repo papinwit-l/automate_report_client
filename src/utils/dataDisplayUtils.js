@@ -181,6 +181,7 @@ export const METRIC_CONFIGS = {
   cpm: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
   cpe: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
   cpr: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpa: { valueType: "decimal" },
   Reach: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
   engagementRate: { valueType: "percentage" },
   frequency: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
@@ -208,12 +209,12 @@ export const formatTableValue = (value, metric) => {
 
   // Currency cases - no decimal places (only Spent and Cost)
   if (metricLower === "spent" || metricLower === "cost") {
-    return `${Math.round(value).toLocaleString()}`; // ✅ FIXED: Only Spent and Cost as currency
+    return `${Math.round(value).toLocaleString()}`;
   }
 
   // Metrics starting with "cp" and frequency - decimal format
   if (metricLower.startsWith("cp") || metricLower === "frequency") {
-    return formatDecimal(value, 2); // ✅ CHANGED: All "cp" metrics now use decimal format
+    return formatDecimal(value, 2);
   }
 
   // Number format for impressions, clicks, reach, etc.
@@ -224,7 +225,7 @@ export const formatTableValue = (value, metric) => {
     metricLower === "conversions" ||
     metricLower === "engagements"
   ) {
-    return value?.toLocaleString(); // ✅ FIXED: Removed frequency from number format
+    return value?.toLocaleString();
   }
 
   return value?.toLocaleString();

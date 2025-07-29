@@ -23,7 +23,7 @@ function TitleSlide({ projectName, reportType }) {
       />
       {/* CIRCLE BACKGROUND */}
       <div className="absolute left-28 top-[250px] border-[#4c6363] border-[1px] rounded-full w-[1400px] h-[1400px]" />
-      <div className="absolute top-5 right-14 text-xs text-main-tertiary leading-[100%] text-left">
+      <div className="absolute top-5 right-14 text-xs text-main-tertiary leading-[125%] text-left font-main-detail">
         <p>PRESENTED BY</p>
         <p>TYN MOON MAKERS CO.,LTD.</p>
       </div>

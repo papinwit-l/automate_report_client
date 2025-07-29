@@ -10,6 +10,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useData } from "@/contexts/dataContext";
 import domtoimage from "dom-to-image";
+import axios from "axios";
 import React from "react";
 import {
   Presentation,
@@ -19,15 +20,19 @@ import {
 } from "lucide-react";
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
-import FacebookAwarenessSlide from "@/components/slides/FacebookAwarenessSlide";
-import axios from "axios";
-import FacebookReachSlide from "@/components/slides/FacebookReachSlide01";
-import FacebookEngagementSlide from "@/components/slides/FacebookEngagementSlide01";
 import TitleSlide from "@/components/slides/TitleSlide";
 import FacebookReachSlide01 from "@/components/slides/FacebookReachSlide01";
 import FacebookReachSlide02 from "@/components/slides/FacebookReachSlide02";
 import SectionSlide from "@/components/slides/SectionSlide";
 import FacebookEngagementSlide01 from "@/components/slides/FacebookEngagementSlide01";
+import FacebookEngagementSlide02 from "@/components/slides/FacebookEngagementSlide02";
+import FacebookAwarenessSlide01 from "@/components/slides/FacebookAwarenessSlide01";
+import FacebookAwarenessSlide02 from "@/components/slides/FacebookAwarenessSlide02";
+import FacebookAwarenessSlide02PicTable from "@/components/slides/FacebookAwarenessSlide02PicTable";
+import EndSlide from "@/components/slides/EndSlide";
+import Overall from "@/components/slides/Overall";
+import FacebookMessageSlide01 from "@/components/slides/FacebookMessageSlide01";
+import FacebookMessageSlide02 from "@/components/slides/FacebookMessageSlide02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -262,15 +267,22 @@ function SlideReport() {
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center gap-10">
                 <TitleSlide projectName={projectName} reportType={reportType} />
+                <Overall />
                 <SectionSlide title={"Google"} />
                 <SEMSlide />
                 <GDNSlide />
                 <DiscoverySlide />
                 <SectionSlide title={"Facebook"} />
-                <FacebookAwarenessSlide />
+                <FacebookAwarenessSlide01 />
+                <FacebookAwarenessSlide02 />
+                <FacebookAwarenessSlide02PicTable />
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
                 <FacebookEngagementSlide01 />
+                <FacebookEngagementSlide02 />
+                <FacebookMessageSlide01 />
+                <FacebookMessageSlide02 />
+                <EndSlide />
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">

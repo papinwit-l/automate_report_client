@@ -86,6 +86,12 @@ export const calculateComparison = (current, previous) => {
 // Helper function to create state setters map
 export const createStateSettersMap = (stateSetter) => {
   return {
+    overall: {
+      setData: stateSetter.setOverallData,
+      setTotals: stateSetter.setOverallTotals,
+      setMetrics: stateSetter.setOverallMetrics,
+      setComparison: stateSetter.setOverallComparison,
+    },
     SEM: {
       setData: stateSetter.setSEMData,
       setTotals: stateSetter.setSEMTotals,
@@ -140,6 +146,14 @@ export const createStateSettersMap = (stateSetter) => {
       setCreativeTotals: stateSetter.setFacebookEngagementCreativeTotals,
       setMetrics: stateSetter.setFacebookEngagementAudienceMetrics,
       setComparison: stateSetter.setFacebookEngagementAudienceComparison,
+    },
+    FacebookMessage: {
+      setAudienceData: stateSetter.setFacebookMessageAudienceData,
+      setAudienceTotals: stateSetter.setFacebookMessageAudienceTotals,
+      setCreativeData: stateSetter.setFacebookMessageCreativeData,
+      setCreativeTotals: stateSetter.setFacebookMessageCreativeTotals,
+      setMetrics: stateSetter.setFacebookMessageAudienceMetrics,
+      setComparison: stateSetter.setFacebookMessageAudienceComparison,
     },
     TikTokAudience: {
       setAudienceData: stateSetter.setTikTokAudienceData,

@@ -81,7 +81,7 @@ function FacebookEngagementSlide01() {
     );
     const topCreativeText = `Top Creative: **${
       topCreative.key
-    } (with ${topCreative.value.engagements?.toLocaleString()} post engagements**`;
+    } (with ${topCreative.value.engagements?.toLocaleString()} post engagements)**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     setSummaryText(summaryTextTemp);
@@ -99,7 +99,7 @@ function FacebookEngagementSlide01() {
 
       // Filter for FB Reach data
       const filteredDemographicData = FBDemographicData.filter((item) => {
-        return item?.Channel?.trim() === "FB Reach";
+        return item?.Channel?.trim() === "FB Engagement";
       });
 
       if (filteredDemographicData.length === 0) {
@@ -339,7 +339,7 @@ function FacebookEngagementSlide01() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Facebook Engagement"} />
+      <SlideHeader title={"Facebook Engagement (1/2)"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
@@ -444,6 +444,7 @@ function FacebookEngagementSlide01() {
               innerRadius={30}
               outerRadius={60}
               isPercentage={true}
+              isLegendWrap={false}
             />
           </div>
           {/* Summary */}

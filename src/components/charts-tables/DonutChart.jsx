@@ -13,6 +13,7 @@ const DonutChart = ({
   paddingAngle = 2,
   labelDistance = 140,
   isPercentage = false,
+  isLegendWrap = true,
 }) => {
   // Transform percentage string data to chart format
   const transformDataForChart = (dataObj, defaultColors = {}) => {
@@ -249,7 +250,13 @@ const DonutChart = ({
                   className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-gray-700 leading-tight">{item.name}</span>
+                <span
+                  className={`text-gray-700 leading-tight ${
+                    isLegendWrap ? "" : "text-nowrap"
+                  }`}
+                >
+                  {item.name}
+                </span>
               </div>
             ))}
           </div>

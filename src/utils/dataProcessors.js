@@ -42,6 +42,7 @@ export const processAdvertisingData = (
     const cpc = data.Clicks > 0 ? data.Spent / data.Clicks : 0;
     const cpm =
       data.Impressions > 0 ? (data.Spent * 1000) / data.Impressions : 0;
+    const cpa = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
     const cpv = data.Views > 0 ? data.Spent / data.Views : 0;
     const cpe = data.Engagements > 0 ? data.Spent / data.Engagements : 0;
     const engagementRate =
@@ -56,6 +57,7 @@ export const processAdvertisingData = (
       cpm: Number(cpm.toFixed(2)),
       cpv: Number(cpv.toFixed(2)),
       cpe: Number(cpe.toFixed(2)),
+      cpa: Number(cpa.toFixed(2)),
       engagementRate: Number(engagementRate.toFixed(2)),
     };
   });
@@ -81,6 +83,8 @@ export const processAdvertisingData = (
   const totalCpv = totals.Views > 0 ? totals.Spent / totals.Views : 0;
   const totalCpe =
     totals.Engagements > 0 ? totals.Spent / totals.Engagements : 0;
+  const totalCpa =
+    totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
   const totalEngagementRate =
     totals.Reach > 0 ? (totals.Engagements / totals.Reach) * 100 : 0;
 
@@ -93,6 +97,7 @@ export const processAdvertisingData = (
     cpm: Number(totalCpm.toFixed(2)),
     cpv: Number(totalCpv.toFixed(2)),
     cpe: Number(totalCpe.toFixed(2)),
+    cpa: Number(totalCpa.toFixed(2)),
     engagementRate: Number(totalEngagementRate.toFixed(2)),
   };
 

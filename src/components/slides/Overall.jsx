@@ -1,114 +1,208 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SlideHeader from "./SlideHeader";
-import PerformanceDataTable from "../charts-tables/PerformanceDataTable";
 import NumberDisplayBox from "./NumberDisplayBox";
 import TextEditorModal from "./TextEditorModal";
 import { useData } from "@/contexts/dataContext";
+import DonutChart from "../charts-tables/DonutChart";
+import { Edit } from "lucide-react";
+import { Button } from "../ui/button";
 
-function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
-  const { totalData, channelData, loading, error, metrics, refetch } =
-    useData();
+// Import utility functions
+import {
+  formatDisplayData,
+  formatTableValue,
+  formatMetricsData,
+  METRIC_CONFIGS,
+} from "@/utils/dataDisplayUtils";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
-  const [summaryOverallText, setSummaryOverallText] = useState("");
-  const [highestConversionChannelText, setHighestConversionChannelText] =
-    useState("");
-  const [hasPotentialChannel, setHasPotentialChannel] = useState(false);
-  const [potentialChannelText, setPotentialChannelText] = useState("");
+function Overall() {
+  const {
+    loading,
+    error,
+    refetch,
+    GGDemographicData,
+    overallData,
+    overallTotals,
+    overallMetrics,
+    overallComparison,
+  } = useData();
+
   const [summaryText, setSummaryText] = useState("");
-
-  const formatValue = (value, metric) => {
-    if (metric === "ctr" || metric === "conRate") {
-      return `${value.toFixed(2)}%`;
-    }
-    if (metric === "cpl") {
-      return parseFloat(value.toFixed(2)).toLocaleString();
-    }
-    return value.toLocaleString();
-  };
-
-  const convertToBMK = (value) => {
-    if (!value || value === 0) return "0";
-    const suffixes = ["", "K", "M", "B", "T"];
-    let suffixIndex = 0;
-    while (value >= 1000 && suffixIndex < suffixes.length - 1) {
-      value /= 1000;
-      suffixIndex++;
-    }
-    return `${value?.toFixed(1)}${suffixes[suffixIndex]}`;
-  };
-
-  const getChannelStats = () => {
-    const channelEntries = Object.entries(channelData);
-    if (channelEntries.length === 0) return null;
-
-    const topConversionChannel = channelEntries.reduce((max, current) =>
-      current[1].Conversions > max[1].Conversions ? current : max
-    );
-
-    const topConversionRateChannel = channelEntries.reduce((max, current) =>
-      current[1].conRate > max[1].conRate ? current : max
-    );
-
-    return {
-      topConversionChannel,
-      topConversionRateChannel,
-      isTopConversionAlsoTopRate:
-        topConversionChannel[0] === topConversionRateChannel[0],
-    };
-  };
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [maxTableRows, setMaxTableRows] = useState([0]);
 
   const summarizeData = () => {
+    // Handle "No Data" case
+    if (
+      overallTotals?.Clicks === "No Data" ||
+      !overallTotals ||
+      Object.keys(overallTotals).length === 0
+    ) {
+      setSummaryText("<li>No data available for the selected period</li>");
+      return;
+    }
+
     let summaryTextTemp = "";
     const overallText = `Overall: **CPL ${parseFloat(
-      totalData?.cpl?.toFixed(2) || 0
-    )?.toLocaleString()} THB with ${totalData.Conversions || 0} conversions**`;
+      overallTotals?.cpl?.toFixed(2) || 0
+    )?.toLocaleString()} THB with ${
+      overallTotals.Conversions || 0
+    } conversions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    let highestConversionChannelText = ``;
-    let highestConversionRateChannelText = ``;
-
-    setSummaryOverallText(overallText);
-
-    const channelEntries = Object.entries(channelData);
-    if (channelEntries.length === 0) return null;
-
-    const topConversionChannel = channelEntries.reduce((max, current) =>
-      current[1].Conversions > max[1].Conversions ? current : max
+    // Find top channel by conversions
+    const topConversionChannel = Object.entries(overallData).reduce(
+      (max, [key, value]) =>
+        (value.Conversions || 0) > (max.value.Conversions || 0)
+          ? { key, value }
+          : max,
+      { key: "", value: { Conversions: 0 } }
     );
 
-    const topConversionRateChannel = channelEntries.reduce((max, current) =>
-      current[1].conRate > max[1].conRate ? current : max
-    );
-
-    if (channelEntries.length > 1) {
-      highestConversionChannelText = `Highest conversion channel: **${
-        topConversionChannel[0]
-      } with ${topConversionChannel[1].Conversions} conversions (${(
-        (topConversionChannel[1].Conversions / totalData.Conversions) *
+    if (topConversionChannel.key) {
+      const topChannelText = `Highest conversion channel: **${
+        topConversionChannel.key
+      } with ${topConversionChannel.value.Conversions?.toLocaleString()} conversions (${(
+        (topConversionChannel.value.Conversions / overallTotals.Conversions) *
         100
       ).toFixed(2)}% of total conversions)**`;
-      setHighestConversionChannelText(highestConversionChannelText);
-      summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
+      summaryTextTemp += `<li>${topChannelText}</li>`;
     }
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Highest conversion rate channel: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].conRate.toFixed(
+    // Find top channel by conversion rate
+    const topConversionRateChannel = Object.entries(overallData).reduce(
+      (max, [key, value]) =>
+        (value.conRate || 0) > (max.value.conRate || 0) ? { key, value } : max,
+      { key: "", value: { conRate: 0 } }
+    );
+
+    if (
+      topConversionRateChannel.key &&
+      topConversionRateChannel.key !== topConversionChannel.key
+    ) {
+      const topRateText = `Highest conversion rate channel: **${
+        topConversionRateChannel.key
+      } with ${topConversionRateChannel.value.conRate?.toFixed(
         2
       )}% conversion rate**`;
-      setHasPotentialChannel(true);
-      setPotentialChannelText(highestConversionRateChannelText);
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+      summaryTextTemp += `<li>${topRateText}</li>`;
     }
+
     setSummaryText(summaryTextTemp);
   };
 
-  useEffect(() => {
-    if (totalData && Object.keys(totalData).length > 0) {
-      summarizeData();
+  // Demographic for chart
+  const { impressionsByGender, impressionsByAge } = useMemo(() => {
+    try {
+      if (!GGDemographicData || GGDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Filter for demographic data
+      const filteredDemographicData = [...GGDemographicData];
+
+      if (filteredDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Helper function for consistent parsing
+      const parseImpressions = (value) => {
+        if (value === null || value === undefined || value === "") return 0;
+        const parsed = parseInt(value);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      // Gender impressions
+      const sumImpressionsByGender = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Gender && item?.Impressions !== undefined) {
+            acc[item.Gender] =
+              (acc[item.Gender] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalGenderImpressions = Object.values(
+        sumImpressionsByGender
+      ).reduce((a, b) => a + b, 0);
+
+      // Age impressions
+      const sumImpressionsByAge = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Age && item?.Impressions !== undefined) {
+            acc[item.Age] =
+              (acc[item.Age] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalAgeImpressions = Object.values(sumImpressionsByAge).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Early return if no impressions
+      if (totalGenderImpressions === 0 && totalAgeImpressions === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Calculate percentages with correct totals
+      const genderPercentages =
+        totalGenderImpressions > 0
+          ? Object.entries(sumImpressionsByGender).reduce(
+              (acc, [gender, impressions]) => {
+                acc[gender] =
+                  ((impressions / totalGenderImpressions) * 100).toFixed(2) +
+                  "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      const agePercentages =
+        totalAgeImpressions > 0
+          ? Object.entries(sumImpressionsByAge).reduce(
+              (acc, [age, impressions]) => {
+                acc[age] =
+                  ((impressions / totalAgeImpressions) * 100).toFixed(2) + "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      return {
+        impressionsByGender: genderPercentages,
+        impressionsByAge: agePercentages,
+      };
+    } catch (error) {
+      console.error("Error processing demographic data:", error);
+      return {
+        impressionsByGender: {},
+        impressionsByAge: {},
+      };
     }
-  }, [totalData, channelData]);
+  }, [GGDemographicData]);
+
+  useEffect(() => {
+    // console.log("Overall data", overallData);
+    summarizeData();
+  }, [overallTotals, overallData]);
 
   // Show loading state
   if (loading) {
@@ -134,8 +228,6 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
     );
   }
 
-  const channelStats = getChannelStats();
-
   const renderFormattedText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
@@ -150,90 +242,209 @@ function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
       .replace(/\{\{(.*?)\}\}/g, '<span class="text-lg font-bold">$1</span>')
       .replace(
         /\(\((.*?)\)\)/g,
-        '<span class="text-sm text-gray-600">$1</span>'
+        '<span class="text-xs text-gray-600">$1</span>'
       );
   };
+
+  // Format display data with safe fallbacks
+  const impressionData = formatDisplayData(
+    overallTotals?.Impressions,
+    overallComparison?.Impressions,
+    "compact"
+  );
+  const clicksData = formatDisplayData(
+    overallTotals?.Clicks,
+    overallComparison?.Clicks,
+    "compact"
+  );
+  const ctrData = formatDisplayData(
+    overallTotals?.ctr,
+    overallComparison?.ctr,
+    "percentage"
+  );
+  const reachData = formatDisplayData(
+    overallTotals?.Reach,
+    overallComparison?.Reach,
+    "compact"
+  );
+  const conversionsData = formatDisplayData(
+    overallTotals?.Conversions,
+    overallComparison?.Conversions,
+    "number"
+  );
+  const conRateData = formatDisplayData(
+    overallTotals?.conRate,
+    overallComparison?.conRate,
+    "percentage"
+  );
+  const cplData = formatDisplayData(
+    overallTotals?.cpl,
+    overallComparison?.cpl,
+    "compact"
+  );
+  const spentData = formatDisplayData(
+    overallTotals?.Spent,
+    overallComparison?.Spent,
+    "compact"
+  );
 
   return (
     <div
       id="overall-component"
-      className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4"
+      className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
+      {/* EDIT BUTTON */}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          onClick={() => {
+            setIsEditModalOpen(true);
+          }}
+        >
+          <Edit />
+        </Button>
+      </div>
       <SlideHeader title={"Overall"} />
-      <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-8 gap-2">
-          <h4 className="col-span-4 text-lg font-semibold">
-            Awareness & Considerations
-          </h4>
-          <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
-          <NumberDisplayBox
-            title={"Impression"}
-            value={convertToBMK(totalData.Impressions)}
-          />
-          <NumberDisplayBox
-            title={"Reach"}
-            value={convertToBMK(totalData.Reach)}
-          />
-          <NumberDisplayBox
-            title={"Clicks"}
-            value={convertToBMK(totalData.Clicks)}
-          />
-          <NumberDisplayBox
-            title={"%CTR"}
-            value={`${totalData.ctr?.toFixed(2)}%`}
-          />
-          <NumberDisplayBox
-            title={"Conversions"}
-            value={totalData.Conversions?.toLocaleString() || "0"}
-            isConversion={true}
-          />
-          <NumberDisplayBox
-            title={"%Con Rate"}
-            value={`${totalData.conRate?.toFixed(2)}%`}
-            isConversion={true}
-          />
-          <NumberDisplayBox
-            title={"CPL"}
-            value={convertToBMK(totalData.cpl)}
-            isConversion={true}
-          />
-          <NumberDisplayBox
-            title={"Spent"}
-            value={convertToBMK(totalData.Spent)}
-            isConversion={true}
-          />
-        </div>
+      <div className="flex flex-col justify-between h-full">
+        <div className="grid grid-cols-16">
+          <div className="col-span-16 flex flex-col gap-2">
+            <div className="grid grid-cols-8 gap-2">
+              <h4 className="col-span-4 text-lg font-semibold">
+                Awareness & Considerations
+              </h4>
+              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
 
-        <div className="flex flex-col gap-2">
-          <h4 className="text-lg font-semibold">Performance by Channel</h4>
-          <PerformanceDataTable
-            channelData={channelData}
-            totalData={totalData}
-            metrics={metrics}
-            formatValue={formatValue}
-          />
-        </div>
+              <NumberDisplayBox
+                title={"Impression"}
+                value={impressionData.displayValue}
+                compareValue={impressionData.compareValue}
+                isNegative={impressionData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"Reach"}
+                value={reachData.displayValue}
+                compareValue={reachData.compareValue}
+                isNegative={reachData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"Clicks"}
+                value={clicksData.displayValue}
+                compareValue={clicksData.compareValue}
+                isNegative={clicksData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"%CTR"}
+                value={ctrData.displayValue}
+                compareValue={ctrData.compareValue}
+                isNegative={ctrData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"Conversions"}
+                value={conversionsData.displayValue}
+                isConversion={true}
+                compareValue={conversionsData.compareValue}
+                isNegative={conversionsData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"%Con Rate"}
+                value={conRateData.displayValue}
+                compareValue={conRateData.compareValue}
+                isConversion={true}
+                isNegative={conRateData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"CPL"}
+                value={cplData.displayValue}
+                compareValue={cplData.compareValue}
+                isConversion={true}
+                isNegative={cplData.isNegative}
+                invertCompareColor={true}
+              />
+              <NumberDisplayBox
+                title={"Spent"}
+                value={spentData.displayValue}
+                compareValue={spentData.compareValue}
+                isConversion={true}
+                isNegative={spentData.isNegative}
+              />
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold">Performance by Channel</h4>
 
-        <div className="mt-4 border-1 rounded-xl shadow-lg p-4">
-          <h4 className="text-lg font-semibold">Summary</h4>
-          <ul className="list-disc pl-6">
-            <div
-              dangerouslySetInnerHTML={{
-                __html: renderFormattedText(summaryText),
-              }}
-            />
-          </ul>
+              <AdvancedDataTable
+                firstMetric="Channel"
+                channelData={overallData}
+                totalData={overallTotals}
+                metrics={[
+                  "Channel",
+                  "Impressions",
+                  "Reach",
+                  "Clicks",
+                  "ctr",
+                  "Conversions",
+                  "conRate",
+                  "cpl",
+                  "Spent",
+                ]}
+                formatValue={formatTableValue}
+                maxRows={maxTableRows[0]}
+                defaultSortBy="Conversions"
+                defaultSortOrder="desc"
+                enableSorting={true}
+              />
+            </div>
+            <div className="grid grid-cols-2">
+              <div className="col-span-1">
+                {/* Summary */}
+                <div className="px-4">
+                  <h4 className="text-lg font-semibold">Summary</h4>
+                  <ul className="list-disc pl-6">
+                    <div
+                      className="text-sm"
+                      dangerouslySetInnerHTML={{
+                        __html: renderFormattedText(summaryText),
+                      }}
+                    />
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-span-4 flex flex-col ml-2 mt-8 justify-between items-center">
+            {/* Chart */}
+            {/* <div className="col-span-3">
+              <DonutChart
+                data={impressionsByGender}
+                title="Impression By Gender"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+              <DonutChart
+                data={impressionsByAge}
+                title="Impression By Age"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+                isLegendWrap={false}
+              />
+            </div> */}
+          </div>
         </div>
       </div>
-
       <TextEditorModal
-        isOpen={isOverallEditModalOpen}
-        onClose={() => setIsOverallEditModalOpen(false)}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         onSave={(newText) => setSummaryText(newText)}
         initialText={summaryText}
         revertText={summarizeData}
         title="Edit Summary Text"
         placeholder="Enter your summary text..."
+        maxTableRows={maxTableRows}
+        setMaxTableRows={setMaxTableRows}
       />
     </div>
   );

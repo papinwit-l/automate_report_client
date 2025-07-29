@@ -10,6 +10,9 @@ export const AdvancedDataTable = ({
   defaultSortBy = "conversions",
   defaultSortOrder = "desc",
   enableSorting = true,
+  isPictureTable = false, // ✅ NEW PROP: Enable picture display
+  pictureSize = "w-16 h-16", // ✅ NEW PROP: Customizable image size
+  pictureKey = "Ad Picture", // ✅ NEW PROP: Which property contains the picture URL
 }) => {
   const [sortBy, setSortBy] = useState(defaultSortBy);
   const [sortOrder, setSortOrder] = useState(defaultSortOrder);
@@ -53,6 +56,8 @@ export const AdvancedDataTable = ({
         return "Post Engagements";
       case "engagementrate":
         return "Engagement Rate (%)";
+      case "messages":
+        return "Messages";
       case "cpe":
         return "CPE";
       default:
@@ -71,20 +76,20 @@ export const AdvancedDataTable = ({
       case "ctr":
       case "conrate":
       case "cvr":
-      case "engagementrate": // ✅ ADDED: Format engagement rate as percentage
+      case "engagementrate":
         return `${Number(value).toFixed(2)}%`;
       case "cpl":
       case "spent":
       case "cpc":
       case "cpr":
       case "cpm":
-      case "cpe": // ✅ ADDED: CPE formatting
+      case "cpe":
         return `${Number(value).toFixed(2)}`;
       case "impressions":
       case "clicks":
       case "conversions":
       case "reach":
-      case "engagements": // ✅ ADDED: Format engagements as number
+      case "engagements":
         return Number(value).toLocaleString();
       case "frequency":
         return Number(value).toFixed(2);
@@ -102,7 +107,8 @@ export const AdvancedDataTable = ({
       metricLower !== "channel" &&
       metricLower !== "ad group name" &&
       metricLower !== "ad set name" &&
-      metricLower !== "ad name"
+      metricLower !== "ad name" &&
+      metricLower !== pictureKey.toLowerCase() // ✅ NEW: Hide picture column from metrics
     );
   });
 
@@ -163,6 +169,46 @@ export const AdvancedDataTable = ({
     );
   };
 
+  // ✅ NEW: Function to render the first column content
+  const renderFirstColumn = (keyword, values) => {
+    if (!isPictureTable) {
+      return keyword;
+    }
+
+    const pictureUrl = values[pictureKey];
+
+    // Check if we have a picture URL
+    if (
+      pictureUrl &&
+      (pictureUrl.startsWith("http") || pictureUrl.startsWith("/"))
+    ) {
+      return (
+        <div className="flex items-center space-x-2">
+          <img
+            src={pictureUrl}
+            alt="Ad Creative"
+            className={`${pictureSize} object-cover rounded border`}
+            onError={(e) => {
+              // Fallback to text if image fails to load
+              e.target.style.display = "none";
+              e.target.nextElementSibling.style.display = "block";
+            }}
+          />
+          <span className="text-xs text-gray-600 hidden" title={keyword}>
+            {keyword.length > 20 ? `${keyword.substring(0, 20)}...` : keyword}
+          </span>
+        </div>
+      );
+    } else {
+      // No picture available, show original keyword
+      return (
+        <span className="text-xs" title={keyword}>
+          {keyword.length > 30 ? `${keyword.substring(0, 30)}...` : keyword}
+        </span>
+      );
+    }
+  };
+
   const sortedData =
     channelData && Object.keys(channelData).length > 0
       ? Object.entries(channelData).sort(([nameA, dataA], [nameB, dataB]) => {
@@ -198,7 +244,7 @@ export const AdvancedDataTable = ({
             <th
               className={`px-2 py-1 border text-left font-semibold ${
                 enableSorting ? "cursor-pointer hover:bg-gray-300" : ""
-              } select-none`}
+              } select-none ${isPictureTable ? "w-20" : ""}`} // ✅ NEW: Adjust width for pictures
               onClick={() => handleSort("name")}
             >
               {formatMetricName(firstMetric)}
@@ -226,8 +272,13 @@ export const AdvancedDataTable = ({
               .slice(0, maxRows > 0 ? maxRows : sortedData.length)
               .map(([keyword, values]) => (
                 <tr key={keyword} className="hover:bg-gray-100">
-                  <td className="px-2 py-[2px] border font-medium">
-                    {keyword}
+                  <td
+                    className={`px-2 py-[2px] border font-medium ${
+                      isPictureTable ? "align-top" : ""
+                    }`}
+                  >
+                    {/* ✅ NEW: Use the new render function */}
+                    {renderFirstColumn(keyword, values)}
                   </td>
                   {displayMetrics.map((metric) => (
                     <td
