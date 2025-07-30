@@ -1,4 +1,3 @@
-import SEMSlide from "@/components/slides/SEMSlide";
 import SlideGeneratorSidebar from "@/components/slides/SlideGeneratorSidebar";
 import {
   Card,
@@ -37,6 +36,8 @@ import FacebookLeadSlide01 from "@/components/slides/FacebookLeadSlide01";
 import FacebookLeadSlide02 from "@/components/slides/FacebookLeadSlide02";
 import FacebookConversionSlide01 from "@/components/slides/FacebookConversionSlide01";
 import FacebookConversionSlide02 from "@/components/slides/FacebookConversionSlide02";
+import SEMConversionSlide from "@/components/slides/SEMConversionSlide";
+import SEMClickSlide from "@/components/slides/SEMClickSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -293,7 +294,8 @@ function SlideReport() {
                   title={"Google"}
                   componentID={"google-section-component"}
                 />
-                <SEMSlide />
+                <SEMConversionSlide />
+                <SEMClickSlide />
                 <GDNSlide />
                 <DiscoverySlide />
                 <EndSlide />

@@ -1,6 +1,6 @@
 import DateRangePicker from "@/components/slides/utils/DateRangePicker";
 import Overall from "@/components/slides/Overall";
-import SEMSlide from "@/components/slides/SEMSlide";
+import SEMSlide from "@/components/slides/SEMConversionSlide";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
