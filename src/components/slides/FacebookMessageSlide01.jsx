@@ -45,7 +45,7 @@ function FacebookMessageSlide01() {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
-    console.log(FacebookMessageAudienceTotals);
+
     let summaryTextTemp = "";
     const overallText = `Overall Messages: ** ${parseFloat(
       FacebookMessageAudienceTotals?.messages?.toFixed(2) || 0
@@ -108,8 +108,6 @@ function FacebookMessageSlide01() {
           impressionsByAge: {},
         };
       }
-
-      console.log("FBDemographicData", filteredDemographicData);
 
       // Helper function for consistent parsing
       const parseImpressions = (value) => {

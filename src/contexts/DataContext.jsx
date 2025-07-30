@@ -246,7 +246,6 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("Overall data", result);
     return result;
   };
 
@@ -344,7 +343,6 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("Facebook Message", result);
     return result;
   };
 
@@ -490,7 +488,8 @@ export const DataProvider = ({ children }) => {
     // console.log("dataObjects", dataObjects);
     const dateFilteredData = filterDataByDate(dataObjects, dateRange);
     // console.log("data:", dateFilteredData);
-    const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+    // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+    const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
     // console.log("resultData:", resultData);
     setFacebookAdsPicture(resultData);
   };
@@ -530,17 +529,15 @@ export const DataProvider = ({ children }) => {
     });
   }
 
-  const removeDuplicateByColumnMap = (data, column) => {
-    const map = new Map();
+  const removeDuplicateByColumn = (data, column) => {
+    const map = {};
 
     for (const item of data) {
       const key = item[column];
-      if (!map.has(key)) {
-        map.set(key, item);
-      }
+      map[key] = map[key] ? Object.assign(map[key], item) : item;
     }
 
-    return Array.from(map.values());
+    return Object.values(map);
   };
 
   const value = {
