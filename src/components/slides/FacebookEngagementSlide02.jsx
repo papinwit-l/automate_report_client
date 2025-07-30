@@ -53,12 +53,12 @@ function FacebookEngagementSlide02() {
     const overallText = `Overall Engagements: ** ${parseFloat(
       FacebookEngagementAudienceTotals?.engagements?.toFixed(2) || 0
     )?.toLocaleString()} post engagements**`;
-    summaryTextTemp = `<li>${overallText}</li>`;
+    // summaryTextTemp = `<li>${overallText}</li>`;
 
-    summaryTextTemp += `<li>Average CPE: **${FacebookEngagementAudienceTotals.cpe?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
+    // summaryTextTemp += `<li>Average CPE: **${FacebookEngagementAudienceTotals.cpe?.toLocaleString(
+    //   undefined,
+    //   { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    // )} THB**</li>`;
 
     // Find top audience by engagements (simpler approach)
     const topAudience = Object.entries(FacebookEngagementAudienceData).reduce(
@@ -72,7 +72,7 @@ function FacebookEngagementSlide02() {
     const topAudienceText = `Top Audience: **${
       topAudience.key
     } (with ${topAudience.value.engagements?.toLocaleString()} post engagements)**`;
-    summaryTextTemp += `<li>${topAudienceText}</li>`;
+    // summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
     const topCreative = Object.entries(FacebookEngagementCreativeData).reduce(

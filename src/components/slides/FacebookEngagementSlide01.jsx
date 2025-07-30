@@ -82,7 +82,7 @@ function FacebookEngagementSlide01() {
     const topCreativeText = `Top Creative: **${
       topCreative.key
     } (with ${topCreative.value.engagements?.toLocaleString()} post engagements)**`;
-    summaryTextTemp += `<li>${topCreativeText}</li>`;
+    // summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     setSummaryText(summaryTextTemp);
   };
