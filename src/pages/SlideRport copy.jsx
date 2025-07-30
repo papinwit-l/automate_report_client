@@ -1,4 +1,4 @@
-import DateRangePicker from "@/components/slides/DateRangePicker";
+import DateRangePicker from "@/components/slides/utils/DateRangePicker";
 import Overall from "@/components/slides/Overall";
 import SEMSlide from "@/components/slides/SEMSlide";
 import { Button } from "@/components/ui/button";

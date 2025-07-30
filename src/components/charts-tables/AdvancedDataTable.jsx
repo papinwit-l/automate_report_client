@@ -26,10 +26,10 @@ export const AdvancedDataTable = ({
       case "channel":
         return "Channel";
       case "ctr":
-        return "CTR (%)";
+        return "%CTR";
       case "conrate":
       case "cvr":
-        return "Conv Rate (%)";
+        return "%Conv Rate";
       case "cpl":
         return "CPL";
       case "impressions":

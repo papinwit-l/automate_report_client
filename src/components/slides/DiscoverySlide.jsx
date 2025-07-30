@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";

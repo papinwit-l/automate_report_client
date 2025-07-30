@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import DateRangePicker from "@/components/slides/DateRangePicker";
+import DateRangePicker from "@/components/slides/utils/DateRangePicker";
 import {
   FileSpreadsheet,
   Presentation,
@@ -34,7 +34,7 @@ import {
   MoreVertical,
   Clock,
 } from "lucide-react";
-import DateRangePickerV2 from "./DateRangePickerV2";
+import DateRangePickerV2 from "./utils/DateRangePickerV2";
 
 const SlideGeneratorSidebar = ({
   isOpen,

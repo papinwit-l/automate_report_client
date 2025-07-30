@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -367,12 +367,10 @@ function FacebookLeadSlide01() {
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-5 text-lg font-semibold">
+              <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">
-                Lead Generation
-              </h4>
+              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -388,10 +386,10 @@ function FacebookLeadSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Frequency"}
-                value={formattedMetrics.frequencyData?.displayValue}
-                compareValue={formattedMetrics.frequencyData?.compareValue}
-                isNegative={formattedMetrics.frequencyData?.isNegative}
+                title={"%CTR"}
+                value={formattedMetrics.ctrData?.displayValue}
+                compareValue={formattedMetrics.ctrData?.compareValue}
+                isNegative={formattedMetrics.ctrData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -399,7 +397,7 @@ function FacebookLeadSlide01() {
                 value={formattedMetrics.conversionsData?.displayValue}
                 compareValue={formattedMetrics.conversionsData?.compareValue}
                 isNegative={formattedMetrics.conversionsData?.isNegative}
-                invertCompareColor={true}
+                isConversion={true}
               />
 
               <NumberDisplayBox
@@ -407,6 +405,7 @@ function FacebookLeadSlide01() {
                 value={formattedMetrics.conRate?.displayValue}
                 compareValue={formattedMetrics.conRate?.compareValue}
                 isNegative={formattedMetrics.conRate?.isNegative}
+                isConversion={true}
               />
 
               <NumberDisplayBox

@@ -5,7 +5,6 @@
  * Handles edge cases and "No Data" strings
  */
 export const convertToBMK = (value, decimals = 1) => {
-  // ✅ FIXED: Changed default to 1 decimals
   // Handle "No Data" case
   if (value === "No Data") return "No Data";
 
@@ -25,7 +24,11 @@ export const convertToBMK = (value, decimals = 1) => {
     suffixIndex++;
   }
 
-  const formatted = convertedValue.toFixed(decimals);
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  const formatted = convertedValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
   const sign = numValue < 0 ? "-" : "";
 
   return `${sign}${formatted}${suffixes[suffixIndex]}`;
@@ -41,7 +44,11 @@ export const formatPercentage = (value, decimals = 2) => {
   const numValue = Number(value);
   if (isNaN(numValue)) return "0.00%";
 
-  return `${numValue.toFixed(decimals)}%`;
+  // ✅ FIXED: Use toLocaleString for consistent formatting
+  return `${numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}%`;
 };
 
 /**
@@ -54,17 +61,25 @@ export const formatDecimal = (value, decimals = 2) => {
   const numValue = Number(value);
   if (isNaN(numValue)) return "0.00";
 
-  return numValue.toFixed(decimals);
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  return numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 };
+
 export const formatCurrency = (value, decimals = 0, currency = "$") => {
-  // ✅ FIXED: Changed default to 0 decimals
   if (value === "No Data") return "No Data";
   if (!value && value !== 0) return `${currency}0`;
 
   const numValue = Number(value);
   if (isNaN(numValue)) return `${currency}0`;
 
-  return `${currency}${numValue.toFixed(decimals)}`;
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  return `${currency}${numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
 };
 
 /**
@@ -98,13 +113,19 @@ export const formatDisplayData = (
       displayValue = formatCurrency(value, 0); // 0 decimal places for currency
       break;
     case "decimal":
-      displayValue = formatDecimal(value, 2); // ✅ NEW: Decimal format with 2 decimal places
+      displayValue = formatDecimal(value, 2); // Decimal format with 2 decimal places
       break;
     case "number":
-      displayValue = value?.toLocaleString() || "0";
+      // ✅ FIXED: Ensure proper number formatting with commas
+      const numValue = Number(value);
+      displayValue = isNaN(numValue) ? "0" : numValue.toLocaleString();
       break;
     default:
-      displayValue = value?.toLocaleString() || "0";
+      // ✅ FIXED: Ensure default case has proper comma formatting
+      const defaultNumValue = Number(value);
+      displayValue = isNaN(defaultNumValue)
+        ? "0"
+        : defaultNumValue.toLocaleString();
   }
 
   // Format comparison value
@@ -169,22 +190,22 @@ export const formatMetricsData = (
  * Define how each metric should be formatted
  */
 export const METRIC_CONFIGS = {
-  Impressions: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
-  Clicks: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  Impressions: { valueType: "number" },
+  Clicks: { valueType: "number" },
   Conversions: { valueType: "number" },
   Spent: { valueType: "currency" }, // Currency - no decimal places
   Cost: { valueType: "currency" }, // Currency - no decimal places
   ctr: { valueType: "percentage" },
   conRate: { valueType: "percentage" },
-  cpc: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpl: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpm: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpe: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpr: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  cpc: { valueType: "decimal" },
+  cpl: { valueType: "decimal" },
+  cpm: { valueType: "decimal" },
+  cpe: { valueType: "decimal" },
+  cpr: { valueType: "decimal" },
   cpa: { valueType: "decimal" },
-  Reach: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  Reach: { valueType: "number" },
   engagementRate: { valueType: "percentage" },
-  frequency: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  frequency: { valueType: "decimal" },
   engagements: { valueType: "number" },
 };
 
@@ -204,12 +225,17 @@ export const formatTableValue = (value, metric) => {
     metricLower === "engagementrate" ||
     metricLower === "cvr"
   ) {
-    return `${Number(value).toFixed(2)}%`;
+    const numValue = Number(value);
+    return `${numValue.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}%`;
   }
 
   // Currency cases - no decimal places (only Spent and Cost)
   if (metricLower === "spent" || metricLower === "cost") {
-    return `${Math.round(value).toLocaleString()}`;
+    const numValue = Number(value);
+    return Math.round(numValue).toLocaleString();
   }
 
   // Metrics starting with "cp" and frequency - decimal format
@@ -225,8 +251,11 @@ export const formatTableValue = (value, metric) => {
     metricLower === "conversions" ||
     metricLower === "engagements"
   ) {
-    return value?.toLocaleString();
+    const numValue = Number(value);
+    return isNaN(numValue) ? "0" : numValue.toLocaleString();
   }
 
-  return value?.toLocaleString();
+  // ✅ FIXED: Default case with proper comma formatting
+  const numValue = Number(value);
+  return isNaN(numValue) ? "0" : numValue.toLocaleString();
 };

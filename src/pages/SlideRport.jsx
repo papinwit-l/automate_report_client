@@ -35,6 +35,8 @@ import FacebookMessageSlide01 from "@/components/slides/FacebookMessageSlide01";
 import FacebookMessageSlide02 from "@/components/slides/FacebookMessageSlide02";
 import FacebookLeadSlide01 from "@/components/slides/FacebookLeadSlide01";
 import FacebookLeadSlide02 from "@/components/slides/FacebookLeadSlide02";
+import FacebookConversionSlide01 from "@/components/slides/FacebookConversionSlide01";
+import FacebookConversionSlide02 from "@/components/slides/FacebookConversionSlide02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -285,6 +287,8 @@ function SlideReport() {
                 <FacebookMessageSlide02 />
                 <FacebookLeadSlide01 />
                 <FacebookLeadSlide02 />
+                <FacebookConversionSlide01 />
+                <FacebookConversionSlide02 />
                 <SectionSlide
                   title={"Google"}
                   componentID={"google-section-component"}
