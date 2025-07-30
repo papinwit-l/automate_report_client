@@ -164,6 +164,15 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setFacebookLeadAudienceMetrics,
       setComparison: stateSetter.setFacebookLeadAudienceComparison,
     },
+    // ✅ ADD FacebookConversion
+    FacebookConversion: {
+      setAudienceData: stateSetter.setFacebookConversionAudienceData,
+      setAudienceTotals: stateSetter.setFacebookConversionAudienceTotals,
+      setCreativeData: stateSetter.setFacebookConversionCreativeData,
+      setCreativeTotals: stateSetter.setFacebookConversionCreativeTotals,
+      setMetrics: stateSetter.setFacebookConversionAudienceMetrics,
+      setComparison: stateSetter.setFacebookConversionAudienceComparison,
+    },
     TikTokAudience: {
       setAudienceData: stateSetter.setTikTokAudienceData,
       setAudienceTotals: stateSetter.setTikTokAudienceTotals,

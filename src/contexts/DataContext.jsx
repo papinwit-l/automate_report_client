@@ -142,6 +142,28 @@ export const DataProvider = ({ children }) => {
   const [FacebookLeadAudienceComparison, setFacebookLeadAudienceComparison] =
     useState({});
 
+  // Facebook Conversion Data
+  const [FacebookConversionAudienceData, setFacebookConversionAudienceData] =
+    useState({});
+  const [
+    FacebookConversionAudienceTotals,
+    setFacebookConversionAudienceTotals,
+  ] = useState({});
+  const [FacebookConversionCreativeData, setFacebookConversionCreativeData] =
+    useState({});
+  const [
+    FacebookConversionCreativeTotals,
+    setFacebookConversionCreativeTotals,
+  ] = useState({});
+  const [
+    FacebookConversionAudienceMetrics,
+    setFacebookConversionAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookConversion);
+  const [
+    FacebookConversionAudienceComparison,
+    setFacebookConversionAudienceComparison,
+  ] = useState({});
+
   // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
@@ -178,6 +200,7 @@ export const DataProvider = ({ children }) => {
     FacebookEngagement: FacebookEngagementAudienceMetrics,
     FacebookMessage: FacebookMessageAudienceMetrics,
     FacebookLead: FacebookLeadAudienceMetrics,
+    FacebookConversion: FacebookConversionAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
@@ -236,6 +259,12 @@ export const DataProvider = ({ children }) => {
     setFacebookLeadCreativeTotals,
     setFacebookLeadAudienceMetrics,
     setFacebookLeadAudienceComparison,
+    setFacebookConversionAudienceData,
+    setFacebookConversionAudienceTotals,
+    setFacebookConversionCreativeData,
+    setFacebookConversionCreativeTotals,
+    setFacebookConversionAudienceMetrics,
+    setFacebookConversionAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -380,6 +409,19 @@ export const DataProvider = ({ children }) => {
     return result;
   };
 
+  const getFacebookConversionData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FacebookConversion",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    return result;
+  };
+
   const getTikTokData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "TikTokAudience",
@@ -429,6 +471,7 @@ export const DataProvider = ({ children }) => {
           getFacebookEngagementData(id, "Channel", "FB Engagement"),
           getFacebookMessageData(id, "Channel", "FB Messages"),
           getFacebookLeadData(id, "Channel", "FB Lead"),
+          getFacebookConversionData(id, "Channel", "FB Conversions"),
           getFBDemographicData(id),
           fetchFacebookPicture(id),
           // getTikTokData(id),
@@ -468,6 +511,7 @@ export const DataProvider = ({ children }) => {
           FacebookEngagement: getFacebookEngagementData,
           FacebookMessage: getFacebookMessageData,
           FacebookLead: getFacebookLeadData,
+          FacebookConversion: getFacebookConversionData,
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -659,6 +703,14 @@ export const DataProvider = ({ children }) => {
     FacebookLeadCreativeTotals,
     FacebookLeadAudienceMetrics,
     FacebookLeadAudienceComparison,
+
+    // Facebook Conversion
+    FacebookConversionAudienceData,
+    FacebookConversionAudienceTotals,
+    FacebookConversionCreativeData,
+    FacebookConversionCreativeTotals,
+    FacebookConversionAudienceMetrics,
+    FacebookConversionAudienceComparison,
 
     // TikTok
     TikTokAudienceData,
