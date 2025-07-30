@@ -254,7 +254,7 @@ function GDNSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"GDN"} />
+      <SlideHeader title={"Google Display Network"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">

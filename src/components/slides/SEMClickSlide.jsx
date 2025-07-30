@@ -262,11 +262,11 @@ function SEMClickSlide() {
       <SlideHeader title={"SEM - Click"} />
       <div className="grid grid-cols-16">
         <div className="col-span-12 flex flex-col gap-2">
-          <div className="grid grid-cols-8 gap-2">
+          <div className="grid grid-cols-7 gap-2">
             <h4 className="col-span-4 text-lg font-semibold">
               Awareness & Considerations
             </h4>
-            <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+            <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
             <NumberDisplayBox
               title={"Impression"}
@@ -313,14 +313,14 @@ function SEMClickSlide() {
               isNegative={conRateData.isNegative}
             />
 
-            <NumberDisplayBox
+            {/* <NumberDisplayBox
               title={"CPL"}
               value={cplData.displayValue}
               isConversion={true}
               compareValue={cplData.compareValue}
               isNegative={cplData.isNegative}
               invertCompareColor={true}
-            />
+            /> */}
 
             <NumberDisplayBox
               title={"Spent"}
