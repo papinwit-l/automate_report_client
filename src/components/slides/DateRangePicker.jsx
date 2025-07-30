@@ -53,14 +53,19 @@ function DateRangePicker() {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={dateRange?.from}
-            selected={dateRange}
-            onSelect={setDateRange}
-            numberOfMonths={2}
-          />
+          <div className="h-[340px] overflow-hidden">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              onSelect={setDateRange}
+              numberOfMonths={2}
+              fixedWeeks={true}
+              showOutsideDays={true}
+              className="h-full"
+            />
+          </div>
         </PopoverContent>
       </Popover>
 

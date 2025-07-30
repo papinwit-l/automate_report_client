@@ -57,12 +57,12 @@ const SlideGeneratorSidebar = ({
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed top-0 left-0 h-full w-80 bg-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+        <div className="border-b bg-gradient-to-r from-blue-50 to-purple-50 p-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <FileSpreadsheet className="h-5 w-5 text-white" />
@@ -75,7 +75,7 @@ const SlideGeneratorSidebar = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-4 overflow-y-auto h-full pb-20">
+        <div className="p-4 space-y-4 overflow-y-auto flex-1">
           {/* Data Source Section */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-3">
