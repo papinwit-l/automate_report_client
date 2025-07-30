@@ -1,10 +1,10 @@
 import React from "react";
 import TYN_LOGO from "@/assets/images/TYN_LOGO-08.png";
 
-function SectionSlide({ title }) {
+function SectionSlide({ title, componentID }) {
   return (
     <div
-      id="facebook-awareness-component"
+      id={componentID}
       className="border w-7xl h-[720px] relative group bg-[#c05334] overflow-hidden py-8"
     >
       <div className="h-full relative">

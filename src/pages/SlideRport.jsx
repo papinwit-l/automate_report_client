@@ -268,11 +268,10 @@ function SlideReport() {
               <div className="w-full flex flex-col items-center gap-10">
                 <TitleSlide projectName={projectName} reportType={reportType} />
                 <Overall />
-                <SectionSlide title={"Google"} />
-                <SEMSlide />
-                <GDNSlide />
-                <DiscoverySlide />
-                <SectionSlide title={"Facebook"} />
+                <SectionSlide
+                  title={"Facebook"}
+                  componentID={"facebook-section-component"}
+                />
                 <FacebookAwarenessSlide01 />
                 <FacebookAwarenessSlide02 />
                 <FacebookAwarenessSlide02PicTable />
@@ -282,6 +281,13 @@ function SlideReport() {
                 <FacebookEngagementSlide02 />
                 <FacebookMessageSlide01 />
                 <FacebookMessageSlide02 />
+                <SectionSlide
+                  title={"Google"}
+                  componentID={"google-section-component"}
+                />
+                <SEMSlide />
+                <GDNSlide />
+                <DiscoverySlide />
                 <EndSlide />
               </div>
             ) : (

@@ -13,7 +13,7 @@ function TitleSlide({ projectName, reportType }) {
   //   console.log(dateRange);
   return (
     <div
-      id="facebook-awareness-component"
+      id="title-component"
       className="flex flex-col border w-7xl h-[720px] gap-2 relative group bg-main-secondary overflow-hidden"
     >
       <img

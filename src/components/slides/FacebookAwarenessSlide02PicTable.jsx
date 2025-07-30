@@ -401,7 +401,7 @@ function FacebookAwarenessSlide02PicTable() {
   // console.log("facebookMEtrics", FacebookAudienceMetrics);
   return (
     <div
-      id="facebook-awareness-02-component"
+      id="facebook-awareness-02-picture-table-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
