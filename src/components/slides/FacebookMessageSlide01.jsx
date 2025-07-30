@@ -403,11 +403,11 @@ function FacebookMessageSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPA"}
-                value={cpaData.displayValue}
-                compareValue={cpaData.compareValue}
+                title={"CPL"}
+                value={cplData.displayValue}
+                compareValue={cplData.compareValue}
                 isConversion={true}
-                isNegative={cpaData.isNegative}
+                isNegative={cplData.isNegative}
                 invertCompareColor={true}
               />
 
