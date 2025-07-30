@@ -272,9 +272,9 @@ function SlideReport() {
                   title={"Facebook"}
                   componentID={"facebook-section-component"}
                 />
-                <FacebookAwarenessSlide01 />
+                {/* <FacebookAwarenessSlide01 />
                 <FacebookAwarenessSlide02 />
-                <FacebookAwarenessSlide02PicTable />
+                <FacebookAwarenessSlide02PicTable /> */}
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
                 <FacebookEngagementSlide01 />

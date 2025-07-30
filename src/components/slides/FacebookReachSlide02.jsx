@@ -55,12 +55,12 @@ function FacebookReachSlide02() {
       const overallText = `Overall Reach: ** ${parseFloat(
         FacebookReachAudienceTotals?.reach?.toFixed(2) || 0
       )?.toLocaleString()} reaches**`;
-      summaryTextTemp = `<li>${overallText}</li>`;
+      // summaryTextTemp = `<li>${overallText}</li>`;
 
-      summaryTextTemp += `<li>Average CPR: **${FacebookReachAudienceTotals.cpr?.toLocaleString(
-        undefined,
-        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-      )} THB (per 1000 reaches)**</li>`;
+      // summaryTextTemp += `<li>Average CPR: **${FacebookReachAudienceTotals.cpr?.toLocaleString(
+      //   undefined,
+      //   { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      // )} THB (per 1000 reaches)**</li>`;
 
       // Find top audience by reach (with error handling)
       const topAudience = FacebookReachAudienceData
@@ -77,7 +77,7 @@ function FacebookReachSlide02() {
         const topAudienceText = `Top Audience: **${
           topAudience.key
         } (with ${topAudience.value.reach?.toLocaleString()} reaches)**`;
-        summaryTextTemp += `<li>${topAudienceText}</li>`;
+        // summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
       // Find top creative by reach (with error handling)
@@ -299,6 +299,21 @@ function FacebookReachSlide02() {
         FacebookReachAudienceComparison?.cpr,
         "compact"
       ),
+      engagementData: formatDisplayData(
+        FacebookReachAudienceTotals?.engagements,
+        FacebookReachAudienceComparison?.engagements,
+        "compact"
+      ),
+      engagementRateData: formatDisplayData(
+        FacebookReachAudienceTotals?.engagementRate,
+        FacebookReachAudienceComparison?.engagementRate,
+        "percentage"
+      ),
+      cpeData: formatDisplayData(
+        FacebookReachAudienceTotals?.cpe,
+        FacebookReachAudienceComparison?.cpe,
+        "compact"
+      ),
     };
   }, [FacebookReachAudienceTotals, FacebookReachAudienceComparison]);
 
@@ -364,8 +379,8 @@ function FacebookReachSlide02() {
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-6 gap-2">
-              <h4 className="col-span-4 text-lg font-semibold">
+            <div className="grid grid-cols-7 gap-2">
+              <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
               <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
@@ -384,10 +399,10 @@ function FacebookReachSlide02() {
               />
 
               <NumberDisplayBox
-                title={"Frequency"}
-                value={formattedMetrics.frequencyData?.displayValue}
-                compareValue={formattedMetrics.frequencyData?.compareValue}
-                isNegative={formattedMetrics.frequencyData?.isNegative}
+                title={"Reach"}
+                value={formattedMetrics.reachData?.displayValue}
+                compareValue={formattedMetrics.reachData?.compareValue}
+                isNegative={formattedMetrics.reachData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -396,6 +411,13 @@ function FacebookReachSlide02() {
                 compareValue={formattedMetrics.cprData?.compareValue}
                 isNegative={formattedMetrics.cprData?.isNegative}
                 invertCompareColor={true}
+              />
+
+              <NumberDisplayBox
+                title={"Clicks"}
+                value={formattedMetrics.clicksData?.displayValue}
+                compareValue={formattedMetrics.clicksData?.compareValue}
+                isNegative={formattedMetrics.clicksData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -423,11 +445,17 @@ function FacebookReachSlide02() {
                 channelData={FacebookReachCreativeData}
                 totalData={FacebookReachCreativeTotals}
                 metrics={[
-                  "Ad name",
+                  "Ad set name",
                   "impressions",
                   "reach",
-                  "frequency",
                   "cpr",
+                  "frequency",
+                  "clicks",
+                  "ctr",
+                  "cpc",
+                  // "engagements",
+                  // "engagementRate",
+                  // "cpe",
                   "conversions",
                   "spent",
                 ]}

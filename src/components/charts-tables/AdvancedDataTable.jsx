@@ -53,9 +53,9 @@ export const AdvancedDataTable = ({
       case "cpm":
         return "CPM";
       case "engagements":
-        return "Post Engagements";
+        return "Engagement";
       case "engagementrate":
-        return "Engagement Rate (%)";
+        return "%Engage Rate";
       case "messages":
         return "Messages";
       case "cpe":

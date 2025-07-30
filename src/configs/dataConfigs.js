@@ -36,6 +36,10 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cost", sourceField: "Cost" },
       { key: "engagements", sourceField: "Post engagements" },
       { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+      {
+        key: "messages",
+        sourceField: "New messaging conversations within 7 days",
+      },
     ],
     calculatedFields: [
       { key: "frequency", type: "frequency" },
@@ -47,7 +51,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
+      { key: "cpa", type: "cpa" },
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -64,6 +68,10 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cost", sourceField: "Cost" },
       { key: "engagements", sourceField: "Post engagements" },
       { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+      {
+        key: "messages",
+        sourceField: "New messaging conversations within 7 days",
+      },
     ],
     calculatedFields: [
       { key: "frequency", type: "frequency" },
@@ -75,7 +83,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
+      { key: "cpa", type: "cpa" },
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -92,6 +100,10 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cost", sourceField: "Cost" },
       { key: "engagements", sourceField: "Post engagements" },
       { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+      {
+        key: "messages",
+        sourceField: "New messaging conversations within 7 days",
+      },
     ],
     calculatedFields: [
       { key: "frequency", type: "frequency" },
@@ -103,7 +115,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
+      { key: "cpa", type: "cpa" },
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -135,7 +147,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "cpm", type: "cpm" },
       { key: "cpv", type: "cpv" },
       { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" }, // ✅ ADD THIS
+      { key: "cpa", type: "cpa" },
       { key: "engagementRate", type: "engagementRate" },
       { key: "spent", type: "custom", calculate: (data) => data.cost },
     ],
@@ -157,7 +169,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "ctr", type: "ctr" },
       { key: "cpc", type: "cpc" },
       { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" }, // ✅ ALREADY EXISTS
+      { key: "cpa", type: "cpa" },
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
       { key: "cpr", type: "cpr" },
@@ -182,7 +194,7 @@ export const SOCIAL_MEDIA_CONFIGS = {
       { key: "ctr", type: "ctr" },
       { key: "cpc", type: "cpc" },
       { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" }, // ✅ ALREADY EXISTS
+      { key: "cpa", type: "cpa" },
       { key: "cpm", type: "cpm" },
       { key: "cpe", type: "cpe" },
       { key: "cpr", type: "cpr" },
@@ -297,6 +309,8 @@ export const DATA_CONFIGS = {
       "Cost",
       "Video watches at 25%",
       "Post engagements",
+      "Channel", // From FacebookReach & FacebookEngagement
+      "New messaging conversations within 7 days", // From FacebookMessage
     ],
     groupBy: "Ad set name",
     hasComparison: true,
@@ -330,9 +344,9 @@ export const DATA_CONFIGS = {
   },
 
   FacebookReach: {
-    endpoint: "facebook-data", // ✅ Same endpoint as FacebookAudience
+    endpoint: "facebook-data",
     processFields: [
-      "Channel", // ✅ FIXED: Added Channel field for filtering
+      "Channel", // Original field
       "Ad set name",
       "Impressions",
       "Reach",
@@ -341,6 +355,7 @@ export const DATA_CONFIGS = {
       "Cost",
       "Video watches at 25%",
       "Post engagements",
+      "New messaging conversations within 7 days", // From FacebookMessage
     ],
     groupBy: "Ad set name",
     hasComparison: true,
@@ -350,9 +365,9 @@ export const DATA_CONFIGS = {
   },
 
   FacebookEngagement: {
-    endpoint: "facebook-data", // ✅ Same endpoint as FacebookAudience
+    endpoint: "facebook-data",
     processFields: [
-      "Channel", // ✅ FIXED: Added Channel field for filtering
+      "Channel", // Original field
       "Ad set name",
       "Impressions",
       "Reach",
@@ -361,6 +376,7 @@ export const DATA_CONFIGS = {
       "Cost",
       "Video watches at 25%",
       "Post engagements",
+      "New messaging conversations within 7 days", // From FacebookMessage
     ],
     groupBy: "Ad set name",
     hasComparison: true,
@@ -370,7 +386,7 @@ export const DATA_CONFIGS = {
   },
 
   FacebookMessage: {
-    endpoint: "facebook-data", // Same endpoint as other Facebook data
+    endpoint: "facebook-data",
     processFields: [
       "Channel", // For filtering
       "Ad set name",
@@ -381,7 +397,7 @@ export const DATA_CONFIGS = {
       "Cost",
       "Video watches at 25%",
       "Post engagements",
-      "New messaging conversations within 7 days", // Add message-specific field
+      "New messaging conversations within 7 days", // Original field
     ],
     groupBy: "Ad set name",
     hasComparison: true,
@@ -457,6 +473,8 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
+    "Channel", // From FacebookReach & FacebookEngagement
+    "New messaging conversations within 7 days", // From FacebookMessage
   ],
   FBDemographic: [
     "Project",
@@ -475,7 +493,7 @@ export const DEFAULT_METRICS = {
     "New messaging conversations within 7 days",
   ],
   FacebookReach: [
-    "Channel", // ✅ FIXED: Added Channel field
+    "Channel", // Original field
     "Ad set name",
     "Ad name",
     "Impressions",
@@ -485,9 +503,10 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
+    "New messaging conversations within 7 days", // From FacebookMessage
   ],
   FacebookEngagement: [
-    "Channel", // ✅ FIXED: Added Channel field
+    "Channel", // Original field
     "Ad set name",
     "Ad name",
     "Impressions",
@@ -497,6 +516,7 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
+    "New messaging conversations within 7 days", // From FacebookMessage
   ],
   FacebookMessage: [
     "Channel",
@@ -509,7 +529,7 @@ export const DEFAULT_METRICS = {
     "Cost",
     "Video watches at 25%",
     "Post engagements",
-    "New messaging conversations within 7 days", // Add message-specific field
+    "New messaging conversations within 7 days", // Original field
   ],
   TikTokAudience: [
     "Ad group name",
