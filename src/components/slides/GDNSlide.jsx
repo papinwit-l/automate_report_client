@@ -104,17 +104,14 @@ function GDNSlide() {
     }
 
     let summaryTextTemp = "";
+    const averageCPC = GDNTotals?.cpc?.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     const overallText = `Overall clicks: ** ${parseFloat(
       GDNTotals?.Clicks?.toFixed(2) || 0
-    )?.toLocaleString()} clicks**`;
+    )?.toLocaleString()} clicks with average CPC ${averageCPC} THB**`;
     summaryTextTemp = `<li>${overallText}</li>`;
-
-    const averageCPC = GDNTotals?.cpc;
-
-    summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
 
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
@@ -143,11 +140,20 @@ function GDNSlide() {
       summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential Ad: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // if (topConversionChannel[0] != topConversionRateChannel[0]) {
+    highestConversionRateChannelText = `Potential Ad: **${
+      topConversionRateChannel[0]
+    } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
+    summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // }
+
+    //Total conversions
+    const totalConversions = GDNTotals?.Conversions;
+    if (totalConversions > 0) {
+      summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
+        undefined,
+        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+      )} conversions**</li>`;
     }
     setSummaryText(summaryTextTemp);
   };
