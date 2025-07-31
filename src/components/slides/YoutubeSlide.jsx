@@ -113,8 +113,8 @@ function YoutubeSlide() {
     try {
       if (!GGDemographicData || GGDemographicData.length === 0) {
         return {
-          impressionsByGender: {},
-          impressionsByAge: {},
+          chartByGender: {},
+          chartByDevice: {},
         };
       }
 

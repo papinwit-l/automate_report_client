@@ -39,6 +39,8 @@ import FacebookConversionSlide02 from "@/components/slides/FacebookConversionSli
 import SEMConversionSlide from "@/components/slides/SEMConversionSlide";
 import SEMClickSlide from "@/components/slides/SEMClickSlide";
 import YoutubeSlide from "@/components/slides/YoutubeSlide";
+import FacebookTrafficSlide01 from "@/components/slides/FacebookTrafficSlide01";
+import FacebookTrafficSlide02 from "@/components/slides/FacebookTrafficSlide02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -285,6 +287,8 @@ function SlideReport() {
                 <FacebookReachSlide02 />
                 <FacebookEngagementSlide01 />
                 <FacebookEngagementSlide02 />
+                <FacebookTrafficSlide01 />
+                <FacebookTrafficSlide02 />
                 <FacebookMessageSlide01 />
                 <FacebookMessageSlide02 />
                 <FacebookLeadSlide01 />
