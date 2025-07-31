@@ -300,6 +300,10 @@ function SlideReport() {
                 <GDNSlide />
                 <DiscoverySlide />
                 <YoutubeSlide />
+                <SectionSlide
+                  title={"Tiktok"}
+                  componentID={"tiktok-section-component"}
+                />
                 <EndSlide />
               </div>
             ) : (
