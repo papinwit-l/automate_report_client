@@ -47,17 +47,14 @@ function DiscoverySlide() {
     }
 
     let summaryTextTemp = "";
+    const averageCPC = DiscTotals?.cpc?.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     const overallText = `Overall clicks: ** ${parseFloat(
       DiscTotals?.Clicks?.toFixed(2) || 0
-    )?.toLocaleString()} clicks**`;
+    )?.toLocaleString()} clicks with average CPC ${averageCPC} THB**`;
     summaryTextTemp = `<li>${overallText}</li>`;
-
-    const averageCPC = DiscTotals?.cpc;
-
-    summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
 
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
@@ -86,11 +83,19 @@ function DiscoverySlide() {
       summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential Ad: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // if (topConversionChannel[0] != topConversionRateChannel[0]) {
+    highestConversionRateChannelText = `Potential Ad: **${
+      topConversionRateChannel[0]
+    } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
+    summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // }
+
+    const totalConversions = DiscTotals?.Conversions;
+    if (totalConversions > 0) {
+      summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
+        undefined,
+        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+      )} conversions**</li>`;
     }
     setSummaryText(summaryTextTemp);
   };
