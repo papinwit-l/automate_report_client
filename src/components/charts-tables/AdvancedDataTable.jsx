@@ -48,6 +48,8 @@ export const AdvancedDataTable = ({
         return "Frequency";
       case "cpr":
         return "CPR";
+      case "cpv":
+        return "CPV";
       case "keyword":
         return "Keyword";
       case "cpm":
@@ -56,6 +58,8 @@ export const AdvancedDataTable = ({
         return "Engagement";
       case "engagementrate":
         return "%Engage Rate";
+      case "viewrate":
+        return "%View Rate";
       case "messages":
         return "Messages";
       case "cpe":

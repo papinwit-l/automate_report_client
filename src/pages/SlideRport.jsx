@@ -38,6 +38,7 @@ import FacebookConversionSlide01 from "@/components/slides/FacebookConversionSli
 import FacebookConversionSlide02 from "@/components/slides/FacebookConversionSlide02";
 import SEMConversionSlide from "@/components/slides/SEMConversionSlide";
 import SEMClickSlide from "@/components/slides/SEMClickSlide";
+import YoutubeSlide from "@/components/slides/YoutubeSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -298,6 +299,7 @@ function SlideReport() {
                 <SEMClickSlide />
                 <GDNSlide />
                 <DiscoverySlide />
+                <YoutubeSlide />
                 <EndSlide />
               </div>
             ) : (
