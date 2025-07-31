@@ -80,6 +80,24 @@ export const DataProvider = ({ children }) => {
     DEFAULT_METRICS.FBDemographic
   );
 
+  // Facebook Awareness Data
+  const [FacebookAwarenessAudienceData, setFacebookAwarenessAudienceData] =
+    useState({});
+  const [FacebookAwarenessAudienceTotals, setFacebookAwarenessAudienceTotals] =
+    useState({});
+  const [FacebookAwarenessCreativeData, setFacebookAwarenessCreativeData] =
+    useState({});
+  const [FacebookAwarenessCreativeTotals, setFacebookAwarenessCreativeTotals] =
+    useState({});
+  const [
+    FacebookAwarenessAudienceMetrics,
+    setFacebookAwarenessAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookAwareness);
+  const [
+    FacebookAwarenessAudienceComparison,
+    setFacebookAwarenessAudienceComparison,
+  ] = useState({});
+
   // Facebook Reach Data (separate state for filtered data)
   const [FacebookReachAudienceData, setFacebookReachAudienceData] = useState(
     {}
@@ -203,6 +221,7 @@ export const DataProvider = ({ children }) => {
     Disc: DiscMetrics,
     Youtube: YoutubeMetrics,
     FacebookAudience: FacebookAudienceMetrics,
+    FacebookAwareness: FacebookAwarenessAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
     FacebookEngagement: FacebookEngagementAudienceMetrics,
     FacebookMessage: FacebookMessageAudienceMetrics,
@@ -243,6 +262,12 @@ export const DataProvider = ({ children }) => {
     setFacebookCreativeTotals,
     setFacebookAudienceMetrics,
     setFacebookAudienceComparison,
+    setFacebookAwarenessAudienceData,
+    setFacebookAwarenessAudienceTotals,
+    setFacebookAwarenessCreativeData,
+    setFacebookAwarenessCreativeTotals,
+    setFacebookAwarenessAudienceMetrics,
+    setFacebookAwarenessAudienceComparison,
     setFBDemographicData,
     setFBDemographicMetrics,
     setFBDemographicTotals,
@@ -350,7 +375,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getYoutubeData result:", result);
+    // console.log("🎯 getYoutubeData result:", result);
     return result;
   };
 
@@ -360,6 +385,20 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
+  };
+
+  const getFacebookAwarenessData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FacebookAwareness",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getFacebookAwarenessData result:", result);
+    return result;
   };
 
   const getFacebookReachData = async (
@@ -490,6 +529,7 @@ export const DataProvider = ({ children }) => {
           getDiscData(id),
           getYoutubeData(id),
           getFacebookData(id),
+          getFacebookAwarenessData(id, "Channel", "FB Awareness"),
           getFacebookReachData(id, "Channel", "FB Reach"),
           getFacebookEngagementData(id, "Channel", "FB Engagement"),
           getFacebookMessageData(id, "Channel", "FB Messages"),
@@ -531,6 +571,7 @@ export const DataProvider = ({ children }) => {
           Disc: getDiscData,
           Youtube: getYoutubeData,
           FacebookAudience: getFacebookData,
+          FacebookAwareness: getFacebookAwarenessData,
           FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
           FacebookEngagement: getFacebookEngagementData,
           FacebookMessage: getFacebookMessageData,
@@ -701,6 +742,14 @@ export const DataProvider = ({ children }) => {
     FacebookAudienceComparison,
     FacebookAdsPicture,
     FBDemographicData,
+
+    // Facebook Awareness
+    FacebookAwarenessAudienceData,
+    FacebookAwarenessAudienceTotals,
+    FacebookAwarenessCreativeData,
+    FacebookAwarenessCreativeTotals,
+    FacebookAwarenessAudienceMetrics,
+    FacebookAwarenessAudienceComparison,
 
     // Facebook Reach (filtered data)
     FacebookReachAudienceData,

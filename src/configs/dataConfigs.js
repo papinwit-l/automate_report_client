@@ -57,6 +57,38 @@ export const SOCIAL_MEDIA_CONFIGS = {
     ],
   },
 
+  FacebookAwareness: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: [
+      { key: "impressions", sourceField: "Impressions" },
+      { key: "reach", sourceField: "Reach" },
+      { key: "clicks", sourceField: "Link clicks" },
+      { key: "conversions", sourceField: "Website conversions" },
+      { key: "cost", sourceField: "Cost" },
+      { key: "engagements", sourceField: "Post engagements" },
+      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
+      {
+        key: "messages",
+        sourceField: "New messaging conversations within 7 days",
+      },
+    ],
+    calculatedFields: [
+      { key: "frequency", type: "frequency" },
+      { key: "cpr", type: "cpr" },
+      { key: "ctr", type: "ctr" },
+      { key: "cpc", type: "cpc" },
+      { key: "cvr", type: "cvr" },
+      { key: "cpl", type: "cpl" },
+      { key: "cpm", type: "cpm" },
+      { key: "cpv", type: "cpv" },
+      { key: "cpe", type: "cpe" },
+      { key: "cpa", type: "cpa" },
+      { key: "engagementRate", type: "engagementRate" },
+      { key: "spent", type: "custom", calculate: (data) => data.cost },
+    ],
+  },
+
   FacebookReach: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
@@ -406,6 +438,27 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAudience,
   },
 
+  FacebookAwareness: {
+    endpoint: "facebook-data",
+    processFields: [
+      "Channel", // For filtering
+      "Ad set name",
+      "Impressions",
+      "Reach",
+      "Link clicks",
+      "Website conversions",
+      "Cost",
+      "Video watches at 25%",
+      "Post engagements",
+      "New messaging conversations within 7 days",
+    ],
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAwareness,
+  },
+
   FBDemographic: {
     endpoint: "fb-demographic",
     processFields: [
@@ -618,6 +671,19 @@ export const DEFAULT_METRICS = {
     "Post engagements",
     "Channel", // From FacebookReach & FacebookEngagement
     "New messaging conversations within 7 days", // From FacebookMessage
+  ],
+  FacebookAwareness: [
+    "Channel",
+    "Ad set name",
+    "Ad name",
+    "Impressions",
+    "Reach",
+    "Link clicks",
+    "Website conversions",
+    "Cost",
+    "Video watches at 25%",
+    "Post engagements",
+    "New messaging conversations within 7 days",
   ],
   FBDemographic: [
     "Project",
