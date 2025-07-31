@@ -56,6 +56,12 @@ export const DataProvider = ({ children }) => {
   const [DiscMetrics, setDiscMetrics] = useState(DEFAULT_METRICS.Disc);
   const [DiscComparison, setDiscComparison] = useState({});
 
+  // Youtube Data
+  const [YoutubeData, setYoutubeData] = useState({});
+  const [YoutubeTotals, setYoutubeTotals] = useState({});
+  const [YoutubeMetrics, setYoutubeMetrics] = useState(DEFAULT_METRICS.Youtube);
+  const [YoutubeComparison, setYoutubeComparison] = useState({});
+
   // Facebook Data
   const [FacebookAudienceData, setFacebookAudienceData] = useState({});
   const [FacebookAudienceTotals, setFacebookAudienceTotals] = useState({});
@@ -195,6 +201,7 @@ export const DataProvider = ({ children }) => {
     GGDemographic: GGDemographicMetrics,
     GDN: GDNMetrics,
     Disc: DiscMetrics,
+    Youtube: YoutubeMetrics,
     FacebookAudience: FacebookAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
     FacebookEngagement: FacebookEngagementAudienceMetrics,
@@ -226,6 +233,10 @@ export const DataProvider = ({ children }) => {
     setDiscTotals,
     setDiscMetrics,
     setDiscComparison,
+    setYoutubeData,
+    setYoutubeTotals,
+    setYoutubeMetrics,
+    setYoutubeComparison,
     setFacebookAudienceData,
     setFacebookAudienceTotals,
     setFacebookCreativeData,
@@ -330,6 +341,16 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue)
     );
     // console.log("🎯 getDiscData result:", result);
+    return result;
+  };
+
+  const getYoutubeData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "Youtube",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getYoutubeData result:", result);
     return result;
   };
 
@@ -467,6 +488,7 @@ export const DataProvider = ({ children }) => {
           getGGDemographic(id),
           getGDNData(id),
           getDiscData(id),
+          getYoutubeData(id),
           getFacebookData(id),
           getFacebookReachData(id, "Channel", "FB Reach"),
           getFacebookEngagementData(id, "Channel", "FB Engagement"),
@@ -507,6 +529,7 @@ export const DataProvider = ({ children }) => {
           GGDemographic: getGGDemographic,
           GDN: getGDNData,
           Disc: getDiscData,
+          Youtube: getYoutubeData,
           FacebookAudience: getFacebookData,
           FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
           FacebookEngagement: getFacebookEngagementData,
@@ -662,6 +685,12 @@ export const DataProvider = ({ children }) => {
     DiscTotals,
     DiscMetrics,
     DiscComparison,
+
+    // Youtube
+    YoutubeData,
+    YoutubeTotals,
+    YoutubeMetrics,
+    YoutubeComparison,
 
     // Facebook
     FacebookAudienceData,

@@ -361,6 +361,29 @@ export const DATA_CONFIGS = {
     processorType: "advertising",
   },
 
+  Youtube: {
+    endpoint: "youtube-data",
+    processFields: [
+      "Ad group name",
+      "Impressions",
+      "Clicks",
+      "Video views",
+      "viewRate",
+      "cpv",
+      "Conversions",
+      "Spent",
+      "Watch 25% views",
+      "Watch 50% views",
+      "Watch 75% views",
+      "Watch 100% views",
+      "Engagements",
+    ],
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
   // Social media platforms
   FacebookAudience: {
     endpoint: "facebook-data",
@@ -569,6 +592,20 @@ export const DEFAULT_METRICS = {
   ],
   GDN: ["Ad group name", "Impressions", "Clicks", "Conversions", "Spent"],
   Disc: ["Ad group name", "Impressions", "Clicks", "Conversions", "Spent"],
+  Youtube: [
+    "Ad group name",
+    "Impressions",
+    "Clicks",
+    "Video views",
+    "viewRate",
+    "Conversions",
+    "Spent",
+    "Watch 25% views",
+    "Watch 50% views",
+    "Watch 75% views",
+    "Watch 100% views",
+    "Engagements",
+  ],
   FacebookAudience: [
     "Ad set name",
     "Ad name",

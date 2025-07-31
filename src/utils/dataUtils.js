@@ -116,6 +116,12 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setDiscMetrics,
       setComparison: stateSetter.setDiscComparison,
     },
+    Youtube: {
+      setData: stateSetter.setYoutubeData,
+      setTotals: stateSetter.setYoutubeTotals,
+      setMetrics: stateSetter.setYoutubeMetrics,
+      setComparison: stateSetter.setYoutubeComparison,
+    },
     // Social media platforms
     FacebookAudience: {
       setAudienceData: stateSetter.setFacebookAudienceData,

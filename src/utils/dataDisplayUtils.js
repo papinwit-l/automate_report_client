@@ -203,6 +203,20 @@ export const METRIC_CONFIGS = {
   cpe: { valueType: "decimal" },
   cpr: { valueType: "decimal" },
   cpa: { valueType: "decimal" },
+  cpv: { valueType: "decimal" },
+  viewRate: { valueType: "percentage" }, // ✅ YouTube specific
+  // ✅ YouTube specific metrics
+  "Video views": { valueType: "number" },
+  "Watch 25% views": { valueType: "number" },
+  "Watch 50% views": { valueType: "number" },
+  "Watch 75% views": { valueType: "number" },
+  "Watch 100% views": { valueType: "number" },
+  VideoViews: { valueType: "number" }, // Alternative naming
+  Watch25: { valueType: "number" }, // Alternative naming
+  Watch50: { valueType: "number" }, // Alternative naming
+  Watch75: { valueType: "number" }, // Alternative naming
+  Watch100: { valueType: "number" }, // Alternative naming
+  Engagements: { valueType: "number" },
   Reach: { valueType: "number" },
   engagementRate: { valueType: "percentage" },
   frequency: { valueType: "decimal" },
@@ -218,12 +232,13 @@ export const formatTableValue = (value, metric) => {
 
   const metricLower = metric.toLowerCase();
 
-  // Percentage cases
+  // ✅ YouTube-enhanced percentage cases
   if (
     metricLower === "ctr" ||
     metricLower === "conrate" ||
     metricLower === "engagementrate" ||
-    metricLower === "cvr"
+    metricLower === "cvr" ||
+    metricLower === "viewrate" // ✅ Added viewRate
   ) {
     const numValue = Number(value);
     return `${numValue.toLocaleString(undefined, {
@@ -243,13 +258,23 @@ export const formatTableValue = (value, metric) => {
     return formatDecimal(value, 2);
   }
 
-  // Number format for impressions, clicks, reach, etc.
+  // ✅ YouTube-enhanced number format for impressions, clicks, reach, etc.
   if (
     metricLower === "impressions" ||
     metricLower === "clicks" ||
     metricLower === "reach" ||
     metricLower === "conversions" ||
-    metricLower === "engagements"
+    metricLower === "engagements" ||
+    metricLower === "videoviews" ||
+    metricLower === "video views" || // ✅ YouTube field name
+    metricLower === "watch25" ||
+    metricLower === "watch50" ||
+    metricLower === "watch75" ||
+    metricLower === "watch100" ||
+    metricLower === "watch 25% views" || // ✅ YouTube field names
+    metricLower === "watch 50% views" ||
+    metricLower === "watch 75% views" ||
+    metricLower === "watch 100% views"
   ) {
     const numValue = Number(value);
     return isNaN(numValue) ? "0" : numValue.toLocaleString();

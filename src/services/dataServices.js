@@ -110,11 +110,15 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
           );
         }
       } else if (config.processorType === "advertising") {
+        // ✅ KEY CHANGE: Determine platform for YouTube-specific processing
+        const platform = dataType === "Youtube" ? "Youtube" : "default";
+
         currentPeriodResults = processAdvertisingData(
           currentPeriodData,
           metrics,
           config.processFields,
-          config.groupBy
+          config.groupBy,
+          platform // ✅ Pass platform parameter
         );
 
         if (config.hasComparison && previousPeriodData.length > 0) {
@@ -122,7 +126,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
             previousPeriodData,
             metrics,
             config.processFields,
-            config.groupBy
+            config.groupBy,
+            platform // ✅ Pass platform parameter for previous period too
           );
           comparison = calculateComparison(
             currentPeriodResults.enhancedTotals,

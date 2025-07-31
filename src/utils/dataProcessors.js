@@ -1,12 +1,13 @@
-// utils/dataProcessors.js
+// utils/dataProcessors.js - Enhanced version with YouTube support
 import { NON_NUMERIC_COLUMNS } from "../configs/dataConfigs";
 
-// Original processor for advertising platforms (SEM, GDN, Disc)
+// Enhanced processor for advertising platforms (SEM, GDN, Disc, Youtube)
 export const processAdvertisingData = (
   cleanedData,
   metrics,
   finalMetrics,
-  groupBy = "Keyword"
+  groupBy = "Keyword",
+  platform = "default" // Add platform parameter to handle YouTube differently
 ) => {
   if (!cleanedData || cleanedData.length === 0) {
     return {
@@ -34,32 +35,61 @@ export const processAdvertisingData = (
   // Add calculations for each field value
   const enhancedFieldData = {};
   Object.entries(summaryByField).forEach(([fieldValue, data]) => {
+    const enhanced = { ...data };
+
+    // Standard calculations
     const ctr =
       data.Impressions > 0 ? (data.Clicks / data.Impressions) * 100 : 0;
     const conRate =
       data.Clicks > 0 ? (data.Conversions / data.Clicks) * 100 : 0;
-    const cpl = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
-    const cpc = data.Clicks > 0 ? data.Spent / data.Clicks : 0;
+
+    // Use appropriate cost field based on platform
+    const costField =
+      platform === "Youtube" ? data.Spent || 0 : data.Spent || 0;
+
+    const cpl = data.Conversions > 0 ? costField / data.Conversions : 0;
+    const cpc = data.Clicks > 0 ? costField / data.Clicks : 0;
     const cpm =
-      data.Impressions > 0 ? (data.Spent * 1000) / data.Impressions : 0;
-    const cpa = data.Conversions > 0 ? data.Spent / data.Conversions : 0;
-    const cpv = data.Views > 0 ? data.Spent / data.Views : 0;
-    const cpe = data.Engagements > 0 ? data.Spent / data.Engagements : 0;
+      data.Impressions > 0 ? (costField * 1000) / data.Impressions : 0;
+    const cpa = data.Conversions > 0 ? costField / data.Conversions : 0;
+    const cpe = data.Engagements > 0 ? costField / data.Engagements : 0;
     const engagementRate =
       data.Reach > 0 ? (data.Engagements / data.Reach) * 100 : 0;
 
-    enhancedFieldData[fieldValue] = {
-      ...data,
-      ctr: Number(ctr.toFixed(2)),
-      conRate: Number(conRate.toFixed(2)),
-      cpl: Number(cpl.toFixed(2)),
-      cpc: Number(cpc.toFixed(2)),
-      cpm: Number(cpm.toFixed(2)),
-      cpv: Number(cpv.toFixed(2)),
-      cpe: Number(cpe.toFixed(2)),
-      cpa: Number(cpa.toFixed(2)),
-      engagementRate: Number(engagementRate.toFixed(2)),
-    };
+    // YouTube-specific calculations
+    let cpv = 0;
+    let viewRate = 0;
+
+    if (platform === "Youtube") {
+      // CPV calculation using "Video views" field
+      const videoViews = data["Video views"] || 0;
+      cpv = videoViews > 0 ? costField / videoViews : 0;
+
+      // View Rate calculation (Video views / Impressions * 100)
+      viewRate =
+        data.Impressions > 0 ? (videoViews / data.Impressions) * 100 : 0;
+    } else {
+      // For other platforms, use VideoViews if available
+      cpv = data.VideoViews > 0 ? costField / data.VideoViews : 0;
+    }
+
+    // Add all calculated metrics
+    enhanced.ctr = Number(ctr.toFixed(2));
+    enhanced.conRate = Number(conRate.toFixed(2));
+    enhanced.cpl = Number(cpl.toFixed(2));
+    enhanced.cpc = Number(cpc.toFixed(2));
+    enhanced.cpm = Number(cpm.toFixed(2));
+    enhanced.cpv = Number(cpv.toFixed(2));
+    enhanced.cpe = Number(cpe.toFixed(2));
+    enhanced.cpa = Number(cpa.toFixed(2));
+    enhanced.engagementRate = Number(engagementRate.toFixed(2));
+
+    // Add viewRate for YouTube
+    if (platform === "Youtube") {
+      enhanced.viewRate = Number(viewRate.toFixed(2));
+    }
+
+    enhancedFieldData[fieldValue] = enhanced;
   });
 
   // Calculate totals
@@ -75,18 +105,35 @@ export const processAdvertisingData = (
     totals.Impressions > 0 ? (totals.Clicks / totals.Impressions) * 100 : 0;
   const totalConRate =
     totals.Clicks > 0 ? (totals.Conversions / totals.Clicks) * 100 : 0;
+
+  // Use appropriate cost field for totals
+  const totalCostField =
+    platform === "Youtube" ? totals.Spent || 0 : totals.Spent || 0;
+
   const totalCpl =
-    totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
-  const totalCpc = totals.Clicks > 0 ? totals.Spent / totals.Clicks : 0;
+    totals.Conversions > 0 ? totalCostField / totals.Conversions : 0;
+  const totalCpc = totals.Clicks > 0 ? totalCostField / totals.Clicks : 0;
   const totalCpm =
-    totals.Impressions > 0 ? (totals.Spent * 1000) / totals.Impressions : 0;
-  const totalCpv = totals.Views > 0 ? totals.Spent / totals.Views : 0;
+    totals.Impressions > 0 ? (totalCostField * 1000) / totals.Impressions : 0;
   const totalCpe =
-    totals.Engagements > 0 ? totals.Spent / totals.Engagements : 0;
+    totals.Engagements > 0 ? totalCostField / totals.Engagements : 0;
   const totalCpa =
-    totals.Conversions > 0 ? totals.Spent / totals.Conversions : 0;
+    totals.Conversions > 0 ? totalCostField / totals.Conversions : 0;
   const totalEngagementRate =
     totals.Reach > 0 ? (totals.Engagements / totals.Reach) * 100 : 0;
+
+  // YouTube-specific total calculations
+  let totalCpv = 0;
+  let totalViewRate = 0;
+
+  if (platform === "Youtube") {
+    const totalVideoViews = totals["Video views"] || 0;
+    totalCpv = totalVideoViews > 0 ? totalCostField / totalVideoViews : 0;
+    totalViewRate =
+      totals.Impressions > 0 ? (totalVideoViews / totals.Impressions) * 100 : 0;
+  } else {
+    totalCpv = totals.VideoViews > 0 ? totalCostField / totals.VideoViews : 0;
+  }
 
   const enhancedTotals = {
     ...totals,
@@ -100,6 +147,11 @@ export const processAdvertisingData = (
     cpa: Number(totalCpa.toFixed(2)),
     engagementRate: Number(totalEngagementRate.toFixed(2)),
   };
+
+  // Add viewRate for YouTube totals
+  if (platform === "Youtube") {
+    enhancedTotals.viewRate = Number(totalViewRate.toFixed(2));
+  }
 
   return {
     enhancedFieldData,
@@ -174,6 +226,13 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         enhanced[field.key] =
           data.reach > 0
             ? Number(((data.engagements / data.reach) * 100).toFixed(2))
+            : 0;
+        break;
+      case "viewRate":
+        // YouTube-specific view rate calculation
+        enhanced[field.key] =
+          data.impressions > 0
+            ? Number(((data.views / data.impressions) * 100).toFixed(2))
             : 0;
         break;
       case "custom":
