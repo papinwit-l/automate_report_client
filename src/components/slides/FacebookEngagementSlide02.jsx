@@ -16,6 +16,7 @@ import {
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import ImageFallback from "./utils/ImageFallback";
 
 function FacebookEngagementSlide02() {
   const {
@@ -87,6 +88,7 @@ function FacebookEngagementSlide02() {
     } (with ${topCreative.value.engagements?.toLocaleString()} post engagements)**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;
     prepareAdsPicture(topCreative.key);
+    setTopAds(topCreative.key);
     setSummaryText(summaryTextTemp);
   };
 
@@ -94,9 +96,9 @@ function FacebookEngagementSlide02() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    // console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
 
   //Demographic for chart
@@ -440,11 +442,7 @@ function FacebookEngagementSlide02() {
           </div>
           {/* Images */}
           <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
-            <img
-              src={adsPicture}
-              alt="ads preview"
-              className="max-h-[265px] max-w-full object-contain w-auto"
-            />
+            <ImageFallback src={adsPicture} alt="ads preview" />
             <p className="mx-auto">{topAds}</p>
           </div>
           {/* Summary */}

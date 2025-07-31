@@ -99,6 +99,7 @@ function FacebookConversionSlide02() {
       }
 
       prepareAdsPicture(topCreative.key);
+      setTopAds(topCreative.key);
 
       setSummaryText(summaryTextTemp);
     } catch (error) {
@@ -115,9 +116,9 @@ function FacebookConversionSlide02() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    // console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
 
   //Demographic for chart

@@ -90,6 +90,7 @@ function FacebookAwarenessSlide() {
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     prepareAdsPicture(topCreative.key);
+    setTopAds(topCreative.key);
     setSummaryText(summaryTextTemp);
   };
 
@@ -97,9 +98,9 @@ function FacebookAwarenessSlide() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
 
   const prepareChartData = () => {

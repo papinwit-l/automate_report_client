@@ -16,6 +16,7 @@ import {
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import ImageFallback from "./utils/ImageFallback";
 
 function FacebookAwarenessSlide02PicTable() {
   const {
@@ -91,23 +92,19 @@ function FacebookAwarenessSlide02PicTable() {
 
     prepareAdsPicture(topCreative.key);
     // prepareTablePicture();
+    setTopAds(topCreative.key);
     prepareTablePictureObject();
     setSummaryText(summaryTextTemp);
   };
 
   const prepareAdsPicture = (adsName) => {
-    // console.log(
-    //   "FacebookAdsPicture",
-    //   FacebookAdsPicture.map((item) => item["Ad name"])
-    // );
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    // console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
-
   const prepareTablePictureObject = () => {
     const pictureTableData = {};
 
@@ -556,14 +553,8 @@ function FacebookAwarenessSlide02PicTable() {
           </div>
           <div className="col-span-3 flex flex-col ml-2 mt-8 justify-between items-center">
             {/* Ads Preview */}
-            <div className="p-6 flex flex-col gap-2">
-              <img
-                src={adsPicture}
-                alt="ads preview"
-                className="max-h-[300px] max-w-full object-contain w-auto"
-              />
-              <p className="mx-auto">{topAds}</p>
-            </div>
+            <ImageFallback src={adsPicture} alt="ads preview" />
+            <p className="mx-auto">{topAds}</p>
             {/* Chart */}
             {/* <div className="col-span-3">
               <DonutChart

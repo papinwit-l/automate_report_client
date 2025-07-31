@@ -31,6 +31,12 @@ function FacebookAwarenessSlide01() {
     FacebookCreativeData,
     FacebookCreativeTotals,
     FacebookAdsPicture,
+    FacebookAwarenessAudienceData,
+    FacebookAwarenessAudienceTotals,
+    FacebookAwarenessCreativeData,
+    FacebookAwarenessCreativeTotals,
+    FacebookAwarenessAudienceMetrics,
+    FacebookAwarenessAudienceComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -42,9 +48,9 @@ function FacebookAwarenessSlide01() {
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      FacebookAudienceTotals?.clicks === "No Data" ||
-      !FacebookAudienceTotals ||
-      Object.keys(FacebookAudienceTotals).length === 0
+      FacebookAwarenessAudienceTotals?.clicks === "No Data" ||
+      !FacebookAwarenessAudienceTotals ||
+      Object.keys(FacebookAwarenessAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
@@ -52,17 +58,17 @@ function FacebookAwarenessSlide01() {
 
     let summaryTextTemp = "";
     const overallText = `Overall impression: ** ${parseFloat(
-      FacebookAudienceTotals?.impressions?.toFixed(2) || 0
+      FacebookAwarenessAudienceTotals?.impressions?.toFixed(2) || 0
     )?.toLocaleString()} impressions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    summaryTextTemp += `<li>Average CPM: **${FacebookAudienceTotals.cpm?.toLocaleString(
+    summaryTextTemp += `<li>Average CPM: **${FacebookAwarenessAudienceTotals.cpm?.toLocaleString(
       undefined,
       { minimumFractionDigits: 2, maximumFractionDigits: 2 }
     )} THB (per 1000 impressions)**</li>`;
 
     // Find top audience by impressions (simpler approach)
-    const topAudience = Object.entries(FacebookAudienceData).reduce(
+    const topAudience = Object.entries(FacebookAwarenessAudienceData).reduce(
       (max, [key, value]) =>
         (value.impressions || 0) > (max.value.impressions || 0)
           ? { key, value }
@@ -76,7 +82,7 @@ function FacebookAwarenessSlide01() {
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
-    const topCreative = Object.entries(FacebookCreativeData).reduce(
+    const topCreative = Object.entries(FacebookAwarenessCreativeData).reduce(
       (max, [key, value]) =>
         (value.impressions || 0) > (max.value.impressions || 0)
           ? { key, value }
@@ -86,9 +92,10 @@ function FacebookAwarenessSlide01() {
     const topCreativeText = `Top Creative: **${
       topCreative.key
     } (with ${topCreative.value.impressions?.toLocaleString()} Impressions**`;
-    summaryTextTemp += `<li>${topCreativeText}</li>`;
+    // summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     prepareAdsPicture(topCreative.key);
+    setTopAds(topCreative.key);
     setSummaryText(summaryTextTemp);
   };
 
@@ -96,9 +103,9 @@ function FacebookAwarenessSlide01() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    // console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
 
   //Demographic for chart
@@ -210,7 +217,7 @@ function FacebookAwarenessSlide01() {
 
   useEffect(() => {
     summarizeData();
-  }, [FacebookAudienceTotals, FacebookAudienceData]);
+  }, [FacebookAwarenessAudienceTotals, FacebookAwarenessAudienceData]);
 
   // Show loading state
   if (loading) {
@@ -257,78 +264,78 @@ function FacebookAwarenessSlide01() {
   // Format display data with safe fallbacks
   // Using optional chaining to handle undefined/null values from useState
   const impressionData = formatDisplayData(
-    FacebookAudienceTotals?.impressions,
-    FacebookAudienceComparison?.impressions,
+    FacebookAwarenessAudienceTotals?.impressions,
+    FacebookAwarenessAudienceComparison?.impressions,
     "compact"
   );
   const clicksData = formatDisplayData(
-    FacebookAudienceTotals?.clicks,
-    FacebookAudienceComparison?.clicks,
+    FacebookAwarenessAudienceTotals?.clicks,
+    FacebookAwarenessAudienceComparison?.clicks,
     "compact"
   );
   const ctrData = formatDisplayData(
-    FacebookAudienceTotals?.ctr,
-    FacebookAudienceComparison?.ctr,
+    FacebookAwarenessAudienceTotals?.ctr,
+    FacebookAwarenessAudienceComparison?.ctr,
     "percentage"
   );
   const cpcData = formatDisplayData(
-    FacebookAudienceTotals?.cpc,
-    FacebookAudienceComparison?.cpc,
+    FacebookAwarenessAudienceTotals?.cpc,
+    FacebookAwarenessAudienceComparison?.cpc,
     "compact"
   );
   const conversionsData = formatDisplayData(
-    FacebookAudienceTotals?.conversions,
-    FacebookAudienceComparison?.conversions,
+    FacebookAwarenessAudienceTotals?.conversions,
+    FacebookAwarenessAudienceComparison?.conversions,
     "number"
   );
   const cplData = formatDisplayData(
-    FacebookAudienceTotals?.cpl,
-    FacebookAudienceComparison?.cpl,
+    FacebookAwarenessAudienceTotals?.cpl,
+    FacebookAwarenessAudienceComparison?.cpl,
     "compact"
   );
   const spentData = formatDisplayData(
-    FacebookAudienceTotals?.spent,
-    FacebookAudienceComparison?.spent,
+    FacebookAwarenessAudienceTotals?.spent,
+    FacebookAwarenessAudienceComparison?.spent,
     "compact"
   );
   const conRate = formatDisplayData(
-    FacebookAudienceTotals?.cvr, // Changed from conRate to cvr
-    FacebookAudienceComparison?.cvr,
+    FacebookAwarenessAudienceTotals?.cvr, // Changed from conRate to cvr
+    FacebookAwarenessAudienceComparison?.cvr,
     "percentage"
   );
   const cpmData = formatDisplayData(
-    FacebookAudienceTotals?.cpm,
-    FacebookAudienceComparison?.cpm,
+    FacebookAwarenessAudienceTotals?.cpm,
+    FacebookAwarenessAudienceComparison?.cpm,
     "compact"
   );
   const reachData = formatDisplayData(
-    FacebookAudienceTotals?.reach,
-    FacebookAudienceComparison?.reach,
+    FacebookAwarenessAudienceTotals?.reach,
+    FacebookAwarenessAudienceComparison?.reach,
     "compact"
   );
   const frequencyData = formatDisplayData(
-    FacebookAudienceTotals?.frequency,
-    FacebookAudienceComparison?.frequency,
+    FacebookAwarenessAudienceTotals?.frequency,
+    FacebookAwarenessAudienceComparison?.frequency,
     "compact"
   );
   const cprData = formatDisplayData(
-    FacebookAudienceTotals?.cpr,
-    FacebookAudienceComparison?.cpr,
+    FacebookAwarenessAudienceTotals?.cpr,
+    FacebookAwarenessAudienceComparison?.cpr,
     "compact"
   );
   const engagementData = formatDisplayData(
-    FacebookAudienceTotals?.engagements,
-    FacebookAudienceComparison?.engagements,
+    FacebookAwarenessAudienceTotals?.engagements,
+    FacebookAwarenessAudienceComparison?.engagements,
     "compact"
   );
   const engagementRateData = formatDisplayData(
-    FacebookAudienceTotals?.engagementRate,
-    FacebookAudienceComparison?.engagementRate,
+    FacebookAwarenessAudienceTotals?.engagementRate,
+    FacebookAwarenessAudienceComparison?.engagementRate,
     "percentage"
   );
   const cpeData = formatDisplayData(
-    FacebookAudienceTotals?.cpe,
-    FacebookAudienceComparison?.cpe,
+    FacebookAwarenessAudienceTotals?.cpe,
+    FacebookAwarenessAudienceComparison?.cpe,
     "compact"
   );
 
@@ -419,8 +426,8 @@ function FacebookAwarenessSlide01() {
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookAudienceData}
-                totalData={FacebookAudienceTotals}
+                channelData={FacebookAwarenessAudienceData}
+                totalData={FacebookAwarenessAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
@@ -447,7 +454,7 @@ function FacebookAwarenessSlide01() {
 
               <AdvancedDataTable
                 firstMetric="Ad name"
-                channelData={FacebookCreativeData}
+                channelData={FacebookAwarenessCreativeData}
                 totalData={FacebookCreativeTotals}
                 metrics={[
                   "Ad name",
