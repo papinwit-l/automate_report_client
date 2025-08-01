@@ -439,7 +439,6 @@ export const DEFAULT_METRICS = {
     "Impressions",
     "Clicks",
     "Video views",
-    "viewRate",
     "Conversions",
     "Spent",
     "Watch 25% views",
@@ -457,6 +456,7 @@ export const DEFAULT_METRICS = {
   FacebookLead: FACEBOOK_METRICS,
   FacebookConversion: FACEBOOK_METRICS,
   FacebookTraffic: FACEBOOK_METRICS,
+  FacebookVideo: FACEBOOK_METRICS,
   TikTokAudience: [
     "Ad group name",
     "Ad name",

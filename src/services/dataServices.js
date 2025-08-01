@@ -1,4 +1,5 @@
-// services/dataServices.js
+// services/dataServices.js - FIXED VERSION
+
 import axios from "axios";
 import { DATA_CONFIGS } from "../configs/dataConfigs";
 import {
@@ -19,8 +20,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     dateRange = { from: null, to: null },
     metricsMap = {},
     settersMap = {},
-    filterBy = null, // ✅ Field to filter by (e.g., 'Channel', 'Campaign objective')
-    filterValue = null, // ✅ Value to filter for (e.g., 'Lead', 'LEAD_GENERATION')
+    filterBy = null,
+    filterValue = null,
   } = options;
 
   try {
@@ -43,9 +44,12 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
 
-    // Get metrics and clean data
-    const metrics = metricsMap[dataType] || [];
-    const cleanedData = cleanObjectData(dataObjects, metrics);
+    // Get metrics for processing and display
+    const displayMetrics = metricsMap[dataType] || []; // For final display
+    const processMetrics = config.processFields || displayMetrics; // For data cleaning
+
+    // ✅ FIX: Use processMetrics (source field names) for cleaning
+    const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
     // Apply date range filtering
     let currentPeriodData = cleanedData;
@@ -90,8 +94,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       if (config.processorType === "social") {
         currentPeriodResults = processSocialMediaData(
           currentPeriodData,
-          metrics,
-          config.processFields,
+          processMetrics, // ✅ Use source field names for processing
+          displayMetrics, // ✅ Use display field names for final result
           config.socialConfig,
           filterOptions
         );
@@ -99,8 +103,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
         if (config.hasComparison && previousPeriodData.length > 0) {
           previousPeriodResults = processSocialMediaData(
             previousPeriodData,
-            metrics,
-            config.processFields,
+            processMetrics, // ✅ Use source field names for processing
+            displayMetrics, // ✅ Use display field names for final result
             config.socialConfig,
             filterOptions
           );
@@ -110,24 +114,23 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
           );
         }
       } else if (config.processorType === "advertising") {
-        // ✅ KEY CHANGE: Determine platform for YouTube-specific processing
         const platform = dataType === "Youtube" ? "Youtube" : "default";
 
         currentPeriodResults = processAdvertisingData(
           currentPeriodData,
-          metrics,
-          config.processFields,
+          processMetrics, // ✅ Use source field names
+          displayMetrics, // ✅ Use display field names
           config.groupBy,
-          platform // ✅ Pass platform parameter
+          platform
         );
 
         if (config.hasComparison && previousPeriodData.length > 0) {
           previousPeriodResults = processAdvertisingData(
             previousPeriodData,
-            metrics,
-            config.processFields,
+            processMetrics, // ✅ Use source field names
+            displayMetrics, // ✅ Use display field names
             config.groupBy,
-            platform // ✅ Pass platform parameter for previous period too
+            platform
           );
           comparison = calculateComparison(
             currentPeriodResults.enhancedTotals,
@@ -171,7 +174,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
   }
 };
 
-// Helper function to get unique filter values from data
+// Helper function remains the same
 export const getFilterValues = async (dataType, id, filterField) => {
   try {
     const config = DATA_CONFIGS[dataType];
@@ -179,7 +182,6 @@ export const getFilterValues = async (dataType, id, filterField) => {
       throw new Error(`Configuration for ${dataType} not found`);
     }
 
-    // Fetch data from API
     const response = await axios.get(
       `http://localhost:8000/data-sheets/${config.endpoint}/${id}`
     );
@@ -188,12 +190,10 @@ export const getFilterValues = async (dataType, id, filterField) => {
     const headers = rawData[0];
     const dataRows = rawData.slice(1);
 
-    // Transform raw data to objects
     const dataObjects = dataRows.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
 
-    // Extract unique values for the filter field
     const uniqueValues = [
       ...new Set(
         dataObjects

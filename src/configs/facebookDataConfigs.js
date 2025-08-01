@@ -1,3 +1,5 @@
+// facebookDataConfigs.js
+
 export const FACEBOOK_FIELDS = [
   { key: "impressions", sourceField: "Impressions" },
   { key: "reach", sourceField: "Reach" },
@@ -25,6 +27,7 @@ export const FACEBOOK_CALCULATED_FIELDS = [
   { key: "cpe", type: "cpe" },
   { key: "cpa", type: "cpa" },
   { key: "engagementRate", type: "engagementRate" },
+  { key: "viewRate", type: "viewRate" },
   { key: "spent", type: "custom", calculate: (data) => data.cost },
 ];
 
@@ -51,7 +54,7 @@ export const FACEBOOK_METRICS = [
   "Website conversions",
   "Cost",
   "Video watches at 25%",
-  "Video views",
+  "views",
   "Post engagements",
   "Channel", // From FacebookReach & FacebookEngagement
   "New messaging conversations within 7 days", // From FacebookMessage

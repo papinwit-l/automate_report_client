@@ -1,4 +1,4 @@
-// utils/dataProcessors.js - Enhanced version with YouTube support
+// utils/dataProcessors.js - Clean version without debug logs
 import { NON_NUMERIC_COLUMNS } from "../configs/dataConfigs";
 
 // Enhanced processor for advertising platforms (SEM, GDN, Disc, Youtube)
@@ -7,7 +7,7 @@ export const processAdvertisingData = (
   metrics,
   finalMetrics,
   groupBy = "Keyword",
-  platform = "default" // Add platform parameter to handle YouTube differently
+  platform = "default"
 ) => {
   if (!cleanedData || cleanedData.length === 0) {
     return {
@@ -166,75 +166,101 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
 
   calculatedFields.forEach((field) => {
     switch (field.type) {
+      case "cpv":
+        // Ensure both values are properly converted to numbers
+        let views = data.views;
+        let cost = data.cost;
+
+        // Convert views to number if it's a string
+        if (typeof views === "string") {
+          // Remove leading zeros and convert to number
+          views = parseFloat(views.replace(/^0+/, "") || "0") || 0;
+        } else {
+          views = Number(views) || 0;
+        }
+
+        // Ensure cost is a number
+        cost = Number(cost) || 0;
+
+        const cpvResult = views > 0 ? Number((cost / views).toFixed(6)) : 0;
+        enhanced[field.key] = cpvResult;
+        break;
+
       case "frequency":
         enhanced[field.key] =
           data.impressions > 0 && data.reach > 0
             ? Number((data.impressions / data.reach).toFixed(2))
             : 0;
         break;
+
       case "ctr":
         enhanced[field.key] =
           data.impressions > 0
             ? Number(((data.clicks / data.impressions) * 100).toFixed(2))
             : 0;
         break;
+
       case "cpc":
         enhanced[field.key] =
           data.clicks > 0 ? Number((data.cost / data.clicks).toFixed(2)) : 0;
         break;
+
       case "cvr":
         enhanced[field.key] =
           data.clicks > 0
             ? Number(((data.conversions / data.clicks) * 100).toFixed(2))
             : 0;
         break;
+
       case "cpa":
         enhanced[field.key] =
           data.conversions > 0
             ? Number((data.cost / data.conversions).toFixed(2))
             : 0;
         break;
+
       case "cpr":
         enhanced[field.key] =
           data.reach > 0
             ? Number(((data.cost * 1000) / data.reach).toFixed(2))
             : 0;
         break;
+
       case "cpl":
         enhanced[field.key] =
           data.conversions > 0
             ? Number((data.cost / data.conversions).toFixed(2))
             : 0;
         break;
+
       case "cpm":
         enhanced[field.key] =
           data.impressions > 0
             ? Number(((data.cost * 1000) / data.impressions).toFixed(2))
             : 0;
         break;
-      case "cpv":
-        enhanced[field.key] =
-          data.views > 0 ? Number((data.cost / data.views).toFixed(2)) : 0;
-        break;
+
       case "cpe":
         enhanced[field.key] =
           data.engagements > 0
             ? Number((data.cost / data.engagements).toFixed(2))
             : 0;
         break;
+
       case "engagementRate":
         enhanced[field.key] =
           data.reach > 0
             ? Number(((data.engagements / data.reach) * 100).toFixed(2))
             : 0;
         break;
+
       case "viewRate":
-        // YouTube-specific view rate calculation
         enhanced[field.key] =
           data.impressions > 0
             ? Number(((data.views / data.impressions) * 100).toFixed(2))
             : 0;
         break;
+
       case "custom":
         enhanced[field.key] = field.calculate(data);
         break;
@@ -285,19 +311,6 @@ export const processSocialMediaData = (
       filterOptions.filterBy,
       filterOptions.filterValue
     );
-
-    // If no data after filtering, return empty results
-    if (processedData.length === 0) {
-      return {
-        enhancedFieldData: {},
-        enhancedTotals: Object.fromEntries(
-          finalMetrics.map((m) => [m, "No Data"])
-        ),
-        allMetrics: finalMetrics,
-        audienceData: {},
-        creativeData: {},
-      };
-    }
   }
 
   // Process data for Performance by Audiences table
@@ -312,8 +325,8 @@ export const processSocialMediaData = (
     }
 
     config.fields.forEach((field) => {
-      const value = item[field.sourceField] || 0;
-      acc[audienceKey][field.key] += value;
+      const sourceValue = item[field.sourceField];
+      acc[audienceKey][field.key] += sourceValue || 0;
     });
 
     return acc;
@@ -400,8 +413,24 @@ export const cleanObjectData = (object, metrics) => {
     // Clean numeric fields
     for (const key of metrics) {
       if (NON_NUMERIC_COLUMNS.includes(key)) continue;
-      cleaned[key] =
-        parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
+
+      let value = cleaned[key];
+
+      // Convert to string first, handle null/undefined
+      if (value === null || value === undefined) {
+        value = "0";
+      } else {
+        value = value.toString().replace(/,/g, "");
+      }
+
+      // Remove leading zeros for problematic fields
+      if (typeof value === "string" && value.match(/^0+\d/)) {
+        value = value.replace(/^0+/, "") || "0";
+      }
+
+      // Parse to number
+      const numericValue = parseFloat(value) || 0;
+      cleaned[key] = numericValue;
     }
 
     // Clean all text fields that could be used for grouping

@@ -40,6 +40,8 @@ function DataTable({
         return "Frequency";
       case "cpr":
         return "CPR";
+      case "views":
+        return "Video views";
       case "keyword":
         return "Keyword";
       default:
