@@ -1,3 +1,10 @@
+import {
+  FACEBOOK_CALCULATED_FIELDS,
+  FACEBOOK_FIELDS,
+  FACEBOOK_METRICS,
+  FACEBOOK_PROCESSED_FIELDS,
+} from "./facebookDataConfigs";
+
 // configs/dataConfigs.js
 export const NON_NUMERIC_COLUMNS = [
   "Ad group name",
@@ -28,257 +35,64 @@ export const SOCIAL_MEDIA_CONFIGS = {
   FacebookAudience: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookAwareness: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookReach: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookEngagement: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookMessage: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookLead: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookConversion: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookTraffic: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-      {
-        key: "messages",
-        sourceField: "New messaging conversations within 7 days",
-      },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpa", type: "cpa" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookVideo: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   TikTokAudience: {
@@ -451,18 +265,7 @@ export const DATA_CONFIGS = {
   // Social media platforms
   FacebookAudience: {
     endpoint: "facebook-data",
-    processFields: [
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "Channel", // From FacebookReach & FacebookEngagement
-      "New messaging conversations within 7 days", // From FacebookMessage
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -472,18 +275,7 @@ export const DATA_CONFIGS = {
 
   FacebookAwareness: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // For filtering
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days",
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -517,18 +309,7 @@ export const DATA_CONFIGS = {
 
   FacebookReach: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // Original field
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days", // From FacebookMessage
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -538,18 +319,7 @@ export const DATA_CONFIGS = {
 
   FacebookEngagement: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // Original field
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days", // From FacebookMessage
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -559,18 +329,7 @@ export const DATA_CONFIGS = {
 
   FacebookMessage: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // For filtering
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days", // Original field
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -580,18 +339,7 @@ export const DATA_CONFIGS = {
 
   FacebookLead: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // For filtering
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days", // From other Facebook types
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -601,18 +349,7 @@ export const DATA_CONFIGS = {
 
   FacebookConversion: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // For filtering
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days", // From other Facebook types
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -622,23 +359,22 @@ export const DATA_CONFIGS = {
 
   FacebookTraffic: {
     endpoint: "facebook-data",
-    processFields: [
-      "Channel", // For filtering
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-      "New messaging conversations within 7 days",
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
     processorType: "social",
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookTraffic,
+  },
+
+  FacebookVideo: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookVideo,
   },
 
   TikTokAudience: {
@@ -712,126 +448,15 @@ export const DEFAULT_METRICS = {
     "Watch 100% views",
     "Engagements",
   ],
-  FacebookAudience: [
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "Channel", // From FacebookReach & FacebookEngagement
-    "New messaging conversations within 7 days", // From FacebookMessage
-  ],
-  FacebookAwareness: [
-    "Channel",
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days",
-  ],
-  FBDemographic: [
-    "Project",
-    "Channel",
-    "Conversion",
-    "Spent",
-    "Updated Date",
-    "Campaign name",
-    "Campaign objective",
-    "Age",
-    "Gender",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "New messaging conversations within 7 days",
-  ],
-  FacebookReach: [
-    "Channel", // Original field
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days", // From FacebookMessage
-  ],
-  FacebookEngagement: [
-    "Channel", // Original field
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days", // From FacebookMessage
-  ],
-  FacebookMessage: [
-    "Channel",
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days", // Original field
-  ],
-  FacebookLead: [
-    "Channel",
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days", // From other Facebook types
-  ],
-  FacebookConversion: [
-    "Channel",
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days", // From other Facebook types
-  ],
-  FacebookTraffic: [
-    "Channel",
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-    "New messaging conversations within 7 days",
-  ],
+  FacebookAudience: FACEBOOK_METRICS,
+  FacebookAwareness: FACEBOOK_METRICS,
+  FBDemographic: FACEBOOK_METRICS,
+  FacebookReach: FACEBOOK_METRICS,
+  FacebookEngagement: FACEBOOK_METRICS,
+  FacebookMessage: FACEBOOK_METRICS,
+  FacebookLead: FACEBOOK_METRICS,
+  FacebookConversion: FACEBOOK_METRICS,
+  FacebookTraffic: FACEBOOK_METRICS,
   TikTokAudience: [
     "Ad group name",
     "Ad name",

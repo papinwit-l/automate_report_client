@@ -204,6 +204,19 @@ export const DataProvider = ({ children }) => {
     setFacebookTrafficAudienceComparison,
   ] = useState({});
 
+  // Facebook Video
+  const [FacebookVideoData, setFacebookVideoData] = useState({});
+  const [FacebookVideoTotals, setFacebookVideoTotals] = useState({});
+  const [FacebookVideoMetrics, setFacebookVideoMetrics] = useState(
+    DEFAULT_METRICS.FacebookVideo
+  );
+  const [FacebookVideoComparison, setFacebookVideoComparison] = useState({});
+  const [FacebookVideoCreativeData, setFacebookVideoCreativeData] = useState(
+    {}
+  );
+  const [FacebookVideoCreativeTotals, setFacebookVideoCreativeTotals] =
+    useState({});
+
   // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
@@ -244,6 +257,7 @@ export const DataProvider = ({ children }) => {
     FacebookLead: FacebookLeadAudienceMetrics,
     FacebookConversion: FacebookConversionAudienceMetrics,
     FacebookTraffic: FacebookTrafficAudienceMetrics,
+    FacebookVideo: FacebookVideoMetrics,
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
@@ -324,6 +338,12 @@ export const DataProvider = ({ children }) => {
     setFacebookTrafficCreativeTotals,
     setFacebookTrafficAudienceMetrics,
     setFacebookTrafficAudienceComparison,
+    setFacebookVideoData,
+    setFacebookVideoTotals,
+    setFacebookVideoCreativeData,
+    setFacebookVideoCreativeTotals,
+    setFacebookVideoMetrics,
+    setFacebookVideoComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -516,7 +536,21 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getFacebookTrafficData result:", result);
+    // console.log("🎯 getFacebookTrafficData result:", result);
+    return result;
+  };
+
+  const getFacebookVideoData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FacebookVideo",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getFacebookVideoData result:", result);
     return result;
   };
 
@@ -573,6 +607,7 @@ export const DataProvider = ({ children }) => {
           getFacebookLeadData(id, "Channel", "FB Lead"),
           getFacebookConversionData(id, "Channel", "FB Conversions"),
           getFacebookTrafficData(id, "Channel", "FB Traffic"),
+          getFacebookVideoData(id, "Channel", "FB Video Views"),
           getFBDemographicData(id),
           fetchFacebookPicture(id),
           // getTikTokData(id),
@@ -616,6 +651,7 @@ export const DataProvider = ({ children }) => {
           FacebookLead: getFacebookLeadData,
           FacebookConversion: getFacebookConversionData,
           FacebookTraffic: getFacebookTrafficData,
+          FacebookVideo: getFacebookVideoData,
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -837,6 +873,14 @@ export const DataProvider = ({ children }) => {
     FacebookTrafficCreativeTotals,
     FacebookTrafficAudienceMetrics,
     FacebookTrafficAudienceComparison,
+
+    // Facebook Video
+    FacebookVideoData,
+    FacebookVideoTotals,
+    FacebookVideoCreativeData,
+    FacebookVideoCreativeTotals,
+    FacebookVideoMetrics,
+    FacebookVideoComparison,
 
     // TikTok
     TikTokAudienceData,
