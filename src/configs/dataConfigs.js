@@ -4,6 +4,12 @@ import {
   FACEBOOK_METRICS,
   FACEBOOK_PROCESSED_FIELDS,
 } from "./facebookDataConfigs";
+import {
+  TIKTOK_CALCULATED_FIELDS,
+  TIKTOK_FIELDS,
+  TIKTOK_METRICS,
+  TIKTOK_PROCESSED_FIELDS,
+} from "./tiktokDataConfigs";
 
 // configs/dataConfigs.js
 export const NON_NUMERIC_COLUMNS = [
@@ -102,29 +108,47 @@ export const SOCIAL_MEDIA_CONFIGS = {
     calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
+  // TikTok Campaign Types
   TikTokAudience: {
     audienceGroupBy: "Ad group name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Clicks" },
-      { key: "conversions", sourceField: "Conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Engagements" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokLead: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokReach: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokTraffic: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokConversion: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokVideo: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
   },
 
   InstagramAudience: {
@@ -396,19 +420,62 @@ export const DATA_CONFIGS = {
 
   TikTokAudience: {
     endpoint: "tiktok-data",
-    processFields: [
-      "Ad group name",
-      "Impressions",
-      "Reach",
-      "Clicks",
-      "Conversions",
-      "Cost",
-    ],
+    processFields: TIKTOK_PROCESSED_FIELDS,
     groupBy: "Ad group name",
     hasComparison: true,
     processData: true,
     processorType: "social",
     socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokAudience,
+  },
+
+  TikTokLead: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokLead,
+  },
+
+  TikTokReach: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokReach,
+  },
+
+  TikTokTraffic: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokTraffic,
+  },
+
+  TikTokConversion: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokConversion,
+  },
+
+  TikTokVideo: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokVideo,
   },
 
   InstagramAudience: {
@@ -475,16 +542,12 @@ export const DEFAULT_METRICS = {
   FacebookTraffic: FACEBOOK_METRICS,
   FacebookVideo: FACEBOOK_METRICS,
   FacebookCatalog: FACEBOOK_METRICS,
-  TikTokAudience: [
-    "Ad group name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Clicks",
-    "Conversions",
-    "Cost",
-    "Engagements",
-  ],
+  TikTokAudience: TIKTOK_METRICS,
+  TikTokLead: TIKTOK_METRICS,
+  TikTokReach: TIKTOK_METRICS,
+  TikTokTraffic: TIKTOK_METRICS,
+  TikTokConversion: TIKTOK_METRICS,
+  TikTokVideo: TIKTOK_METRICS,
   InstagramAudience: [
     "Ad set name",
     "Ad name",

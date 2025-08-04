@@ -247,15 +247,77 @@ export const DataProvider = ({ children }) => {
   );
   const [TikTokAudienceComparison, setTikTokAudienceComparison] = useState({});
 
-  // Instagram Data
-  const [InstagramAudienceData, setInstagramAudienceData] = useState({});
-  const [InstagramAudienceTotals, setInstagramAudienceTotals] = useState({});
-  const [InstagramCreativeData, setInstagramCreativeData] = useState({});
-  const [InstagramCreativeTotals, setInstagramCreativeTotals] = useState({});
-  const [InstagramAudienceMetrics, setInstagramAudienceMetrics] = useState(
-    DEFAULT_METRICS.InstagramAudience
+  // TikTok Lead Data
+  const [TikTokLeadAudienceData, setTikTokLeadAudienceData] = useState({});
+  const [TikTokLeadAudienceTotals, setTikTokLeadAudienceTotals] = useState({});
+  const [TikTokLeadCreativeData, setTikTokLeadCreativeData] = useState({});
+  const [TikTokLeadCreativeTotals, setTikTokLeadCreativeTotals] = useState({});
+  const [TikTokLeadAudienceMetrics, setTikTokLeadAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokLead
   );
-  const [InstagramAudienceComparison, setInstagramAudienceComparison] =
+  const [TikTokLeadAudienceComparison, setTikTokLeadAudienceComparison] =
+    useState({});
+
+  // TikTok Reach Data
+  const [TikTokReachAudienceData, setTikTokReachAudienceData] = useState({});
+  const [TikTokReachAudienceTotals, setTikTokReachAudienceTotals] = useState(
+    {}
+  );
+  const [TikTokReachCreativeData, setTikTokReachCreativeData] = useState({});
+  const [TikTokReachCreativeTotals, setTikTokReachCreativeTotals] = useState(
+    {}
+  );
+  const [TikTokReachAudienceMetrics, setTikTokReachAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokReach
+  );
+  const [TikTokReachAudienceComparison, setTikTokReachAudienceComparison] =
+    useState({});
+
+  // TikTok Traffic Data
+  const [TikTokTrafficAudienceData, setTikTokTrafficAudienceData] = useState(
+    {}
+  );
+  const [TikTokTrafficAudienceTotals, setTikTokTrafficAudienceTotals] =
+    useState({});
+  const [TikTokTrafficCreativeData, setTikTokTrafficCreativeData] = useState(
+    {}
+  );
+  const [TikTokTrafficCreativeTotals, setTikTokTrafficCreativeTotals] =
+    useState({});
+  const [TikTokTrafficAudienceMetrics, setTikTokTrafficAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokTraffic);
+  const [TikTokTrafficAudienceComparison, setTikTokTrafficAudienceComparison] =
+    useState({});
+
+  // TikTok Conversion Data
+  const [TikTokConversionAudienceData, setTikTokConversionAudienceData] =
+    useState({});
+  const [TikTokConversionAudienceTotals, setTikTokConversionAudienceTotals] =
+    useState({});
+  const [TikTokConversionCreativeData, setTikTokConversionCreativeData] =
+    useState({});
+  const [TikTokConversionCreativeTotals, setTikTokConversionCreativeTotals] =
+    useState({});
+  const [TikTokConversionAudienceMetrics, setTikTokConversionAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokConversion);
+  const [
+    TikTokConversionAudienceComparison,
+    setTikTokConversionAudienceComparison,
+  ] = useState({});
+
+  // TikTok Video Data
+  const [TikTokVideoAudienceData, setTikTokVideoAudienceData] = useState({});
+  const [TikTokVideoAudienceTotals, setTikTokVideoAudienceTotals] = useState(
+    {}
+  );
+  const [TikTokVideoCreativeData, setTikTokVideoCreativeData] = useState({});
+  const [TikTokVideoCreativeTotals, setTikTokVideoCreativeTotals] = useState(
+    {}
+  );
+  const [TikTokVideoAudienceMetrics, setTikTokVideoAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokVideo
+  );
+  const [TikTokVideoAudienceComparison, setTikTokVideoAudienceComparison] =
     useState({});
 
   // Create metrics map
@@ -277,7 +339,11 @@ export const DataProvider = ({ children }) => {
     FacebookVideo: FacebookVideoAudienceMetrics,
     FacebookCatalog: FacebookCatalogAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
-    InstagramAudience: InstagramAudienceMetrics,
+    TikTokLead: TikTokLeadAudienceMetrics,
+    TikTokReach: TikTokReachAudienceMetrics,
+    TikTokTraffic: TikTokTrafficAudienceMetrics,
+    TikTokConversion: TikTokConversionAudienceMetrics,
+    TikTokVideo: TikTokVideoAudienceMetrics,
   };
 
   // Create setters map
@@ -374,12 +440,36 @@ export const DataProvider = ({ children }) => {
     setTikTokCreativeTotals,
     setTikTokAudienceMetrics,
     setTikTokAudienceComparison,
-    setInstagramAudienceData,
-    setInstagramAudienceTotals,
-    setInstagramCreativeData,
-    setInstagramCreativeTotals,
-    setInstagramAudienceMetrics,
-    setInstagramAudienceComparison,
+    setTikTokLeadAudienceData,
+    setTikTokLeadAudienceTotals,
+    setTikTokLeadCreativeData,
+    setTikTokLeadCreativeTotals,
+    setTikTokLeadAudienceMetrics,
+    setTikTokLeadAudienceComparison,
+    setTikTokReachAudienceData,
+    setTikTokReachAudienceTotals,
+    setTikTokReachCreativeData,
+    setTikTokReachCreativeTotals,
+    setTikTokReachAudienceMetrics,
+    setTikTokReachAudienceComparison,
+    setTikTokTrafficAudienceData,
+    setTikTokTrafficAudienceTotals,
+    setTikTokTrafficCreativeData,
+    setTikTokTrafficCreativeTotals,
+    setTikTokTrafficAudienceMetrics,
+    setTikTokTrafficAudienceComparison,
+    setTikTokConversionAudienceData,
+    setTikTokConversionAudienceTotals,
+    setTikTokConversionCreativeData,
+    setTikTokConversionCreativeTotals,
+    setTikTokConversionAudienceMetrics,
+    setTikTokConversionAudienceComparison,
+    setTikTokVideoAudienceData,
+    setTikTokVideoAudienceTotals,
+    setTikTokVideoCreativeData,
+    setTikTokVideoCreativeTotals,
+    setTikTokVideoAudienceMetrics,
+    setTikTokVideoAudienceComparison,
   });
 
   // Helper function to build fetch options
@@ -600,9 +690,57 @@ export const DataProvider = ({ children }) => {
     );
   };
 
-  const getInstagramData = async (id, filterBy = null, filterValue = null) => {
+  const getTikTokLeadData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
-      "InstagramAudience",
+      "TikTokLead",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+  };
+
+  const getTikTokReachData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    return await fetchDataSheet(
+      "TikTokReach",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+  };
+
+  const getTikTokTrafficData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    return await fetchDataSheet(
+      "TikTokTraffic",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+  };
+
+  const getTikTokConversionData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    return await fetchDataSheet(
+      "TikTokConversion",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+  };
+
+  const getTikTokVideoData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    return await fetchDataSheet(
+      "TikTokVideo",
       id,
       buildFetchOptions(filterBy, filterValue)
     );
@@ -648,10 +786,10 @@ export const DataProvider = ({ children }) => {
           getFacebookTrafficData(id, "Channel", "FB Traffic"),
           getFacebookVideoData(id, "Channel", "FB Video Views"),
           getFacebookCatalogData(id, "Channel", "FB Catalog Sales"),
+          getTikTokReachData(id, "Channel", "TikTok Reach"),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
-          // getInstagramData(id),
         ];
 
         await Promise.all(promises);
@@ -694,7 +832,7 @@ export const DataProvider = ({ children }) => {
           FacebookVideo: getFacebookVideoData,
           FacebookCatalog: getFacebookCatalogData,
           TikTokAudience: getTikTokData,
-          InstagramAudience: getInstagramData,
+          TikTokReach: getTikTokReachData,
         }[dataType];
 
         if (!fetchFunction) {
@@ -939,13 +1077,45 @@ export const DataProvider = ({ children }) => {
     TikTokAudienceMetrics,
     TikTokAudienceComparison,
 
-    // Instagram
-    InstagramAudienceData,
-    InstagramAudienceTotals,
-    InstagramCreativeData,
-    InstagramCreativeTotals,
-    InstagramAudienceMetrics,
-    InstagramAudienceComparison,
+    // TikTok Lead
+    TikTokLeadAudienceData,
+    TikTokLeadAudienceTotals,
+    TikTokLeadCreativeData,
+    TikTokLeadCreativeTotals,
+    TikTokLeadAudienceMetrics,
+    TikTokLeadAudienceComparison,
+
+    // TikTok Reach
+    TikTokReachAudienceData,
+    TikTokReachAudienceTotals,
+    TikTokReachCreativeData,
+    TikTokReachCreativeTotals,
+    TikTokReachAudienceMetrics,
+    TikTokReachAudienceComparison,
+
+    // TikTok Traffic
+    TikTokTrafficAudienceData,
+    TikTokTrafficAudienceTotals,
+    TikTokTrafficCreativeData,
+    TikTokTrafficCreativeTotals,
+    TikTokTrafficAudienceMetrics,
+    TikTokTrafficAudienceComparison,
+
+    // TikTok Conversion
+    TikTokConversionAudienceData,
+    TikTokConversionAudienceTotals,
+    TikTokConversionCreativeData,
+    TikTokConversionCreativeTotals,
+    TikTokConversionAudienceMetrics,
+    TikTokConversionAudienceComparison,
+
+    // TikTok Video
+    TikTokVideoAudienceData,
+    TikTokVideoAudienceTotals,
+    TikTokVideoCreativeData,
+    TikTokVideoCreativeTotals,
+    TikTokVideoAudienceMetrics,
+    TikTokVideoAudienceComparison,
 
     //function
     fetchFacebookPicture,

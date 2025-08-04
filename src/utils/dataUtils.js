@@ -227,5 +227,46 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setInstagramAudienceMetrics,
       setComparison: stateSetter.setInstagramAudienceComparison,
     },
+    // TikTok campaign types
+    TikTokLead: {
+      setAudienceData: stateSetter.setTikTokLeadAudienceData,
+      setAudienceTotals: stateSetter.setTikTokLeadAudienceTotals,
+      setCreativeData: stateSetter.setTikTokLeadCreativeData,
+      setCreativeTotals: stateSetter.setTikTokLeadCreativeTotals,
+      setMetrics: stateSetter.setTikTokLeadAudienceMetrics,
+      setComparison: stateSetter.setTikTokLeadAudienceComparison,
+    },
+    TikTokReach: {
+      setAudienceData: stateSetter.setTikTokReachAudienceData,
+      setAudienceTotals: stateSetter.setTikTokReachAudienceTotals,
+      setCreativeData: stateSetter.setTikTokReachCreativeData,
+      setCreativeTotals: stateSetter.setTikTokReachCreativeTotals,
+      setMetrics: stateSetter.setTikTokReachAudienceMetrics,
+      setComparison: stateSetter.setTikTokReachAudienceComparison,
+    },
+    TikTokTraffic: {
+      setAudienceData: stateSetter.setTikTokTrafficAudienceData,
+      setAudienceTotals: stateSetter.setTikTokTrafficAudienceTotals,
+      setCreativeData: stateSetter.setTikTokTrafficCreativeData,
+      setCreativeTotals: stateSetter.setTikTokTrafficCreativeTotals,
+      setMetrics: stateSetter.setTikTokTrafficAudienceMetrics,
+      setComparison: stateSetter.setTikTokTrafficAudienceComparison,
+    },
+    TikTokConversion: {
+      setAudienceData: stateSetter.setTikTokConversionAudienceData,
+      setAudienceTotals: stateSetter.setTikTokConversionAudienceTotals,
+      setCreativeData: stateSetter.setTikTokConversionCreativeData,
+      setCreativeTotals: stateSetter.setTikTokConversionCreativeTotals,
+      setMetrics: stateSetter.setTikTokConversionAudienceMetrics,
+      setComparison: stateSetter.setTikTokConversionAudienceComparison,
+    },
+    TikTokVideo: {
+      setAudienceData: stateSetter.setTikTokVideoAudienceData,
+      setAudienceTotals: stateSetter.setTikTokVideoAudienceTotals,
+      setCreativeData: stateSetter.setTikTokVideoCreativeData,
+      setCreativeTotals: stateSetter.setTikTokVideoCreativeTotals,
+      setMetrics: stateSetter.setTikTokVideoAudienceMetrics,
+      setComparison: stateSetter.setTikTokVideoAudienceComparison,
+    },
   };
 };
