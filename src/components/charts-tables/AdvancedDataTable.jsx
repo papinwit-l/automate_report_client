@@ -64,6 +64,10 @@ export const AdvancedDataTable = ({
         return "Messages";
       case "cpe":
         return "CPE";
+      case "purchaseconvalue":
+        return "Purchase Conversion Value";
+      case "roas":
+        return "ROAS";
       default:
         return metric
           .split(/(?=[A-Z])/)

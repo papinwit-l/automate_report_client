@@ -23,12 +23,12 @@ function FacebookCatalogSlide01() {
     refetch,
     FacebookAdsPicture,
     FBDemographicData,
-    FacebookVideoAudienceData,
-    FacebookVideoAudienceTotals,
-    FacebookVideoCreativeData,
-    FacebookVideoCreativeTotals,
-    FacebookVideoAudienceMetrics,
-    FacebookVideoComparison,
+    FacebookCatalogAudienceData,
+    FacebookCatalogAudienceTotals,
+    FacebookCatalogCreativeData,
+    FacebookCatalogCreativeTotals,
+    FacebookCatalogAudienceMetrics,
+    FacebookCatalogAudienceComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
@@ -37,36 +37,41 @@ function FacebookCatalogSlide01() {
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
-    const KEY = "views";
+    const KEY = "purchase";
     const ENABLE_CONVERSION = false;
     try {
       // Handle "No Data" case
       if (
-        FacebookVideoAudienceTotals[KEY] === "No Data" ||
-        !FacebookVideoAudienceTotals ||
-        Object.keys(FacebookVideoAudienceTotals).length === 0
+        FacebookCatalogAudienceTotals[KEY] === "No Data" ||
+        !FacebookCatalogAudienceTotals ||
+        Object.keys(FacebookCatalogAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");
         return;
       }
 
       let summaryTextTemp = "";
-      const averageCPV = FacebookVideoAudienceTotals.cpv?.toLocaleString(
+      const averageCPA = FacebookCatalogAudienceTotals.cpa?.toLocaleString(
         undefined,
         {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Video View: ** ${parseFloat(
-        FacebookVideoAudienceTotals[KEY]?.toFixed(2) || 0
-      )?.toLocaleString()} views**`;
-      summaryTextTemp = `<li>${overallText}</li>`;
-      summaryTextTemp += `<li>Average CPV: **${averageCPV} THB**</li>`;
+      const overallText = `Overall conversions: ** ${parseFloat(
+        FacebookCatalogAudienceTotals[KEY]?.toFixed(2) || 0
+      )?.toLocaleString()} purchases`;
+      summaryTextTemp = `<li>${overallText} with average CPA: ${averageCPA} THB**</li>`;
+      summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
+        FacebookCatalogAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
+      )?.toLocaleString()} THB with ${parseFloat(
+        FacebookCatalogAudienceTotals["roas"]?.toFixed(2) || 0
+      )?.toLocaleString()} of ROAS**</li>`;
+      // summaryTextTemp += `<li>Average CPV: **${averageCPA} THB**</li>`;
 
       // Find top audience by reach (with error handling)
-      const topAudience = FacebookVideoAudienceData
-        ? Object.entries(FacebookVideoAudienceData).reduce(
+      const topAudience = FacebookCatalogAudienceData
+        ? Object.entries(FacebookCatalogAudienceData).reduce(
             (max, [key, value]) =>
               (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
             { key: "", value: { KEY: 0 } }
@@ -76,13 +81,13 @@ function FacebookCatalogSlide01() {
       if (topAudience.key) {
         const topAudienceText = `Top audience: **${
           topAudience.key
-        } (with ${topAudience.value[KEY]?.toLocaleString()} views)**`;
+        } (with ${topAudience.value[KEY]?.toLocaleString()} purchases)**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
       // Find top creative by reach (with error handling)
-      const topCreative = FacebookVideoAudienceData
-        ? Object.entries(FacebookVideoAudienceData).reduce(
+      const topCreative = FacebookCatalogAudienceData
+        ? Object.entries(FacebookCatalogAudienceData).reduce(
             (max, [key, value]) =>
               (value?.viewRate || 0) > (max.value?.viewRate || 0)
                 ? { key, value }
@@ -93,13 +98,13 @@ function FacebookCatalogSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Potential ad group: **${
+      const topCreativeText = `Top audience: **${
         topCreative.key
       } (with ${topCreative.value.viewRate?.toLocaleString()} %view rate)**`;
       // summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 
-      const totalConversions = FacebookVideoAudienceTotals?.Conversions;
+      const totalConversions = FacebookCatalogAudienceTotals?.Conversions;
       if (totalConversions > 0 && ENABLE_CONVERSION) {
         summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
           undefined,
@@ -112,12 +117,12 @@ function FacebookCatalogSlide01() {
       console.error("Error in summarizeData:", error);
       setSummaryText("<li>Error generating summary</li>");
     }
-  }, [FacebookVideoAudienceTotals, FacebookVideoAudienceData]);
+  }, [FacebookCatalogAudienceTotals, FacebookCatalogAudienceData]);
 
   //Demographic for chart
   const { chartByGender, chartByDevice } = useMemo(() => {
-    const GRAPH_KEY = "views";
-    const CHANNEL = "FB Video Views";
+    const GRAPH_KEY = "purchase";
+    const CHANNEL = "FB Catalog Sales";
     try {
       if (!FBDemographicData || FBDemographicData.length === 0) {
         return {
@@ -214,108 +219,128 @@ function FacebookCatalogSlide01() {
 
   // Fix: Memoize formatted metrics to prevent unnecessary recalculations
   const formattedMetrics = useMemo(() => {
-    if (!FacebookVideoAudienceTotals || !FacebookVideoComparison) {
+    if (!FacebookCatalogAudienceTotals || !FacebookCatalogAudienceComparison) {
       return {};
     }
 
     return {
       impressionData: formatDisplayData(
-        FacebookVideoAudienceTotals?.impressions,
-        FacebookVideoComparison?.impressions,
+        FacebookCatalogAudienceTotals?.impressions,
+        FacebookCatalogAudienceComparison?.impressions,
         "compact"
       ),
       clicksData: formatDisplayData(
-        FacebookVideoAudienceTotals?.clicks,
-        FacebookVideoComparison?.clicks,
+        FacebookCatalogAudienceTotals?.clicks,
+        FacebookCatalogAudienceComparison?.clicks,
         "compact"
       ),
       ctrData: formatDisplayData(
-        FacebookVideoAudienceTotals?.ctr,
-        FacebookVideoComparison?.ctr,
+        FacebookCatalogAudienceTotals?.ctr,
+        FacebookCatalogAudienceComparison?.ctr,
         "percentage"
       ),
       cpcData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpc,
-        FacebookVideoComparison?.cpc,
+        FacebookCatalogAudienceTotals?.cpc,
+        FacebookCatalogAudienceComparison?.cpc,
         "compact"
       ),
       conversionsData: formatDisplayData(
-        FacebookVideoAudienceTotals?.conversions,
-        FacebookVideoComparison?.conversions,
+        FacebookCatalogAudienceTotals?.conversions,
+        FacebookCatalogAudienceComparison?.conversions,
         "number"
       ),
       cplData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpl,
-        FacebookVideoComparison?.cpl,
+        FacebookCatalogAudienceTotals?.cpl,
+        FacebookCatalogAudienceComparison?.cpl,
         "compact"
       ),
       spentData: formatDisplayData(
-        FacebookVideoAudienceTotals?.spent,
-        FacebookVideoComparison?.spent,
+        FacebookCatalogAudienceTotals?.spent,
+        FacebookCatalogAudienceComparison?.spent,
         "compact"
       ),
       conRate: formatDisplayData(
-        FacebookVideoAudienceTotals?.cvr,
-        FacebookVideoComparison?.cvr,
+        FacebookCatalogAudienceTotals?.cvr,
+        FacebookCatalogAudienceComparison?.cvr,
         "percentage"
       ),
       cpmData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpm,
-        FacebookVideoComparison?.cpm,
+        FacebookCatalogAudienceTotals?.cpm,
+        FacebookCatalogAudienceComparison?.cpm,
         "compact"
       ),
       reachData: formatDisplayData(
-        FacebookVideoAudienceTotals?.reach,
-        FacebookVideoComparison?.reach,
+        FacebookCatalogAudienceTotals?.reach,
+        FacebookCatalogAudienceComparison?.reach,
         "compact"
       ),
       frequencyData: formatDisplayData(
-        FacebookVideoAudienceTotals?.frequency,
-        FacebookVideoComparison?.frequency,
+        FacebookCatalogAudienceTotals?.frequency,
+        FacebookCatalogAudienceComparison?.frequency,
         "compact"
       ),
       cprData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpr,
-        FacebookVideoComparison?.cpr,
+        FacebookCatalogAudienceTotals?.cpr,
+        FacebookCatalogAudienceComparison?.cpr,
         "compact"
       ),
       engagementData: formatDisplayData(
-        FacebookVideoAudienceTotals?.engagements,
-        FacebookVideoComparison?.engagements,
+        FacebookCatalogAudienceTotals?.engagements,
+        FacebookCatalogAudienceComparison?.engagements,
         "compact"
       ),
       engagementRateData: formatDisplayData(
-        FacebookVideoAudienceTotals?.engagementRate,
-        FacebookVideoComparison?.engagementRate,
+        FacebookCatalogAudienceTotals?.engagementRate,
+        FacebookCatalogAudienceComparison?.engagementRate,
         "percentage"
       ),
       cpeData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpe,
-        FacebookVideoComparison?.cpe,
+        FacebookCatalogAudienceTotals?.cpe,
+        FacebookCatalogAudienceComparison?.cpe,
         "compact"
       ),
       viewRateData: formatDisplayData(
-        FacebookVideoAudienceTotals?.viewRate,
-        FacebookVideoComparison?.viewRate,
+        FacebookCatalogAudienceTotals?.viewRate,
+        FacebookCatalogAudienceComparison?.viewRate,
         "percentage"
       ),
       VideoViewsData: formatDisplayData(
-        FacebookVideoAudienceTotals["views"],
-        FacebookVideoComparison["views"],
+        FacebookCatalogAudienceTotals["views"],
+        FacebookCatalogAudienceComparison["views"],
         "number"
       ),
       cpvData: formatDisplayData(
-        FacebookVideoAudienceTotals?.cpv,
-        FacebookVideoComparison?.cpv,
+        FacebookCatalogAudienceTotals?.cpv,
+        FacebookCatalogAudienceComparison?.cpv,
         "compact"
       ),
       conRateData: formatDisplayData(
-        FacebookVideoAudienceTotals?.conRate,
-        FacebookVideoComparison?.conRate,
+        FacebookCatalogAudienceTotals?.conRate,
+        FacebookCatalogAudienceComparison?.conRate,
         "percentage"
       ),
+      purchaseConValueData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.purchaseConValue,
+        FacebookCatalogAudienceComparison?.purchaseConValue,
+        "compact"
+      ),
+      roasData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.roas,
+        FacebookCatalogAudienceComparison?.roas,
+        "compact"
+      ),
+      purchaseData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.purchase,
+        FacebookCatalogAudienceComparison?.purchase,
+        "number"
+      ),
+      addToCartData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.addToCart,
+        FacebookCatalogAudienceComparison?.addToCart,
+        "number"
+      ),
     };
-  }, [FacebookVideoAudienceTotals, FacebookVideoComparison]);
+  }, [FacebookCatalogAudienceTotals, FacebookCatalogAudienceComparison]);
 
   // Memoize text formatter
   const renderFormattedText = useCallback((text) => {
@@ -360,6 +385,8 @@ function FacebookCatalogSlide01() {
     );
   }
 
+  console.log("formattedMetrics", formattedMetrics);
+
   return (
     <div
       id="facebook-catalog-01-component"
@@ -378,12 +405,12 @@ function FacebookCatalogSlide01() {
       <SlideHeader title={"Facebook Catalog Sale (1/2)"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
-          <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-5 text-lg font-semibold">
+          <div className="col-span-13 flex flex-col gap-2">
+            <div className="grid grid-cols-8 gap-2">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -392,37 +419,32 @@ function FacebookCatalogSlide01() {
                 isNegative={formattedMetrics.impressionData?.isNegative}
               />
               <NumberDisplayBox
-                title={"Reach"}
-                value={formattedMetrics.reachData?.displayValue}
-                compareValue={formattedMetrics.reachData?.compareValue}
-                isNegative={formattedMetrics.reachData?.isNegative}
+                title={"Clicks"}
+                value={formattedMetrics.clicksData?.displayValue}
+                compareValue={formattedMetrics.clicksData?.compareValue}
+                isNegative={formattedMetrics.clicksData?.isNegative}
               />
 
               <NumberDisplayBox
-                title={"Video View"}
-                value={formattedMetrics.VideoViewsData?.displayValue}
-                compareValue={formattedMetrics.VideoViewsData?.compareValue}
-                isNegative={formattedMetrics.VideoViewsData?.isNegative}
+                title={"%CTR"}
+                value={formattedMetrics.ctrData?.displayValue}
+                compareValue={formattedMetrics.ctrData?.compareValue}
+                isNegative={formattedMetrics.ctrData?.isNegative}
               />
 
               <NumberDisplayBox
-                title={"%View Rate"}
-                value={formattedMetrics.viewRateData?.displayValue}
-                compareValue={formattedMetrics.viewRateData?.compareValue}
-                isNegative={formattedMetrics.viewRateData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={"CPV"}
-                value={formattedMetrics.cpvData?.displayValue}
-                compareValue={formattedMetrics.cpvData?.compareValue}
-                isNegative={formattedMetrics.cpvData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={"Conversions"}
-                value={formattedMetrics.conversionsData?.displayValue}
+                title={"Purchase"}
+                value={formattedMetrics.purchaseData?.displayValue}
+                compareValue={formattedMetrics.purchaseData?.compareValue}
+                isNegative={formattedMetrics.purchaseData?.isNegative}
                 isConversion={true}
-                compareValue={formattedMetrics.conversionsData?.compareValue}
-                isNegative={formattedMetrics.conversionsData?.isNegative}
+              />
+              <NumberDisplayBox
+                title={"%Conv Rate"}
+                value={formattedMetrics.conRateData?.displayValue}
+                isConversion={true}
+                compareValue={formattedMetrics.conRateData?.compareValue}
+                isNegative={formattedMetrics.conRateData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -433,35 +455,55 @@ function FacebookCatalogSlide01() {
                 isNegative={formattedMetrics.spentData?.isNegative}
                 invertCompareColor={true}
               />
+
+              <NumberDisplayBox
+                title={"Purchase Conversion Value"}
+                value={formattedMetrics.purchaseConValueData?.displayValue}
+                isConversion={true}
+                compareValue={
+                  formattedMetrics.purchaseConValueData?.compareValue
+                }
+                isNegative={formattedMetrics.purchaseConValueData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"ROAS"}
+                value={formattedMetrics.roasData?.displayValue}
+                isConversion={true}
+                compareValue={formattedMetrics.roasData?.compareValue}
+                isNegative={formattedMetrics.roasData?.isNegative}
+              />
             </div>
             <div>
               <h4 className="text-lg font-semibold">Performance by Audience</h4>
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookVideoAudienceData}
-                totalData={FacebookVideoAudienceTotals}
+                channelData={FacebookCatalogAudienceData}
+                totalData={FacebookCatalogAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
                   "reach",
                   "clicks",
-                  "views",
-                  "viewRate",
-                  "cpv",
-                  "conversions",
+                  "ctr",
+                  "addToCart",
+                  "purchase",
+                  "conRate",
                   "spent",
+                  "purchaseConValue",
+                  "roas",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="views"
+                defaultSortBy="purchase"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
             </div>
           </div>
           {/* Chart */}
-          <div className="col-span-4 flex flex-col">
+          <div className="col-span-3 flex flex-col">
             <DonutChart
               data={chartByGender}
               title="Clicks By Gender"
