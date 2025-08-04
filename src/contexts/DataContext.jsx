@@ -219,6 +219,21 @@ export const DataProvider = ({ children }) => {
   const [FacebookVideoCreativeTotals, setFacebookVideoCreativeTotals] =
     useState({});
 
+  const [FacebookCatalogAudienceData, setFacebookCatalogAudienceData] =
+    useState({});
+  const [FacebookCatalogAudienceTotals, setFacebookCatalogAudienceTotals] =
+    useState({});
+  const [FacebookCatalogCreativeData, setFacebookCatalogCreativeData] =
+    useState({});
+  const [FacebookCatalogCreativeTotals, setFacebookCatalogCreativeTotals] =
+    useState({});
+  const [FacebookCatalogAudienceMetrics, setFacebookCatalogAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookCatalog);
+  const [
+    FacebookCatalogAudienceComparison,
+    setFacebookCatalogAudienceComparison,
+  ] = useState({});
+
   // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
@@ -260,6 +275,7 @@ export const DataProvider = ({ children }) => {
     FacebookConversion: FacebookConversionAudienceMetrics,
     FacebookTraffic: FacebookTrafficAudienceMetrics,
     FacebookVideo: FacebookVideoAudienceMetrics,
+    FacebookCatalog: FacebookCatalogAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
     InstagramAudience: InstagramAudienceMetrics,
   };
@@ -346,6 +362,12 @@ export const DataProvider = ({ children }) => {
     setFacebookVideoCreativeTotals,
     setFacebookVideoAudienceMetrics,
     setFacebookVideoComparison,
+    setFacebookCatalogAudienceData,
+    setFacebookCatalogAudienceTotals,
+    setFacebookCatalogCreativeData,
+    setFacebookCatalogCreativeTotals,
+    setFacebookCatalogAudienceMetrics,
+    setFacebookCatalogAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
@@ -556,6 +578,20 @@ export const DataProvider = ({ children }) => {
     return result;
   };
 
+  const getFacebookCatalogData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FacebookCatalog",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getFacebookCatalogData result:", result);
+    return result;
+  };
+
   const getTikTokData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "TikTokAudience",
@@ -611,6 +647,7 @@ export const DataProvider = ({ children }) => {
           getFacebookConversionData(id, "Channel", "FB Conversions"),
           getFacebookTrafficData(id, "Channel", "FB Traffic"),
           getFacebookVideoData(id, "Channel", "FB Video Views"),
+          getFacebookCatalogData(id, "Channel", "FB Catalog Sales"),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
@@ -655,6 +692,7 @@ export const DataProvider = ({ children }) => {
           FacebookConversion: getFacebookConversionData,
           FacebookTraffic: getFacebookTrafficData,
           FacebookVideo: getFacebookVideoData,
+          FacebookCatalog: getFacebookCatalogData,
           TikTokAudience: getTikTokData,
           InstagramAudience: getInstagramData,
         }[dataType];
@@ -884,6 +922,14 @@ export const DataProvider = ({ children }) => {
     FacebookVideoCreativeTotals,
     FacebookVideoAudienceMetrics,
     FacebookVideoComparison,
+
+    // Facebook Catalog
+    FacebookCatalogAudienceData,
+    FacebookCatalogAudienceTotals,
+    FacebookCatalogCreativeData,
+    FacebookCatalogCreativeTotals,
+    FacebookCatalogAudienceMetrics,
+    FacebookCatalogAudienceComparison,
 
     // TikTok
     TikTokAudienceData,

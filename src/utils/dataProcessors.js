@@ -261,6 +261,14 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
             : 0;
         break;
 
+      case "roas":
+        // ROAS = Website purchases conversion value / cost
+        enhanced[field.key] =
+          data.cost > 0
+            ? Number((data.purchaseConValue / data.cost).toFixed(2))
+            : 0;
+        break;
+
       case "custom":
         enhanced[field.key] = field.calculate(data);
         break;

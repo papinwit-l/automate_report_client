@@ -13,6 +13,12 @@ export const FACEBOOK_FIELDS = [
     key: "messages",
     sourceField: "New messaging conversations within 7 days",
   },
+  { key: "addToCart", sourceField: "Website adds to cart" },
+  { key: "purchase", sourceField: "Website purchases" },
+  {
+    key: "purchaseConValue",
+    sourceField: "Website purchases conversion value",
+  },
 ];
 
 export const FACEBOOK_CALCULATED_FIELDS = [
@@ -26,6 +32,7 @@ export const FACEBOOK_CALCULATED_FIELDS = [
   { key: "cpv", type: "cpv" },
   { key: "cpe", type: "cpe" },
   { key: "cpa", type: "cpa" },
+  { key: "roas", type: "roas" },
   { key: "engagementRate", type: "engagementRate" },
   { key: "viewRate", type: "viewRate" },
   { key: "spent", type: "custom", calculate: (data) => data.cost },
@@ -43,6 +50,9 @@ export const FACEBOOK_PROCESSED_FIELDS = [
   "Video views",
   "Post engagements",
   "New messaging conversations within 7 days", // Original field
+  "Website adds to cart",
+  "Website purchases",
+  "Website purchases conversion value",
 ];
 
 export const FACEBOOK_METRICS = [
@@ -58,4 +68,7 @@ export const FACEBOOK_METRICS = [
   "Post engagements",
   "Channel", // From FacebookReach & FacebookEngagement
   "New messaging conversations within 7 days", // From FacebookMessage
+  "Website adds to cart",
+  "Website purchases",
+  "Website purchases conversion value",
 ];

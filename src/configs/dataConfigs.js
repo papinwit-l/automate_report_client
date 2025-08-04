@@ -95,6 +95,13 @@ export const SOCIAL_MEDIA_CONFIGS = {
     calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
+  FacebookCatalog: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
   TikTokAudience: {
     audienceGroupBy: "Ad group name",
     creativeGroupBy: "Ad name",
@@ -377,6 +384,16 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookVideo,
   },
 
+  FacebookCatalog: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookCatalog,
+  },
+
   TikTokAudience: {
     endpoint: "tiktok-data",
     processFields: [
@@ -457,6 +474,7 @@ export const DEFAULT_METRICS = {
   FacebookConversion: FACEBOOK_METRICS,
   FacebookTraffic: FACEBOOK_METRICS,
   FacebookVideo: FACEBOOK_METRICS,
+  FacebookCatalog: FACEBOOK_METRICS,
   TikTokAudience: [
     "Ad group name",
     "Ad name",
