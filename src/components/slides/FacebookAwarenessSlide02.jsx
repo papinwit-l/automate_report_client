@@ -97,7 +97,7 @@ function FacebookAwarenessSlide02() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    console.log("ads name is", adsName);
+    // console.log("ads name is", adsName);
     // console.log("Ads Picture", adsPicture);
     if (adsPicture.length === 0) return;
     setAdsPicture(adsPicture[0]["Ads"]);

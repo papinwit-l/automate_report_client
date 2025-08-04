@@ -68,6 +68,8 @@ export const AdvancedDataTable = ({
         return "Purchase Conversion Value";
       case "roas":
         return "ROAS";
+      case "view6sec":
+        return "6-second video views";
       default:
         return metric
           .split(/(?=[A-Z])/)

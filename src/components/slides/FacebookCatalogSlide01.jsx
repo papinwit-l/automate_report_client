@@ -385,8 +385,6 @@ function FacebookCatalogSlide01() {
     );
   }
 
-  console.log("formattedMetrics", formattedMetrics);
-
   return (
     <div
       id="facebook-catalog-01-component"
