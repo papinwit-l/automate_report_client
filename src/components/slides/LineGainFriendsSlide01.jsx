@@ -37,7 +37,7 @@ function LineGainFriendsSlide01() {
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
-    const KEY = "reach";
+    const KEY = "clicks";
     const ENABLE_CONVERSION = false;
     try {
       // Handle "No Data" case
@@ -51,23 +51,23 @@ function LineGainFriendsSlide01() {
       }
 
       let summaryTextTemp = "";
-      const averageCPR = LineGainFriendsAudienceTotals.cpr?.toLocaleString(
+      const averageCPA = LineGainFriendsAudienceTotals.cpa?.toLocaleString(
         undefined,
         {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall reach: ** ${parseFloat(
+      const overallText = `Overall Friends: ** ${parseFloat(
         LineGainFriendsAudienceTotals[KEY]?.toFixed(2) || 0
-      )?.toLocaleString()} reaches`;
+      )?.toLocaleString()} friends`;
       summaryTextTemp = `<li>${overallText}**</li>`;
       // summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
       //   LineGainFriendsAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
       // )?.toLocaleString()} THB with ${parseFloat(
       //   LineGainFriendsAudienceTotals["roas"]?.toFixed(2) || 0
       // )?.toLocaleString()} of ROAS**</li>`;
-      summaryTextTemp += `<li>Average CPR: **${averageCPR} THB (per 1,000 reaches)**</li>`;
+      summaryTextTemp += `<li>Average CPA: **${averageCPA} THB**</li>`;
 
       // Find top audience by reach (with error handling)
       const topAudience = LineGainFriendsAudienceData
@@ -81,7 +81,7 @@ function LineGainFriendsSlide01() {
       if (topAudience.key) {
         const topAudienceText = `Top audience: **${
           topAudience.key
-        } with ${topAudience.value[KEY]?.toLocaleString()} reaches**`;
+        } with ${topAudience.value[KEY]?.toLocaleString()} friends**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
@@ -98,7 +98,7 @@ function LineGainFriendsSlide01() {
       // Fix: Added missing closing parenthesis
       const topCreativeText = `Top Creative: **${
         topCreative.key
-      } with ${topCreative.value[KEY]?.toLocaleString()} reaches**`;
+      } with ${topCreative.value[KEY]?.toLocaleString()} friends**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 
@@ -394,7 +394,7 @@ function LineGainFriendsSlide01() {
 
   return (
     <div
-      id="line-reach-01-component"
+      id="line-gain-friends-01-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -407,7 +407,7 @@ function LineGainFriendsSlide01() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Line Reach"} />
+      <SlideHeader title={"Line Gain Friends"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
           <div className="col-span-14 flex flex-col gap-2">
@@ -415,28 +415,13 @@ function LineGainFriendsSlide01() {
               <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold"></h4>
+              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
                 value={formattedMetrics.impressionData?.displayValue}
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"Reach"}
-                value={formattedMetrics.reachData?.displayValue}
-                compareValue={formattedMetrics.reachData?.compareValue}
-                isNegative={formattedMetrics.reachData?.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"CPR"}
-                value={formattedMetrics.cprData?.displayValue}
-                compareValue={formattedMetrics.cprData?.compareValue}
-                isNegative={formattedMetrics.cprData?.isNegative}
-                invertCompareColor={true}
               />
 
               <NumberDisplayBox
@@ -454,10 +439,27 @@ function LineGainFriendsSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPC"}
-                value={formattedMetrics.cpcData?.displayValue}
-                compareValue={formattedMetrics.cpcData?.compareValue}
-                isNegative={formattedMetrics.cpcData?.isNegative}
+                title={"Conversion"}
+                value={formattedMetrics.conversionsData?.displayValue}
+                compareValue={formattedMetrics.conversionsData?.compareValue}
+                isNegative={formattedMetrics.conversionsData?.isNegative}
+                isConversion={true}
+              />
+
+              <NumberDisplayBox
+                title={"%Conv Rate"}
+                value={formattedMetrics.conRateData?.displayValue}
+                compareValue={formattedMetrics.conRateData?.compareValue}
+                isNegative={formattedMetrics.conRateData?.isNegative}
+                isConversion={true}
+              />
+
+              <NumberDisplayBox
+                title={"CPL"}
+                value={formattedMetrics.cplData?.displayValue}
+                compareValue={formattedMetrics.cplData?.compareValue}
+                isNegative={formattedMetrics.cplData?.isNegative}
+                isConversion={true}
                 invertCompareColor={true}
               />
 
@@ -479,16 +481,16 @@ function LineGainFriendsSlide01() {
                 metrics={[
                   "Ad group name",
                   "impressions",
-                  "reach",
-                  "cpr",
                   "clicks",
                   "ctr",
-                  "cpc",
+                  "conversions",
+                  "cvr",
+                  "cpa",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="reach"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
@@ -499,18 +501,18 @@ function LineGainFriendsSlide01() {
                 channelData={LineGainFriendsCreativeData}
                 totalData={LineGainFriendsAudienceTotals}
                 metrics={[
-                  "Ad name",
+                  "Ad group name",
                   "impressions",
-                  "reach",
-                  "cpr",
                   "clicks",
                   "ctr",
-                  "cpc",
+                  "conversions",
+                  "cvr",
+                  "cpa",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[1]}
-                defaultSortBy="reach"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />

@@ -803,7 +803,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getLineReachData result:", result);
+    // console.log("🎯 getLineReachData result:", result);
     return result;
   };
 
@@ -817,7 +817,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    // console.log("🎯 getLineGainFriendsData result:", result);
+    console.log("🎯 getLineGainFriendsData result:", result);
     return result;
   };
 
@@ -867,7 +867,7 @@ export const DataProvider = ({ children }) => {
           getTikTokLeadData(id, "Channel", "TikTok Lead"),
           getTikTokConversionData(id, "Channel", "TikTok Conversion"),
           getLineReachData(id, "Channel", "Line Reach"),
-          // getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
+          getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
@@ -919,7 +919,7 @@ export const DataProvider = ({ children }) => {
           TikTokVideo: getTikTokVideoData,
           TikTokTraffic: getTikTokTrafficData,
           LineReach: getLineReachData,
-          // LineGainFriends: getLineGainFriendsData,
+          LineGainFriends: getLineGainFriendsData,
         }[dataType];
 
         if (!fetchFunction) {

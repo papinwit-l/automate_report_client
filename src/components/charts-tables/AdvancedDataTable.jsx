@@ -46,6 +46,8 @@ export const AdvancedDataTable = ({
         return "Reach";
       case "frequency":
         return "Frequency";
+      case "cpa":
+        return "CPA";
       case "cpr":
         return "CPR";
       case "cpv":

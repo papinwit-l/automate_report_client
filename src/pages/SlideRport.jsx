@@ -51,6 +51,7 @@ import TiktokTrafficSlide01 from "@/components/slides/TiktokTrafficSlide01";
 import TiktokLeadSlide01 from "@/components/slides/TiktokLeadSlide01";
 import TiktokConversionSlide01 from "@/components/slides/TiktokConversionSlide01";
 import LineReachSlide01 from "@/components/slides/LineReachSlide01";
+import LineGainFriendsSlide01 from "@/components/slides/LineGainFriendsSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -332,6 +333,7 @@ function SlideReport() {
                   componentID={"line-section-component"}
                 />
                 <LineReachSlide01 />
+                <LineGainFriendsSlide01 />
                 <EndSlide />
               </div>
             ) : (

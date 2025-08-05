@@ -142,6 +142,10 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
         }
       }
 
+      if (dataType === "LineGainFriends") {
+        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
+      }
+
       // Update state based on processor type
       const setters = settersMap[dataType];
       if (setters) {
@@ -207,7 +211,7 @@ export const getFilterValues = async (dataType, id, filterField) => {
     ].sort();
 
     if (config.endpoint === "line-data") {
-      // console.log("🎯 getFilterValues result:", uniqueValues);
+      console.log("🎯 getFilterValues result:", uniqueValues);
     }
 
     return uniqueValues;
