@@ -46,6 +46,7 @@ import FacebookVideoSlide02 from "@/components/slides/FacebookVideoSlide02";
 import FacebookCatalogSlide01 from "@/components/slides/FacebookCatalogSlide01";
 import FacebookCatalogSlide02 from "@/components/slides/FacebookCatalogSlide02";
 import TiktokReachSlide01 from "@/components/slides/TiktokReachSlide01";
+import TiktokVideoSlide01 from "@/components/slides/TiktokVideoSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -318,6 +319,7 @@ function SlideReport() {
                   componentID={"tiktok-section-component"}
                 />
                 <TiktokReachSlide01 />
+                <TiktokVideoSlide01 />
                 <EndSlide />
               </div>
             ) : (

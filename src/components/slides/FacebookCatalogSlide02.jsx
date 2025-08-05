@@ -486,7 +486,7 @@ function FacebookCatalogSlide02() {
               />
             </div>
             <div>
-              <h4 className="text-lg font-semibold">Performance by Audience</h4>
+              <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
               <AdvancedDataTable
                 firstMetric="Ad name"

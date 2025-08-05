@@ -51,23 +51,23 @@ function TiktokReachSlide01() {
       }
 
       let summaryTextTemp = "";
-      const averageCPA = TikTokReachAudienceTotals.cpa?.toLocaleString(
+      const averageCPR = TikTokReachAudienceTotals.cpr?.toLocaleString(
         undefined,
         {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall conversions: ** ${parseFloat(
+      const overallText = `Overall Reach: ** ${parseFloat(
         TikTokReachAudienceTotals[KEY]?.toFixed(2) || 0
-      )?.toLocaleString()} purchases`;
-      summaryTextTemp = `<li>${overallText} with average CPA: ${averageCPA} THB**</li>`;
-      summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
-        TikTokReachAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
-      )?.toLocaleString()} THB with ${parseFloat(
-        TikTokReachAudienceTotals["roas"]?.toFixed(2) || 0
-      )?.toLocaleString()} of ROAS**</li>`;
-      // summaryTextTemp += `<li>Average CPV: **${averageCPA} THB**</li>`;
+      )?.toLocaleString()} reaches`;
+      summaryTextTemp = `<li>${overallText}**</li>`;
+      // summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
+      //   TikTokReachAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
+      // )?.toLocaleString()} THB with ${parseFloat(
+      //   TikTokReachAudienceTotals["roas"]?.toFixed(2) || 0
+      // )?.toLocaleString()} of ROAS**</li>`;
+      summaryTextTemp += `<li>Average CPR: **${averageCPR} THB (per 1,000 reaches)**</li>`;
 
       // Find top audience by reach (with error handling)
       const topAudience = TikTokReachAudienceData
@@ -81,43 +81,45 @@ function TiktokReachSlide01() {
       if (topAudience.key) {
         const topAudienceText = `Top audience: **${
           topAudience.key
-        } (with ${topAudience.value[KEY]?.toLocaleString()} purchases)**`;
+        } with ${topAudience.value[KEY]?.toLocaleString()} reaches**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
       // Find top creative by reach (with error handling)
-      const topCreative = TikTokReachAudienceData
-        ? Object.entries(TikTokReachAudienceData).reduce(
+      const topCreative = TikTokReachCreativeData
+        ? Object.entries(TikTokReachCreativeData).reduce(
             (max, [key, value]) =>
-              (value?.viewRate || 0) > (max.value?.viewRate || 0)
-                ? { key, value }
-                : max,
-            { key: "", value: { viewRate: 0 } }
+              (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
+            { key: "", value: { KEY: 0 } }
           )
-        : { key: "", value: { viewRate: 0 } };
+        : { key: "", value: { KEY: 0 } };
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top audience: **${
+      const topCreativeText = `Top Creative: **${
         topCreative.key
-      } (with ${topCreative.value.viewRate?.toLocaleString()} %view rate)**`;
-      // summaryTextTemp += `<li>${topCreativeText}</li>`;
+      } with ${topCreative.value[KEY]?.toLocaleString()} reaches**`;
+      summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 
       const totalConversions = TikTokReachAudienceTotals?.Conversions;
-      if (totalConversions > 0 && ENABLE_CONVERSION) {
-        summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
-          undefined,
-          { minimumFractionDigits: 0, maximumFractionDigits: 0 }
-        )} conversions**</li>`;
-      }
+      // if (totalConversions > 0 && ENABLE_CONVERSION) {
+      //   summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
+      //     undefined,
+      //     { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+      //   )} conversions**</li>`;
+      // }
 
       setSummaryText(summaryTextTemp);
     } catch (error) {
       console.error("Error in summarizeData:", error);
       setSummaryText("<li>Error generating summary</li>");
     }
-  }, [TikTokReachAudienceTotals, TikTokReachAudienceData]);
+  }, [
+    TikTokReachAudienceTotals,
+    TikTokReachAudienceData,
+    TikTokReachCreativeData,
+  ]);
 
   //Demographic for chart
   const { chartByGender, chartByDevice } = useMemo(() => {
@@ -405,10 +407,10 @@ function TiktokReachSlide01() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"TikTok Reach (1/2)"} />
+      <SlideHeader title={"TikTok Reach"} />
       <div className="flex flex-col h-full gap-2">
-        <div className="grid grid-cols-16">
-          <div className="col-span-12 flex flex-col gap-2">
+        <div className="grid grid-cols-20 h-full">
+          <div className="col-span-14 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
@@ -488,13 +490,33 @@ function TiktokReachSlide01() {
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
+              <h4 className="text-lg font-semibold">Performance by Creative</h4>
+
+              <AdvancedDataTable
+                firstMetric="Ad name"
+                channelData={TikTokReachCreativeData}
+                totalData={TikTokReachAudienceTotals}
+                metrics={[
+                  "Ad name",
+                  "impressions",
+                  "reach",
+                  "cpr",
+                  "frequency",
+                  "view6sec",
+                  "conversions",
+                  "spent",
+                ]}
+                formatValue={formatTableValue}
+                maxRows={maxTableRows[0]}
+                defaultSortBy="impressions"
+                defaultSortOrder="desc"
+                enableSorting={true}
+              />
             </div>
           </div>
-          {/* Image Preview */}
-          <div className="col-span-4 flex flex-col"></div>
-        </div>
-        <div className="grid grid-cols-16">
-          <div className="col-span-16">
+          <div className="col-span-6 flex flex-col justify-between">
+            {/* Image Preview */}
+            <div className=""></div>
             {/* Summary */}
             <div className="px-4 mt-6">
               <h4 className="text-lg font-semibold">Summary</h4>

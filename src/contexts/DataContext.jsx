@@ -708,7 +708,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getTikTokReachData result:", result);
+    // console.log("🎯 getTikTokReachData result:", result);
     return result;
   };
 
@@ -741,11 +741,13 @@ export const DataProvider = ({ children }) => {
     filterBy = null,
     filterValue = null
   ) => {
-    return await fetchDataSheet(
+    const result = await fetchDataSheet(
       "TikTokVideo",
       id,
       buildFetchOptions(filterBy, filterValue)
     );
+    console.log("🎯 getTikTokVideoData result:", result);
+    return result;
   };
 
   const getFBDemographicData = async (
@@ -789,6 +791,7 @@ export const DataProvider = ({ children }) => {
           getFacebookVideoData(id, "Channel", "FB Video Views"),
           getFacebookCatalogData(id, "Channel", "FB Catalog Sales"),
           getTikTokReachData(id, "Channel", "TikTok Reach"),
+          getTikTokVideoData(id, "Channel", "TikTok VDO View"),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
