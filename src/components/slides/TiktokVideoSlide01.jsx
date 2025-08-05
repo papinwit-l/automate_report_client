@@ -518,18 +518,18 @@ function TiktokVideoSlide01() {
           <div className="col-span-6 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-            {/* Summary */}
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
+          </div>
+          {/* Summary */}
+          <div className="px-4 mt-6 col-span-10">
+            <h4 className="text-lg font-semibold">Summary</h4>
+            <ul className="list-disc pl-6">
+              <div
+                className="text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: renderFormattedText(summaryText),
+                }}
+              />
+            </ul>
           </div>
         </div>
       </div>

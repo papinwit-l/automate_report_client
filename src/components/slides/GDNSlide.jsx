@@ -342,24 +342,6 @@ function GDNSlide() {
           </div>
           <div className="col-span-4 flex flex-col">
             {/* AD Preview Picture */}
-          </div>
-        </div>
-        <div className="grid grid-cols-3">
-          <div className="col-span-1 flex flex-col">
-            {/* Summary */}
-            <div className="px-4">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
-          <div className="col-span-2 flex">
             {clicksByGender && Object.keys(clicksByGender).length > 0 && (
               <DonutChart
                 data={clicksByGender}
@@ -383,6 +365,46 @@ function GDNSlide() {
               />
             )}
           </div>
+        </div>
+        <div className="grid grid-cols-3">
+          <div className="col-span-1 flex flex-col">
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
+          </div>
+          {/* <div className="col-span-2 flex">
+            {clicksByGender && Object.keys(clicksByGender).length > 0 && (
+              <DonutChart
+                data={clicksByGender}
+                title="Clicks by Gender"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+            {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
+              <DonutChart
+                data={clicksByDevice}
+                title="Clicks by Device"
+                width={220}
+                height={140}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+          </div> */}
         </div>
       </div>
       <TextEditorModal
