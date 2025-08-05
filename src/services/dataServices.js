@@ -50,6 +50,9 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
 
     // ✅ FIX: Use processMetrics (source field names) for cleaning
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
+    if (config.endpoint === "line-data") {
+      // console.log("🎯 cleanedData result:", cleanedData);
+    }
 
     // Apply date range filtering
     let currentPeriodData = cleanedData;
@@ -202,6 +205,10 @@ export const getFilterValues = async (dataType, id, filterField) => {
           .map((value) => value.toString().trim())
       ),
     ].sort();
+
+    if (config.endpoint === "line-data") {
+      // console.log("🎯 getFilterValues result:", uniqueValues);
+    }
 
     return uniqueValues;
   } catch (error) {

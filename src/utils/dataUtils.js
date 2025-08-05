@@ -268,5 +268,21 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setTikTokVideoAudienceMetrics,
       setComparison: stateSetter.setTikTokVideoAudienceComparison,
     },
+    LineReach: {
+      setAudienceData: stateSetter.setLineReachAudienceData,
+      setAudienceTotals: stateSetter.setLineReachAudienceTotals,
+      setCreativeData: stateSetter.setLineReachCreativeData,
+      setCreativeTotals: stateSetter.setLineReachCreativeTotals,
+      setMetrics: stateSetter.setLineReachAudienceMetrics,
+      setComparison: stateSetter.setLineReachAudienceComparison,
+    },
+    LineGainFriends: {
+      setAudienceData: stateSetter.setLineGainFriendsAudienceData,
+      setAudienceTotals: stateSetter.setLineGainFriendsAudienceTotals,
+      setCreativeData: stateSetter.setLineGainFriendsCreativeData,
+      setCreativeTotals: stateSetter.setLineGainFriendsCreativeTotals,
+      setMetrics: stateSetter.setLineGainFriendsAudienceMetrics,
+      setComparison: stateSetter.setLineGainFriendsAudienceComparison,
+    },
   };
 };

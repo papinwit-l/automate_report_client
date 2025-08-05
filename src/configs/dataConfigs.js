@@ -5,6 +5,12 @@ import {
   FACEBOOK_PROCESSED_FIELDS,
 } from "./facebookDataConfigs";
 import {
+  LINE_CALCULATED_FIELDS,
+  LINE_FIELDS,
+  LINE_METRICS,
+  LINE_PROCESSED_FIELDS,
+} from "./lineDataConfigs";
+import {
   TIKTOK_CALCULATED_FIELDS,
   TIKTOK_FIELDS,
   TIKTOK_METRICS,
@@ -151,29 +157,19 @@ export const SOCIAL_MEDIA_CONFIGS = {
     calculatedFields: TIKTOK_CALCULATED_FIELDS,
   },
 
-  InstagramAudience: {
-    audienceGroupBy: "Ad set name",
+  //Line
+  LineReach: {
+    audienceGroupBy: "Ad group name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Conversions" },
-      { key: "cost", sourceField: "Amount spent" },
-      { key: "engagements", sourceField: "Engagements" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: LINE_FIELDS,
+    calculatedFields: LINE_CALCULATED_FIELDS,
+  },
+
+  LineGainFriends: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: LINE_FIELDS,
+    calculatedFields: LINE_CALCULATED_FIELDS,
   },
 };
 
@@ -478,21 +474,24 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokVideo,
   },
 
-  InstagramAudience: {
-    endpoint: "instagram-data",
-    processFields: [
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Conversions",
-      "Amount spent",
-    ],
-    groupBy: "Ad set name",
+  LineReach: {
+    endpoint: "line-data",
+    processFields: LINE_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
     hasComparison: true,
     processData: true,
     processorType: "social",
-    socialConfig: SOCIAL_MEDIA_CONFIGS.InstagramAudience,
+    socialConfig: SOCIAL_MEDIA_CONFIGS.LineReach,
+  },
+
+  LineGainFriends: {
+    endpoint: "line-data",
+    processFields: LINE_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.LineGainFriends,
   },
 };
 
@@ -548,14 +547,6 @@ export const DEFAULT_METRICS = {
   TikTokTraffic: TIKTOK_METRICS,
   TikTokConversion: TIKTOK_METRICS,
   TikTokVideo: TIKTOK_METRICS,
-  InstagramAudience: [
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Conversions",
-    "Amount spent",
-    "Engagements",
-  ],
+  LineReach: LINE_METRICS,
+  LineGainFriends: LINE_METRICS,
 };

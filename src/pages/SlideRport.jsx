@@ -50,6 +50,7 @@ import TiktokVideoSlide01 from "@/components/slides/TiktokVideoSlide01";
 import TiktokTrafficSlide01 from "@/components/slides/TiktokTrafficSlide01";
 import TiktokLeadSlide01 from "@/components/slides/TiktokLeadSlide01";
 import TiktokConversionSlide01 from "@/components/slides/TiktokConversionSlide01";
+import LineReachSlide01 from "@/components/slides/LineReachSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -326,6 +327,11 @@ function SlideReport() {
                 <TiktokTrafficSlide01 />
                 <TiktokLeadSlide01 />
                 <TiktokConversionSlide01 />
+                <SectionSlide
+                  title={"Line"}
+                  componentID={"line-section-component"}
+                />
+                <LineReachSlide01 />
                 <EndSlide />
               </div>
             ) : (

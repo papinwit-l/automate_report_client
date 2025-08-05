@@ -5,7 +5,7 @@ export const TIKTOK_FIELDS = [
   { key: "reach", sourceField: "Reach" },
   { key: "clicks", sourceField: "Clicks" },
   { key: "conversions", sourceField: "Website conversions" },
-  { key: "cost", sourceField: "Cost" },
+  { key: "spent", sourceField: "Spent" },
   { key: "engagements", sourceField: "Post engagements" },
   { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
   { key: "views", sourceField: "Video views" },
@@ -36,7 +36,6 @@ export const TIKTOK_CALCULATED_FIELDS = [
   { key: "roas", type: "roas" },
   { key: "engagementRate", type: "engagementRate" },
   { key: "viewRate", type: "viewRate" },
-  { key: "spent", type: "custom", calculate: (data) => data.cost },
 ];
 
 export const TIKTOK_PROCESSED_FIELDS = [
@@ -46,7 +45,7 @@ export const TIKTOK_PROCESSED_FIELDS = [
   "Reach",
   "Clicks",
   "Website conversions",
-  "Cost",
+  "Spent",
   "Video watches at 25%",
   "Video views",
   "Post engagements",
@@ -64,7 +63,7 @@ export const TIKTOK_METRICS = [
   "Reach",
   "Clicks",
   "Website conversions",
-  "Cost",
+  "Spent",
   "Video watches at 25%",
   "views",
   "Post engagements",

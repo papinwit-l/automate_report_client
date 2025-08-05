@@ -169,7 +169,7 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
       case "cpv":
         // Ensure both values are properly converted to numbers
         let views = data.views;
-        let cost = data.cost;
+        let cost = data.spent;
 
         // Convert views to number if it's a string
         if (typeof views === "string") {
@@ -202,7 +202,7 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
 
       case "cpc":
         enhanced[field.key] =
-          data.clicks > 0 ? Number((data.cost / data.clicks).toFixed(2)) : 0;
+          data.clicks > 0 ? Number((data.spent / data.clicks).toFixed(2)) : 0;
         break;
 
       case "cvr":
@@ -215,35 +215,35 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
       case "cpa":
         enhanced[field.key] =
           data.conversions > 0
-            ? Number((data.cost / data.conversions).toFixed(2))
+            ? Number((data.spent / data.conversions).toFixed(2))
             : 0;
         break;
 
       case "cpr":
         enhanced[field.key] =
           data.reach > 0
-            ? Number(((data.cost * 1000) / data.reach).toFixed(2))
+            ? Number(((data.spent * 1000) / data.reach).toFixed(2))
             : 0;
         break;
 
       case "cpl":
         enhanced[field.key] =
           data.conversions > 0
-            ? Number((data.cost / data.conversions).toFixed(2))
+            ? Number((data.spent / data.conversions).toFixed(2))
             : 0;
         break;
 
       case "cpm":
         enhanced[field.key] =
           data.impressions > 0
-            ? Number(((data.cost * 1000) / data.impressions).toFixed(2))
+            ? Number(((data.spent * 1000) / data.impressions).toFixed(2))
             : 0;
         break;
 
       case "cpe":
         enhanced[field.key] =
           data.engagements > 0
-            ? Number((data.cost / data.engagements).toFixed(2))
+            ? Number((data.spent / data.engagements).toFixed(2))
             : 0;
         break;
 
@@ -264,8 +264,8 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
       case "roas":
         // ROAS = Website purchases conversion value / cost
         enhanced[field.key] =
-          data.cost > 0
-            ? Number((data.purchaseConValue / data.cost).toFixed(2))
+          data.spent > 0
+            ? Number((data.purchaseConValue / data.spent).toFixed(2))
             : 0;
         break;
 

@@ -472,11 +472,11 @@ function TiktokVideoSlide01() {
               <h4 className="text-lg font-semibold">Performance by Audience</h4>
 
               <AdvancedDataTable
-                firstMetric="Ad set name"
+                firstMetric="Ad group name"
                 channelData={TikTokVideoAudienceData}
                 totalData={TikTokVideoAudienceTotals}
                 metrics={[
-                  "Ad set name",
+                  "Ad group name",
                   "impressions",
                   "reach",
                   "views",

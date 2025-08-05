@@ -320,6 +320,33 @@ export const DataProvider = ({ children }) => {
   const [TikTokVideoAudienceComparison, setTikTokVideoAudienceComparison] =
     useState({});
 
+  // Line Reach
+  const [LineReachAudienceData, setLineReachAudienceData] = useState({});
+  const [LineReachAudienceTotals, setLineReachAudienceTotals] = useState({});
+  const [LineReachCreativeData, setLineReachCreativeData] = useState({});
+  const [LineReachCreativeTotals, setLineReachCreativeTotals] = useState({});
+  const [LineReachAudienceMetrics, setLineReachAudienceMetrics] = useState(
+    DEFAULT_METRICS.LineReach
+  );
+  const [LineReachAudienceComparison, setLineReachAudienceComparison] =
+    useState({});
+
+  //Line Gain Friends
+  const [LineGainFriendsAudienceData, setLineGainFriendsAudienceData] =
+    useState({});
+  const [LineGainFriendsAudienceTotals, setLineGainFriendsAudienceTotals] =
+    useState({});
+  const [LineGainFriendsCreativeData, setLineGainFriendsCreativeData] =
+    useState({});
+  const [LineGainFriendsCreativeTotals, setLineGainFriendsCreativeTotals] =
+    useState({});
+  const [LineGainFriendsAudienceMetrics, setLineGainFriendsAudienceMetrics] =
+    useState(DEFAULT_METRICS.LineGainFriends);
+  const [
+    LineGainFriendsAudienceComparison,
+    setLineGainFriendsAudienceComparison,
+  ] = useState({});
+
   // Create metrics map
   const metricsMap = {
     overall: overallMetrics,
@@ -344,6 +371,8 @@ export const DataProvider = ({ children }) => {
     TikTokTraffic: TikTokTrafficAudienceMetrics,
     TikTokConversion: TikTokConversionAudienceMetrics,
     TikTokVideo: TikTokVideoAudienceMetrics,
+    LineReach: LineReachAudienceMetrics,
+    LineGainFriends: LineGainFriendsAudienceMetrics,
   };
 
   // Create setters map
@@ -470,6 +499,18 @@ export const DataProvider = ({ children }) => {
     setTikTokVideoCreativeTotals,
     setTikTokVideoAudienceMetrics,
     setTikTokVideoAudienceComparison,
+    setLineReachAudienceData,
+    setLineReachAudienceTotals,
+    setLineReachCreativeData,
+    setLineReachCreativeTotals,
+    setLineReachAudienceMetrics,
+    setLineReachAudienceComparison,
+    setLineGainFriendsAudienceData,
+    setLineGainFriendsAudienceTotals,
+    setLineGainFriendsCreativeData,
+    setLineGainFriendsCreativeTotals,
+    setLineGainFriendsAudienceMetrics,
+    setLineGainFriendsAudienceComparison,
   });
 
   // Helper function to build fetch options
@@ -738,7 +779,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getTikTokConversionData result:", result);
+    // console.log("🎯 getTikTokConversionData result:", result);
     return result;
   };
 
@@ -753,6 +794,30 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue)
     );
     // console.log("🎯 getTikTokVideoData result:", result);
+    return result;
+  };
+
+  const getLineReachData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "LineReach",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getLineReachData result:", result);
+    return result;
+  };
+
+  const getLineGainFriendsData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "LineGainFriends",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    // console.log("🎯 getLineGainFriendsData result:", result);
     return result;
   };
 
@@ -801,6 +866,8 @@ export const DataProvider = ({ children }) => {
           getTikTokTrafficData(id, "Channel", "TikTok Traffic"),
           getTikTokLeadData(id, "Channel", "TikTok Lead"),
           getTikTokConversionData(id, "Channel", "TikTok Conversion"),
+          getLineReachData(id, "Channel", "Line Reach"),
+          // getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
@@ -847,6 +914,12 @@ export const DataProvider = ({ children }) => {
           FacebookCatalog: getFacebookCatalogData,
           TikTokAudience: getTikTokData,
           TikTokReach: getTikTokReachData,
+          TikTokLead: getTikTokLeadData,
+          TikTokConversion: getTikTokConversionData,
+          TikTokVideo: getTikTokVideoData,
+          TikTokTraffic: getTikTokTrafficData,
+          LineReach: getLineReachData,
+          // LineGainFriends: getLineGainFriendsData,
         }[dataType];
 
         if (!fetchFunction) {
@@ -1130,6 +1203,22 @@ export const DataProvider = ({ children }) => {
     TikTokVideoCreativeTotals,
     TikTokVideoAudienceMetrics,
     TikTokVideoAudienceComparison,
+
+    // Line Reach
+    LineReachAudienceData,
+    LineReachAudienceTotals,
+    LineReachCreativeData,
+    LineReachCreativeTotals,
+    LineReachAudienceMetrics,
+    LineReachAudienceComparison,
+
+    // Line Gain Friends
+    LineGainFriendsAudienceData,
+    LineGainFriendsAudienceTotals,
+    LineGainFriendsCreativeData,
+    LineGainFriendsCreativeTotals,
+    LineGainFriendsAudienceMetrics,
+    LineGainFriendsAudienceComparison,
 
     //function
     fetchFacebookPicture,

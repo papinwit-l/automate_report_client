@@ -479,11 +479,11 @@ function TiktokConversionSlide01() {
               <h4 className="text-lg font-semibold">Performance by Audience</h4>
 
               <AdvancedDataTable
-                firstMetric="Ad set name"
+                firstMetric="Ad group name"
                 channelData={TikTokConversionAudienceData}
                 totalData={TikTokConversionAudienceTotals}
                 metrics={[
-                  "Ad set name",
+                  "Ad group name",
                   "impressions",
                   "clicks",
                   "ctr",
@@ -505,7 +505,7 @@ function TiktokConversionSlide01() {
                 channelData={TikTokConversionCreativeData}
                 totalData={TikTokConversionAudienceTotals}
                 metrics={[
-                  "Ad set name",
+                  "Ad name",
                   "impressions",
                   "clicks",
                   "ctr",
