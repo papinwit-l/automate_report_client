@@ -394,7 +394,7 @@ function TiktokLeadSlide01() {
 
   return (
     <div
-      id="tiktok-traffic-01-component"
+      id="tiktok-lead-01-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -407,7 +407,7 @@ function TiktokLeadSlide01() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"TikTok Traffic"} />
+      <SlideHeader title={"TikTok Lead"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
           <div className="col-span-14 flex flex-col gap-2">
