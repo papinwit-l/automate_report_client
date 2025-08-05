@@ -33,7 +33,7 @@ function TiktokReachSlide01() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [maxTableRows, setMaxTableRows] = useState([0, 0]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -507,7 +507,7 @@ function TiktokReachSlide01() {
                   "spent",
                 ]}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows[0]}
+                maxRows={maxTableRows[1]}
                 defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}

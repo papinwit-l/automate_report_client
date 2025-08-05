@@ -33,7 +33,7 @@ function TiktokVideoSlide01() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [maxTableRows, setMaxTableRows] = useState([0, 0]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -498,7 +498,7 @@ function TiktokVideoSlide01() {
                 channelData={TikTokVideoCreativeData}
                 totalData={TikTokVideoAudienceTotals}
                 metrics={[
-                  "Ad set name",
+                  "Ad name",
                   "impressions",
                   "reach",
                   "views",
@@ -508,7 +508,7 @@ function TiktokVideoSlide01() {
                   "spent",
                 ]}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows[0]}
+                maxRows={maxTableRows[1]}
                 defaultSortBy="views"
                 defaultSortOrder="desc"
                 enableSorting={true}
