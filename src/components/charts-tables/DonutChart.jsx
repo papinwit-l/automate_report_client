@@ -181,20 +181,23 @@ const DonutChart = ({
   );
 
   // Early return if no valid data
+  // if (!hasValidData(data)) {
+  //   return (
+  //     <div className="w-full flex flex-col items-center">
+  //       {title && (
+  //         <h3 className="text-lg font-semibold text-center">{title}</h3>
+  //       )}
+  //       <div
+  //         className="flex items-center justify-center text-gray-500 text-sm"
+  //         style={{ width, height }}
+  //       >
+  //         No data available
+  //       </div>
+  //     </div>
+  //   );
+  // }
   if (!hasValidData(data)) {
-    return (
-      <div className="w-full flex flex-col items-center">
-        {title && (
-          <h3 className="text-lg font-semibold text-center">{title}</h3>
-        )}
-        <div
-          className="flex items-center justify-center text-gray-500 text-sm"
-          style={{ width, height }}
-        >
-          No data available
-        </div>
-      </div>
-    );
+    return <div className="w-full flex flex-col items-center"></div>;
   }
 
   // Final check - if no valid chart data after processing
