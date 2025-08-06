@@ -441,10 +441,14 @@ function FacebookEngagementSlide02() {
             </div>
           </div>
           {/* Images */}
-          <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
-            <ImageFallback src={adsPicture} alt="ads preview" />
-            <p className="mx-auto">{topAds}</p>
-          </div>
+          {adsPicture &&
+            typeof adsPicture === "string" &&
+            adsPicture.startsWith("http") && (
+              <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
+                <ImageFallback src={adsPicture} alt="ads preview" />
+                <p className="mx-auto">{topAds}</p>
+              </div>
+            )}
           {/* Summary */}
           <div className="col-span-16">
             <div className="px-4 mt-6">

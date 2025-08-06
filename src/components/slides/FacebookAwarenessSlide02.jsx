@@ -491,10 +491,15 @@ function FacebookAwarenessSlide02() {
           </div>
           <div className="col-span-3 flex flex-col ml-2 mt-8 justify-between items-center">
             {/* Ads Preview */}
-            <div className="p-6 flex flex-col gap-2">
-              <ImageFallback src={adsPicture} alt="ads preview" />
-              <p className="mx-auto">{topAds}</p>
-            </div>
+            {adsPicture &&
+              typeof adsPicture === "string" &&
+              adsPicture.startsWith("http") && (
+                <div className="p-6 flex flex-col gap-2">
+                  <ImageFallback src={adsPicture} alt="ads preview" />
+                  <p className="mx-auto">{topAds}</p>
+                </div>
+              )}
+
             {/* Chart */}
             {/* <div className="col-span-3">
               <DonutChart

@@ -471,11 +471,15 @@ function FacebookConversionSlide02() {
               />
             </div>
           </div>
-          {/* Images */}
-          <div className="col-span-4 flex flex-col p-4 pt-10 gap-4 items-center">
-            <ImageFallback adsPicture={adsPicture} />
-            <p className="mx-auto">{topAds}</p>
-          </div>
+          {/* Ads Preview */}
+          {adsPicture &&
+            typeof adsPicture === "string" &&
+            adsPicture.startsWith("http") && (
+              <div className="p-6 flex flex-col gap-2">
+                <ImageFallback src={adsPicture} alt="ads preview" />
+                <p className="mx-auto">{topAds}</p>
+              </div>
+            )}
         </div>
         <div className="grid grid-cols-16">
           <div className="col-span-16">

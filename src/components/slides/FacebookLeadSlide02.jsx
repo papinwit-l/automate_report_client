@@ -28,11 +28,14 @@ function FacebookLeadSlide02() {
     FacebookLeadCreativeData,
     FacebookLeadCreativeTotals,
     FBDemographicData,
+    FacebookAdsPicture,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([8]);
+  const [adsPicture, setAdsPicture] = useState(null);
+  const [topAds, setTopAds] = useState(null);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -93,7 +96,8 @@ function FacebookLeadSlide02() {
         } (with ${topCreative.value.conversions?.toLocaleString()} leads)**`;
         summaryTextTemp += `<li>${topCreativeText}</li>`;
       }
-
+      prepareAdsPicture(topCreative.key);
+      setTopAds(topCreative.key);
       setSummaryText(summaryTextTemp);
     } catch (error) {
       console.error("Error in summarizeData:", error);
@@ -104,6 +108,15 @@ function FacebookLeadSlide02() {
     FacebookLeadAudienceData,
     FacebookLeadCreativeData,
   ]);
+
+  const prepareAdsPicture = (adsName) => {
+    const adsPicture = FacebookAdsPicture.filter((item) => {
+      return item["Ad name"] == adsName;
+    });
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
+    setAdsPicture(adsPicture[0]["Ads"]);
+  };
 
   //Demographic for chart
   const { impressionsByGender, impressionsByAge } = useMemo(() => {
@@ -456,24 +469,15 @@ function FacebookLeadSlide02() {
           </div>
           {/* Chart */}
           <div className="col-span-4 flex flex-col">
-            {/* <DonutChart
-              data={impressionsByGender}
-              title="Impression By Gender"
-              width={220}
-              height={160}
-              innerRadius={30}
-              outerRadius={60}
-              isPercentage={true}
-            />
-            <DonutChart
-              data={impressionsByAge}
-              title="Impression By Age"
-              width={220}
-              height={160}
-              innerRadius={30}
-              outerRadius={60}
-              isPercentage={true}
-            /> */}
+            {/* Ads Preview */}
+            {adsPicture &&
+              typeof adsPicture === "string" &&
+              adsPicture.startsWith("http") && (
+                <div className="p-6 flex flex-col gap-2">
+                  <ImageFallback src={adsPicture} alt="ads preview" />
+                  <p className="mx-auto">{topAds}</p>
+                </div>
+              )}
           </div>
         </div>
         <div className="grid grid-cols-16">

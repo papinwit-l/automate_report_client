@@ -484,10 +484,14 @@ function FacebookMessageSlide02() {
               isLegendWrap={false}
             /> */}
             {/* Images */}
-            <div className="flex flex-col gap-2 items-center mt-8">
-              <ImageFallback src={adsPicture} alt="ads preview" />
-              <p className="mx-auto">{topAds}</p>
-            </div>
+            {adsPicture &&
+              typeof adsPicture === "string" &&
+              adsPicture.startsWith("http") && (
+                <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
+                  <ImageFallback src={adsPicture} alt="ads preview" />
+                  <p className="mx-auto">{topAds}</p>
+                </div>
+              )}
           </div>
           {/* Summary */}
           <div className="col-span-16">

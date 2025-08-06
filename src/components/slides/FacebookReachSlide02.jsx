@@ -469,11 +469,15 @@ function FacebookReachSlide02() {
               />
             </div>
           </div>
-          {/* Ads */}
-          <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
-            <ImageFallback src={adsPicture} alt="ads preview" />
-            <p className="mx-auto">{topAds}</p>
-          </div>
+          {/* Images */}
+          {adsPicture &&
+            typeof adsPicture === "string" &&
+            adsPicture.startsWith("http") && (
+              <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
+                <ImageFallback src={adsPicture} alt="ads preview" />
+                <p className="mx-auto">{topAds}</p>
+              </div>
+            )}
         </div>
         <div className="grid grid-cols-16">
           <div className="col-span-16">
