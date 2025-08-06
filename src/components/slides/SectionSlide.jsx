@@ -3,37 +3,36 @@ import TYN_LOGO from "@/assets/images/TYN_LOGO-08.png";
 
 function SectionSlide({ title, componentID }) {
   return (
-    <div
-      id={componentID}
-      className="border w-7xl h-[720px] relative group bg-[#c05334] overflow-hidden py-8"
-    >
-      <div className="h-full relative">
-        <div className="absolute -top-2 right-8 ">
-          <img className="h-24" src={TYN_LOGO} alt="TYN LOGO" />
-        </div>
-        <div className="absolute h-full -translate-x-[30%] z-[1]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full -translate-x-[18%] z-[2]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full -translate-x-[6%] z-[3]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full translate-x-[6%] z-[4]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full translate-x-[18%] z-[5]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full translate-x-[30%] z-[6]">
-          <EllipseSVG />
-        </div>
-        <div className="absolute h-full translate-x-[22.5%] z-[7]">
-          <HorizontalLine />
-        </div>
-        <div className="absolute bottom-[50%] right-0 mr-10 mb-4">
-          <h1 className="text-6xl font-header">{title}</h1>
+    <div id={componentID}>
+      <div className="border w-7xl h-[720px] relative group bg-[#c05334] overflow-hidden py-8">
+        <div className="h-full relative">
+          <div className="absolute -top-2 right-8 ">
+            <img className="h-24" src={TYN_LOGO} alt="TYN LOGO" />
+          </div>
+          <div className="absolute h-full -translate-x-[30%] z-[1]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full -translate-x-[18%] z-[2]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full -translate-x-[6%] z-[3]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full translate-x-[6%] z-[4]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full translate-x-[18%] z-[5]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full translate-x-[30%] z-[6]">
+            <EllipseSVG />
+          </div>
+          <div className="absolute h-full translate-x-[22.5%] z-[7]">
+            <HorizontalLine />
+          </div>
+          <div className="absolute bottom-[50%] right-0 mr-10 mb-4">
+            <h1 className="text-6xl font-header">{title}</h1>
+          </div>
         </div>
       </div>
     </div>

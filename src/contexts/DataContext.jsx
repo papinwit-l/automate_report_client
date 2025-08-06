@@ -838,7 +838,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getTaboolaData result:", result);
+    // console.log("🎯 getTaboolaData result:", result);
     return result;
   };
 

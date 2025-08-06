@@ -14,8 +14,10 @@ function TitleSlide({ projectName, reportType }) {
   return (
     <div
       id="title-component"
-      className="flex flex-col border w-7xl h-[720px] gap-2 relative group bg-main-secondary overflow-hidden"
+      className="flex flex-col border w-7xl h-[720px] gap-2 relative group overflow-hidden"
+      // style={{ backgroundColor: "#405a5a" }}
     >
+      <div className="absolute bg-main-secondary h-full w-full"></div>
       <img
         className="absolute h-26 top-6 left-8"
         src={TYN_LOGO}

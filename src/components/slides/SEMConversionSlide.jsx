@@ -248,7 +248,7 @@ function SEMConversionSlide() {
 
   return (
     <div
-      id="sem-component"
+      id="sem-conversion-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4 relative group bg-white"
     >
       {/* EDIT BUTTON */}
