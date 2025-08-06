@@ -24,13 +24,39 @@ export const processAdvertisingData = (
     const fieldValue = item[groupBy] || "Unknown";
 
     if (!acc[fieldValue]) {
+      // Initialize all metrics
       acc[fieldValue] = Object.fromEntries(metrics.map((m) => [m, 0]));
+
+      // Initialize non-numeric fields
+      NON_NUMERIC_COLUMNS.forEach((field) => {
+        if (metrics.includes(field)) {
+          acc[fieldValue][field] = "";
+        }
+      });
     }
+
     for (const key of metrics) {
-      acc[fieldValue][key] += item[key];
+      if (NON_NUMERIC_COLUMNS.includes(key)) {
+        // Handle non-numeric fields - store the value directly
+        if (
+          item[key] &&
+          (!acc[fieldValue][key] || acc[fieldValue][key] === "")
+        ) {
+          acc[fieldValue][key] = item[key];
+        }
+      } else {
+        // Handle numeric fields - sum them up
+        const numValue = Number(item[key]) || 0;
+        acc[fieldValue][key] += numValue;
+      }
     }
+
     return acc;
   }, {});
+
+  if (groupBy === "Updated Date") {
+    // console.log("🎯 summaryByField:", summaryByField);
+  }
 
   // Add calculations for each field value
   const enhancedFieldData = {};

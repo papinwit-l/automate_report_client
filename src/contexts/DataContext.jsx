@@ -347,6 +347,12 @@ export const DataProvider = ({ children }) => {
     setLineGainFriendsAudienceComparison,
   ] = useState({});
 
+  // Taboola
+  const [TaboolaData, setTaboolaData] = useState({});
+  const [TaboolaTotals, setTaboolaTotals] = useState({});
+  const [TaboolaMetrics, setTaboolaMetrics] = useState(DEFAULT_METRICS.Taboola);
+  const [TaboolaComparison, setTaboolaComparison] = useState({});
+
   // Create metrics map
   const metricsMap = {
     overall: overallMetrics,
@@ -373,6 +379,7 @@ export const DataProvider = ({ children }) => {
     TikTokVideo: TikTokVideoAudienceMetrics,
     LineReach: LineReachAudienceMetrics,
     LineGainFriends: LineGainFriendsAudienceMetrics,
+    Taboola: TaboolaMetrics,
   };
 
   // Create setters map
@@ -511,6 +518,10 @@ export const DataProvider = ({ children }) => {
     setLineGainFriendsCreativeTotals,
     setLineGainFriendsAudienceMetrics,
     setLineGainFriendsAudienceComparison,
+    setTaboolaData,
+    setTaboolaTotals,
+    setTaboolaMetrics,
+    setTaboolaComparison,
   });
 
   // Helper function to build fetch options
@@ -817,7 +828,17 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getLineGainFriendsData result:", result);
+    // console.log("🎯 getLineGainFriendsData result:", result);
+    return result;
+  };
+
+  const getTaboolaData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "Taboola",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getTaboolaData result:", result);
     return result;
   };
 
@@ -868,6 +889,7 @@ export const DataProvider = ({ children }) => {
           getTikTokConversionData(id, "Channel", "TikTok Conversion"),
           getLineReachData(id, "Channel", "Line Reach"),
           getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
+          getTaboolaData(id),
           fetchFacebookPicture(id),
 
           // getTikTokData(id),
@@ -920,6 +942,7 @@ export const DataProvider = ({ children }) => {
           TikTokTraffic: getTikTokTrafficData,
           LineReach: getLineReachData,
           LineGainFriends: getLineGainFriendsData,
+          Taboola: getTaboolaData,
         }[dataType];
 
         if (!fetchFunction) {
@@ -1219,6 +1242,12 @@ export const DataProvider = ({ children }) => {
     LineGainFriendsCreativeTotals,
     LineGainFriendsAudienceMetrics,
     LineGainFriendsAudienceComparison,
+
+    // Taboola
+    TaboolaData,
+    TaboolaTotals,
+    TaboolaMetrics,
+    TaboolaComparison,
 
     //function
     fetchFacebookPicture,

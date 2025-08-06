@@ -493,6 +493,22 @@ export const DATA_CONFIGS = {
     processorType: "social",
     socialConfig: SOCIAL_MEDIA_CONFIGS.LineGainFriends,
   },
+
+  Taboola: {
+    endpoint: "taboola-data",
+    processFields: [
+      "Channel", // For filtering
+      "Updated Date",
+      "Impressions",
+      "Clicks",
+      "Conversions",
+      "Spent",
+    ],
+    groupBy: "Updated Date",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
 };
 
 // Default metrics for each data type
@@ -549,4 +565,12 @@ export const DEFAULT_METRICS = {
   TikTokVideo: TIKTOK_METRICS,
   LineReach: LINE_METRICS,
   LineGainFriends: LINE_METRICS,
+  Taboola: [
+    "Channel", // For filtering
+    "Updated Date",
+    "Impressions",
+    "Clicks",
+    "Conversions",
+    "Spent",
+  ],
 };

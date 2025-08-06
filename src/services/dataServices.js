@@ -50,7 +50,9 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
 
     // ✅ FIX: Use processMetrics (source field names) for cleaning
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
-    if (config.endpoint === "line-data") {
+
+    // For debugging
+    if (config.endpoint === "taboola-data") {
       // console.log("🎯 cleanedData result:", cleanedData);
     }
 
@@ -65,6 +67,11 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
         dateRange.from,
         dateRange.to
       );
+
+      //for debugging
+      if (config.endpoint === "taboola-data") {
+        // console.log("🎯 currentPeriodData result:", currentPeriodData);
+      }
 
       // Get previous period data for comparison
       if (config.hasComparison) {
@@ -142,7 +149,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
         }
       }
 
-      if (dataType === "LineGainFriends") {
+      // for debugging
+      if (dataType === "Taboola") {
         // console.log("🎯 currentPeriodResults:", currentPeriodResults);
       }
 

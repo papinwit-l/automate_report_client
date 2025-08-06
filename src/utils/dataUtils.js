@@ -284,5 +284,11 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setLineGainFriendsAudienceMetrics,
       setComparison: stateSetter.setLineGainFriendsAudienceComparison,
     },
+    Taboola: {
+      setData: stateSetter.setTaboolaData,
+      setTotals: stateSetter.setTaboolaTotals,
+      setMetrics: stateSetter.setTaboolaMetrics,
+      setComparison: stateSetter.setTaboolaComparison,
+    },
   };
 };
