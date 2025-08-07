@@ -55,6 +55,7 @@ import LineGainFriendsSlide01 from "@/components/slides/LineGainFriendsSlide01";
 import TaboolaSlide from "@/components/slides/TaboolaSlide";
 import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
 import axiosInstance from "@/configs/axiosConfigs";
+import MediaPlan from "@/components/slides/MediaPlan";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -70,12 +71,8 @@ function SlideReport() {
 
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  const {
-    fetchData,
-    enableDateRange,
-    setEnableDateRange,
-    fetchFacebookPicture,
-  } = useData();
+  const { fetchData, enableDateRange, setEnableDateRange } = useData();
+  const [mediaPlanData, setMediaPlanData] = React.useState(null);
 
   const handleProjectNameChange = (event) => {
     setProjectName(event.target.value);
@@ -489,6 +486,48 @@ function SlideReport() {
     }
   };
 
+  const handleGetMediaPlan = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/data-sheets/media-plan/${sheetsID}`
+      );
+      const rawData = response.data.data;
+      console.log("🎯 rawData | mediaplan:", rawData);
+      const removeLeftColumn = rawData.map((item) => {
+        return item.slice(1);
+      });
+      console.log("🎯 removeLeftColumn | mediaplan:", removeLeftColumn);
+
+      // remove header
+      let marker = 0;
+      for (let i = 0; i < removeLeftColumn.length; i++) {
+        if (removeLeftColumn[i].length === 0 && i > 0) {
+          marker = i + 1;
+          break;
+        }
+      }
+      const removedHeader = removeLeftColumn.slice(marker);
+      console.log("🎯 removedHeader | mediaplan:", removedHeader);
+
+      //remove footer
+      marker = 0;
+      for (let i = 0; i < removedHeader.length; i++) {
+        if (removedHeader[i].length === 0 && i > 0) {
+          marker = i;
+          break;
+        }
+      }
+      const removedFooter = removedHeader.slice(
+        0,
+        removedHeader.length - marker
+      );
+      console.log("🎯 removedFooter | mediaplan:", removedFooter);
+      setMediaPlanData(removedFooter);
+    } catch (error) {
+      console.error("Error fetching media plan:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Sidebar Component */}
@@ -525,7 +564,7 @@ function SlideReport() {
             <h1 className="text-xl font-bold text-slate-900">
               Slide Report Generator
             </h1>
-            <button onClick={() => fetchFacebookPicture(sheetsID)}>TEST</button>
+            <button onClick={() => handleGetMediaPlan()}>TEST</button>
           </div>
           <div className="ml-auto text-sm text-slate-600">
             Transform your Google Sheets data into beautiful presentation slides
@@ -559,6 +598,8 @@ function SlideReport() {
                 </AlertDescription>
               </Alert>
             )}
+
+            <MediaPlan mediaPlanData={mediaPlanData} />
 
             {/* Preview Panel */}
             {slideGenerated ? (
