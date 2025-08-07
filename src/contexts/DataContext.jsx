@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { fetchDataSheet } from "../services/dataServices";
 import { createStateSettersMap } from "../utils/dataUtils";
 import { DEFAULT_METRICS } from "../configs/dataConfigs";
-import axios from "axios";
+import axiosInstance from "../configs/axiosConfigs"; // ✅ Updated: Use centralized axios
 
 const DataContext = createContext();
 
@@ -964,27 +964,10 @@ export const DataProvider = ({ children }) => {
     [enableDateRange, dateRange, metricsMap]
   );
 
-  // const getFBDemographic = async (id) => {
-  //   const rawData = await fetchDemographic(id, "fb-demographic");
-  // };
-
-  // const fetchDemographic = async (id, endpoint) => {
-  //   const response = await axios.get(
-  //     `http://localhost:8000/data-sheets/${endpoint}/${id}`
-  //   );
-  //   const rawData = response.data.data;
-  //   const headers = rawData[0];
-  //   const dataRows = rawData.slice(1);
-  //   const dataObjects = dataRows.map((row) =>
-  //     Object.fromEntries(headers.map((header, index) => [header, row[index]]))
-  //   );
-  //   const dateFilteredData = filterDataByDate(dataObjects, dateRange);
-  //   return dateFilteredData;
-  // };
-
+  // ✅ Updated: Use centralized axios instance with relative URL
   const fetchFacebookPicture = async (id) => {
-    const response = await axios.get(
-      `http://localhost:8000/data-sheets/facebook-picture/${id}`
+    const response = await axiosInstance.get(
+      `/data-sheets/facebook-picture/${id}`
     );
     const rawData = response.data.data;
     const headers = rawData[0];

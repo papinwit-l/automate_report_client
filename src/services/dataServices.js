@@ -1,6 +1,6 @@
-// services/dataServices.js - FIXED VERSION
+// services/dataServices.js - Updated to use centralized axios config
 
-import axios from "axios";
+import axiosInstance from "../configs/axiosConfigs";
 import { DATA_CONFIGS } from "../configs/dataConfigs";
 import {
   processAdvertisingData,
@@ -30,9 +30,9 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       throw new Error(`Configuration for ${dataType} not found`);
     }
 
-    // Fetch data from API
-    const response = await axios.get(
-      `http://localhost:8000/data-sheets/${config.endpoint}/${id}`
+    // Fetch data from API using centralized axios instance
+    const response = await axiosInstance.get(
+      `/data-sheets/${config.endpoint}/${id}`
     );
 
     const rawData = response.data.data;
@@ -189,7 +189,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
   }
 };
 
-// Helper function remains the same
+// Helper function - updated to use centralized axios config
 export const getFilterValues = async (dataType, id, filterField) => {
   try {
     const config = DATA_CONFIGS[dataType];
@@ -197,8 +197,9 @@ export const getFilterValues = async (dataType, id, filterField) => {
       throw new Error(`Configuration for ${dataType} not found`);
     }
 
-    const response = await axios.get(
-      `http://localhost:8000/data-sheets/${config.endpoint}/${id}`
+    // Use centralized axios instance with relative URL
+    const response = await axiosInstance.get(
+      `/data-sheets/${config.endpoint}/${id}`
     );
 
     const rawData = response.data.data;

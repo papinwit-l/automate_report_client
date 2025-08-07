@@ -54,6 +54,7 @@ import LineReachSlide01 from "@/components/slides/LineReachSlide01";
 import LineGainFriendsSlide01 from "@/components/slides/LineGainFriendsSlide01";
 import TaboolaSlide from "@/components/slides/TaboolaSlide";
 import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
+import axiosInstance from "@/configs/axiosConfigs";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -467,16 +468,11 @@ function SlideReport() {
       console.log(`Captured ${slideData.length} slides, sending to backend...`);
 
       // Send to backend
-      const response = await axios.post(
-        "http://localhost:8000/data-sheets/create-multi-slide-presentation",
+      const response = await axiosInstance.post(
+        "/data-sheets/create-multi-slide-presentation",
         {
           slides: slideData,
           presentationTitle: "Monthly Performance Report",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
