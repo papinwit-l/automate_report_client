@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Download, Loader2 } from "lucide-react";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 
 const TARGET_URL =
   "https://lookerstudio.google.com/u/0/reporting/d0ce7551-e5d8-43b4-b572-eabd2c7e8ba3/page/4SVjC";
@@ -52,6 +52,11 @@ function Home() {
       link.click();
     }
   };
+
+  useEffect(() => {
+    // redirect to /slide-rport
+    window.location.href = "/slide-report";
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-100 p-6">
