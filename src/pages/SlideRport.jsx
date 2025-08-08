@@ -56,6 +56,7 @@ import TaboolaSlide from "@/components/slides/TaboolaSlide";
 import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
 import axiosInstance from "@/configs/axiosConfigs";
 import MediaPlan from "@/components/slides/MediaPlan";
+import { tableProcessing } from "@/utils/mediaPlanProcessing";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -492,37 +493,11 @@ function SlideReport() {
         `/data-sheets/media-plan/${sheetsID}`
       );
       const rawData = response.data.data;
-      console.log("🎯 rawData | mediaplan:", rawData);
-      const removeLeftColumn = rawData.map((item) => {
-        return item.slice(1);
-      });
-      console.log("🎯 removeLeftColumn | mediaplan:", removeLeftColumn);
+      // console.log("🎯 rawData | mediaplan:", rawData);
 
-      // remove header
-      let marker = 0;
-      for (let i = 0; i < removeLeftColumn.length; i++) {
-        if (removeLeftColumn[i].length === 0 && i > 0) {
-          marker = i + 1;
-          break;
-        }
-      }
-      const removedHeader = removeLeftColumn.slice(marker);
-      console.log("🎯 removedHeader | mediaplan:", removedHeader);
+      const { topTable, middleTable, bottomTable } = tableProcessing(rawData);
 
-      //remove footer
-      marker = 0;
-      for (let i = 0; i < removedHeader.length; i++) {
-        if (removedHeader[i].length === 0 && i > 0) {
-          marker = i;
-          break;
-        }
-      }
-      const removedFooter = removedHeader.slice(
-        0,
-        removedHeader.length - marker
-      );
-      console.log("🎯 removedFooter | mediaplan:", removedFooter);
-      setMediaPlanData(removedFooter);
+      setMediaPlanData({ topTable, middleTable, bottomTable });
     } catch (error) {
       console.error("Error fetching media plan:", error);
     }
