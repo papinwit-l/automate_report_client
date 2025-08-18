@@ -60,6 +60,7 @@ import MediaPlan from "@/components/slides/MediaPlan";
 import { tableProcessing } from "@/utils/mediaPlanProcessing";
 import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
 import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
+import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversionEcommerceSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -634,6 +635,7 @@ function SlideReport() {
                 <TiktokTrafficSlide01 />
                 <TiktokLeadSlide01 />
                 <TiktokConversionSlide01 />
+                <TiktokConversionEcommerceSlide01 />
                 <SectionSlide
                   title={"Line"}
                   componentID={"line-section-component"}

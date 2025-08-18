@@ -280,6 +280,13 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
             : 0;
         break;
 
+      case "cpf":
+        enhanced[field.key] =
+          data.followers > 0
+            ? Number((data.spent / data.followers).toFixed(2))
+            : 0;
+        break;
+
       case "engagementRate":
         enhanced[field.key] =
           data.reach > 0

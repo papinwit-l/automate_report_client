@@ -20,6 +20,10 @@ export const TIKTOK_FIELDS = [
     sourceField: "Website purchases conversion value",
   },
   { key: "view6sec", sourceField: "6-second video views" },
+  { key: "follows", sourceField: "Paid follows" },
+  { key: "addToCart", sourceField: "Add to cart events" },
+  { key: "addToCartValue", sourceField: "Total add to cart value" },
+  { key: "conversionValue", sourceField: "Total complete payment value" },
 ];
 
 export const TIKTOK_CALCULATED_FIELDS = [
@@ -33,6 +37,7 @@ export const TIKTOK_CALCULATED_FIELDS = [
   { key: "cpv", type: "cpv" },
   { key: "cpe", type: "cpe" },
   { key: "cpa", type: "cpa" },
+  { key: "cpf", type: "cpf" },
   { key: "roas", type: "roas" },
   { key: "engagementRate", type: "engagementRate" },
   { key: "viewRate", type: "viewRate" },
@@ -54,6 +59,10 @@ export const TIKTOK_PROCESSED_FIELDS = [
   "Website purchases",
   "Website purchases conversion value",
   "6-second video views",
+  "Paid follows",
+  "Add to cart events",
+  "Total add to cart value",
+  "Total complete payment value",
 ];
 
 export const TIKTOK_METRICS = [
@@ -73,4 +82,8 @@ export const TIKTOK_METRICS = [
   "Website purchases",
   "Website purchases conversion value",
   "6-second video views",
+  "Paid follows",
+  "Add to cart events",
+  "Total add to cart value",
+  "Total complete payment value",
 ];
