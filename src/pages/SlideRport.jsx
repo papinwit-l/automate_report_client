@@ -16,6 +16,7 @@ import {
   CheckCircle,
   AlertCircle,
   ExternalLink,
+  X,
 } from "lucide-react";
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
@@ -549,7 +550,7 @@ function SlideReport() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 relative">
           <div className="space-y-6">
             {/* Status Alerts */}
             {error && (
@@ -560,9 +561,9 @@ function SlideReport() {
             )}
 
             {presentationUrl && (
-              <Alert className="border-green-200 bg-green-50">
+              <Alert className="border-green-200 bg-green-50 sticky top-0 z-10 opacity-90 w-fit ml-auto">
                 <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
+                <AlertDescription className="text-green-800 pr-8">
                   Presentation created successfully!{" "}
                   <a
                     href={presentationUrl}
@@ -573,6 +574,13 @@ function SlideReport() {
                     Open Presentation <ExternalLink className="h-3 w-3" />
                   </a>
                 </AlertDescription>
+                {/* <button
+                  onClick={() => setPresentationUrl(null)}
+                  className="absolute top-2 right-2 p-1 rounded-sm opacity-70 hover:opacity-100 hover:bg-green-100 transition-all"
+                  aria-label="Close notification"
+                >
+                  <X className="h-4 w-4 text-green-600" />
+                </button> */}
               </Alert>
             )}
 
