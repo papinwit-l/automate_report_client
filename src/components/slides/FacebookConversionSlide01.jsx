@@ -137,9 +137,9 @@ function FacebookConversionSlide01() {
       // Gender impressions
       const sumImpressionsByGender = filteredDemographicData.reduce(
         (acc, item) => {
-          if (item?.Gender && item?.Impressions !== undefined) {
+          if (item?.Gender && item?.Conversions !== undefined) {
             acc[item.Gender] =
-              (acc[item.Gender] || 0) + parseImpressions(item.Impressions);
+              (acc[item.Gender] || 0) + parseImpressions(item.Conversions);
           }
           return acc;
         },
@@ -153,9 +153,9 @@ function FacebookConversionSlide01() {
       // Age impressions
       const sumImpressionsByAge = filteredDemographicData.reduce(
         (acc, item) => {
-          if (item?.Age && item?.Impressions !== undefined) {
+          if (item?.Age && item?.Conversions !== undefined) {
             acc[item.Age] =
-              (acc[item.Age] || 0) + parseImpressions(item.Impressions);
+              (acc[item.Age] || 0) + parseImpressions(item.Conversions);
           }
           return acc;
         },

@@ -574,7 +574,7 @@ function SlideReport() {
               </Alert>
             )}
 
-            <MediaPlan mediaPlanData={mediaPlanData} />
+            {/* <MediaPlan mediaPlanData={mediaPlanData} /> */}
 
             {/* Preview Panel */}
             {slideGenerated ? (
