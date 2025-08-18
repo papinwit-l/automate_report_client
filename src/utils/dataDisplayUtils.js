@@ -110,7 +110,7 @@ export const formatDisplayData = (
       displayValue = formatPercentage(value, 2);
       break;
     case "currency":
-      displayValue = formatCurrency(value, 0); // 0 decimal places for currency
+      displayValue = formatCurrency(value, 0, ""); // 0 decimal places for currency
       break;
     case "decimal":
       displayValue = formatDecimal(value, 2); // Decimal format with 2 decimal places
@@ -221,6 +221,7 @@ export const METRIC_CONFIGS = {
   engagementRate: { valueType: "percentage" },
   frequency: { valueType: "decimal" },
   engagements: { valueType: "number" },
+  "Conversion value": { valueType: "decimal" },
 };
 
 /**

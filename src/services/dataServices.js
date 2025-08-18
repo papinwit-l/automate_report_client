@@ -52,7 +52,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
     // For debugging
-    if (config.endpoint === "taboola-data") {
+    if (config.endpoint === "shopping-ads-data") {
       // console.log("🎯 cleanedData result:", cleanedData);
     }
 
@@ -69,7 +69,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       );
 
       //for debugging
-      if (config.endpoint === "taboola-data") {
+      if (config.endpoint === "shopping-ads-data") {
         // console.log("🎯 currentPeriodData result:", currentPeriodData);
       }
 
@@ -150,7 +150,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       }
 
       // for debugging
-      if (dataType === "Taboola") {
+      if (dataType === "ShoppingAds") {
         // console.log("🎯 currentPeriodResults:", currentPeriodResults);
       }
 

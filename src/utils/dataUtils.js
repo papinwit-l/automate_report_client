@@ -122,6 +122,12 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setYoutubeMetrics,
       setComparison: stateSetter.setYoutubeComparison,
     },
+    ShoppingAds: {
+      setData: stateSetter.setShoppingAdsData,
+      setTotals: stateSetter.setShoppingAdsTotals,
+      setMetrics: stateSetter.setShoppingAdsMetrics,
+      setComparison: stateSetter.setShoppingAdsComparison,
+    },
     // Social media platforms
     FacebookAudience: {
       setAudienceData: stateSetter.setFacebookAudienceData,

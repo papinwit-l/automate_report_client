@@ -57,6 +57,7 @@ import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
 import axiosInstance from "@/configs/axiosConfigs";
 import MediaPlan from "@/components/slides/MediaPlan";
 import { tableProcessing } from "@/utils/mediaPlanProcessing";
+import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -613,6 +614,7 @@ function SlideReport() {
                 <GDNSlide />
                 <DiscoverySlide />
                 <YoutubeSlide />
+                <ShoppingAdsSlide />
                 <SectionSlide
                   title={"Tiktok"}
                   componentID={"tiktok-section-component"}

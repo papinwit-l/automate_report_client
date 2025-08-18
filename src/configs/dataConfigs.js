@@ -40,6 +40,7 @@ export const NON_NUMERIC_COLUMNS = [
   "Campaign objective",
   "Campaign Type",
   "Ad Format",
+  "Product Title",
 ];
 
 // Social Media Platform Configurations
@@ -284,6 +285,24 @@ export const DATA_CONFIGS = {
       "Engagements",
     ],
     groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
+  ShoppingAds: {
+    endpoint: "shopping-ads-data",
+    processFields: [
+      "Product Title",
+      "Campaign name",
+      "Conversions",
+      "Conversion value",
+      "Clicks",
+      "Impressions",
+      "Spent",
+      "Ad group name",
+    ],
+    groupBy: "Product Title",
     hasComparison: true,
     processData: true,
     processorType: "advertising",
@@ -545,6 +564,16 @@ export const DEFAULT_METRICS = {
     "Watch 75% views",
     "Watch 100% views",
     "Engagements",
+  ],
+  ShoppingAds: [
+    "Product Title",
+    "Campaign name",
+    "Conversions",
+    "Conversion value",
+    "Clicks",
+    "Impressions",
+    "Spent",
+    "Ad group name",
   ],
   FacebookAudience: FACEBOOK_METRICS,
   FacebookAwareness: FACEBOOK_METRICS,
