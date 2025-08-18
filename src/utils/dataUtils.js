@@ -128,6 +128,12 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setShoppingAdsMetrics,
       setComparison: stateSetter.setShoppingAdsComparison,
     },
+    PerformanceMax: {
+      setData: stateSetter.setPerformanceMaxData,
+      setTotals: stateSetter.setPerformanceMaxTotals,
+      setMetrics: stateSetter.setPerformanceMaxMetrics,
+      setComparison: stateSetter.setPerformanceMaxComparison,
+    },
     // Social media platforms
     FacebookAudience: {
       setAudienceData: stateSetter.setFacebookAudienceData,

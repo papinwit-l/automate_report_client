@@ -308,6 +308,25 @@ export const DATA_CONFIGS = {
     processorType: "advertising",
   },
 
+  PerformanceMax: {
+    endpoint: "performance-max-data",
+    processFields: [
+      "Channel",
+      "Impressions",
+      "Clicks",
+      "Engagements",
+      "Conversions",
+      "Video views",
+      "Conversions",
+      "All conversions",
+      "Spent",
+    ],
+    groupBy: "Updated Date",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
   // Social media platforms
   FacebookAudience: {
     endpoint: "facebook-data",
@@ -574,6 +593,17 @@ export const DEFAULT_METRICS = {
     "Impressions",
     "Spent",
     "Ad group name",
+  ],
+  PerformanceMax: [
+    "Channel",
+    "Impressions",
+    "Clicks",
+    "Engagements",
+    "Conversions",
+    "Video views",
+    "Conversions",
+    "All conversions",
+    "Spent",
   ],
   FacebookAudience: FACEBOOK_METRICS,
   FacebookAwareness: FACEBOOK_METRICS,

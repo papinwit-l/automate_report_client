@@ -70,6 +70,14 @@ export const DataProvider = ({ children }) => {
   );
   const [ShoppingAdsComparison, setShoppingAdsComparison] = useState({});
 
+  // Performance Max Data
+  const [PerformanceMaxData, setPerformanceMaxData] = useState({});
+  const [PerformanceMaxTotals, setPerformanceMaxTotals] = useState({});
+  const [PerformanceMaxMetrics, setPerformanceMaxMetrics] = useState(
+    DEFAULT_METRICS.PerformanceMax
+  );
+  const [PerformanceMaxComparison, setPerformanceMaxComparison] = useState({});
+
   // Facebook Data
   const [FacebookAudienceData, setFacebookAudienceData] = useState({});
   const [FacebookAudienceTotals, setFacebookAudienceTotals] = useState({});
@@ -370,6 +378,7 @@ export const DataProvider = ({ children }) => {
     Disc: DiscMetrics,
     Youtube: YoutubeMetrics,
     ShoppingAds: ShoppingAdsMetrics,
+    PerformanceMax: PerformanceMaxMetrics,
     FacebookAudience: FacebookAudienceMetrics,
     FacebookAwareness: FacebookAwarenessAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
@@ -420,6 +429,10 @@ export const DataProvider = ({ children }) => {
     setShoppingAdsTotals,
     setShoppingAdsMetrics,
     setShoppingAdsComparison,
+    setPerformanceMaxData,
+    setPerformanceMaxTotals,
+    setPerformanceMaxMetrics,
+    setPerformanceMaxComparison,
     setFacebookAudienceData,
     setFacebookAudienceTotals,
     setFacebookCreativeData,
@@ -612,6 +625,20 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue)
     );
     // console.log("🎯 getShoppingAdsData result:", result);
+    return result;
+  };
+
+  const getPerformanceMaxData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "PerformanceMax",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getPerformanceMaxData result:", result);
     return result;
   };
 
@@ -900,6 +927,7 @@ export const DataProvider = ({ children }) => {
           getDiscData(id),
           getYoutubeData(id),
           getShoppingAdsData(id),
+          getPerformanceMaxData(id),
           getFacebookData(id),
           getFacebookAwarenessData(id, "Channel", "FB Awareness"),
           getFacebookReachData(id, "Channel", "FB Reach"),
@@ -953,6 +981,7 @@ export const DataProvider = ({ children }) => {
           Disc: getDiscData,
           Youtube: getYoutubeData,
           ShoppingAds: getShoppingAdsData,
+          PerformanceMax: getPerformanceMaxData,
           FacebookAudience: getFacebookData,
           FacebookAwareness: getFacebookAwarenessData,
           FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
@@ -1114,6 +1143,12 @@ export const DataProvider = ({ children }) => {
     ShoppingAdsTotals,
     ShoppingAdsMetrics,
     ShoppingAdsComparison,
+
+    // PerformanceMax
+    PerformanceMaxData,
+    PerformanceMaxTotals,
+    PerformanceMaxMetrics,
+    PerformanceMaxComparison,
 
     // Facebook
     FacebookAudienceData,
