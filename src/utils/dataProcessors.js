@@ -82,6 +82,8 @@ export const processAdvertisingData = (
     const engagementRate =
       data.Reach > 0 ? (data.Engagements / data.Reach) * 100 : 0;
 
+    const roas = data.Spent > 0 ? data["Conversion value"] / data.Spent : 0;
+
     // YouTube-specific calculations
     let cpv = 0;
     let viewRate = 0;
@@ -109,6 +111,7 @@ export const processAdvertisingData = (
     enhanced.cpe = Number(cpe.toFixed(2));
     enhanced.cpa = Number(cpa.toFixed(2));
     enhanced.engagementRate = Number(engagementRate.toFixed(2));
+    enhanced.roas = Number(roas.toFixed(2));
 
     // Add viewRate for YouTube
     if (platform === "Youtube") {
@@ -148,6 +151,9 @@ export const processAdvertisingData = (
   const totalEngagementRate =
     totals.Reach > 0 ? (totals.Engagements / totals.Reach) * 100 : 0;
 
+  const totalRoas =
+    totals.Spent > 0 ? totals["Conversion value"] / totals.Spent : 0;
+
   // YouTube-specific total calculations
   let totalCpv = 0;
   let totalViewRate = 0;
@@ -172,6 +178,7 @@ export const processAdvertisingData = (
     cpe: Number(totalCpe.toFixed(2)),
     cpa: Number(totalCpa.toFixed(2)),
     engagementRate: Number(totalEngagementRate.toFixed(2)),
+    roas: Number(totalRoas.toFixed(2)),
   };
 
   // Add viewRate for YouTube totals
@@ -292,6 +299,8 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         enhanced[field.key] =
           data.spent > 0
             ? Number((data.purchaseConValue / data.spent).toFixed(2))
+            : Number((data.purchaseConValue / data.spent).toFixed(2)) === 0
+            ? Number((data["Conversion value"] / data.spent).toFixed(2))
             : 0;
         break;
 
