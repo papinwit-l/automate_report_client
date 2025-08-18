@@ -30,7 +30,7 @@ function Overall() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [maxTableRows, setMaxTableRows] = useState([10]);
 
   const summarizeData = () => {
     // Handle "No Data" case
