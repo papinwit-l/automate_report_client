@@ -52,8 +52,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
     // For debugging
-    if (config.endpoint === "shopping-ads-data") {
-      // console.log("🎯 cleanedData result:", cleanedData);
+    if (config.endpoint === "performance-max-data") {
+      console.log("🎯 cleanedData result:", cleanedData);
     }
 
     // Apply date range filtering
@@ -69,8 +69,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       );
 
       //for debugging
-      if (config.endpoint === "shopping-ads-data") {
-        // console.log("🎯 currentPeriodData result:", currentPeriodData);
+      if (config.endpoint === "performance-max-data") {
+        console.log("🎯 currentPeriodData result:", currentPeriodData);
       }
 
       // Get previous period data for comparison
@@ -150,8 +150,8 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
       }
 
       // for debugging
-      if (dataType === "ShoppingAds") {
-        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
+      if (dataType === "PerformanceMax") {
+        console.log("🎯 currentPeriodResults:", currentPeriodResults);
       }
 
       // Update state based on processor type

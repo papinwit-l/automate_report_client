@@ -58,6 +58,7 @@ import axiosInstance from "@/configs/axiosConfigs";
 import MediaPlan from "@/components/slides/MediaPlan";
 import { tableProcessing } from "@/utils/mediaPlanProcessing";
 import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
+import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -615,6 +616,7 @@ function SlideReport() {
                 <DiscoverySlide />
                 <YoutubeSlide />
                 <ShoppingAdsSlide />
+                <PerformanceMaxSlide />
                 <SectionSlide
                   title={"Tiktok"}
                   componentID={"tiktok-section-component"}
