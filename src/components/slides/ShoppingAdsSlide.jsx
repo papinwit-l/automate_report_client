@@ -254,8 +254,8 @@ function ShoppingAdsSlide() {
         "compact"
       ),
       spentData: formatDisplayData(
-        ShoppingAdsTotals?.spent,
-        ShoppingAdsComparison?.spent,
+        ShoppingAdsTotals?.Spent,
+        ShoppingAdsComparison?.Spent,
         "compact"
       ),
       conRate: formatDisplayData(
