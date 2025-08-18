@@ -383,7 +383,7 @@ const SlideGeneratorSidebar = ({
                       {enableDateRange && (
                         <div className="pt-2 flex flex-col gap-2">
                           <DateRangePicker />
-                          <DateRangePickerV2 />
+                          {/* <DateRangePickerV2 /> */}
                         </div>
                       )}
                     </CardContent>

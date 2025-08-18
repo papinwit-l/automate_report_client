@@ -53,7 +53,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
 
     // For debugging
     if (config.endpoint === "performance-max-data") {
-      console.log("🎯 cleanedData result:", cleanedData);
+      // console.log("🎯 cleanedData result:", cleanedData);
     }
 
     // Apply date range filtering
@@ -70,7 +70,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
 
       //for debugging
       if (config.endpoint === "performance-max-data") {
-        console.log("🎯 currentPeriodData result:", currentPeriodData);
+        // console.log("🎯 currentPeriodData result:", currentPeriodData);
       }
 
       // Get previous period data for comparison
@@ -151,7 +151,7 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
 
       // for debugging
       if (dataType === "PerformanceMax") {
-        console.log("🎯 currentPeriodResults:", currentPeriodResults);
+        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
       }
 
       // Update state based on processor type

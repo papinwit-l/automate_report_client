@@ -14,6 +14,7 @@ import { useData } from "@/contexts/DataContext";
 
 function DateRangePicker() {
   const { dateRange, setDateRange } = useData();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const formatDateRange = (range) => {
     if (range?.from && range?.to) {
@@ -60,13 +61,14 @@ function DateRangePicker() {
 
   return (
     <div className="space-y-4">
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal",
-              !dateRange?.from && "text-muted-foreground"
+              "w-full justify-start text-left font-normal transition-all",
+              !dateRange?.from && "text-muted-foreground",
+              isPopoverOpen && "ring-2 ring-offset-2 ring-green-600"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />

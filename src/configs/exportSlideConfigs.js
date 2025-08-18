@@ -38,6 +38,8 @@ export const EXPORT_SLIDE_COMPONENT_LISTS = [
   { id: "gdn-component", title: "GDN" },
   { id: "discovery-component", title: "Discovery" },
   { id: "youtube-component", title: "Youtube" },
+  { id: "shopping-ads-component", title: "Shopping Ads" },
+  { id: "performance-max-component", title: "Performance Max" },
   { id: "tiktok-section-component", title: "Tiktok" },
   { id: "tiktok-reach-01-component", title: "Tiktok Reach" },
   { id: "tiktok-video-01-component", title: "Tiktok Video" },

@@ -638,7 +638,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getPerformanceMaxData result:", result);
+    // console.log("🎯 getPerformanceMaxData result:", result);
     return result;
   };
 
