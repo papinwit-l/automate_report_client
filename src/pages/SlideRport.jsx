@@ -63,6 +63,7 @@ import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversionEcommerceSlide01";
 import TiktokFollowerSlide01 from "@/components/slides/TiktokFollowerSlide01";
 import MediaPlanBlank from "@/components/slides/MediaPlanBlank";
+import FacebookReachDemoGraph from "@/components/slides/FacebookReachDemoGraph";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -594,7 +595,7 @@ function SlideReport() {
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center gap-10">
                 <TitleSlide projectName={projectName} reportType={reportType} />
-                <MediaPlanBlank />
+                {/* <MediaPlanBlank /> */}
                 <Overall />
                 <SectionSlide
                   title={"Facebook"}
@@ -605,7 +606,8 @@ function SlideReport() {
                 {/* <FacebookAwarenessSlide02PicTable /> */}
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
-                <FacebookEngagementSlide01 />
+                <FacebookReachDemoGraph />
+                {/* <FacebookEngagementSlide01 />
                 <FacebookEngagementSlide02 />
                 <FacebookTrafficSlide01 />
                 <FacebookTrafficSlide02 />
@@ -651,7 +653,7 @@ function SlideReport() {
                   title={"Taboola"}
                   componentID={"taboola-section-component"}
                 />
-                <TaboolaSlide />
+                <TaboolaSlide /> */}
                 <EndSlide />
               </div>
             ) : (
