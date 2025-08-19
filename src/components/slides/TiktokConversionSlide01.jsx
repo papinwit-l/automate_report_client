@@ -33,7 +33,7 @@ function TiktokConversionSlide01() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([4, 4]);
+  const [maxTableRows, setMaxTableRows] = useState([5, 5]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -525,18 +525,18 @@ function TiktokConversionSlide01() {
           <div className="col-span-6 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
+            {/* Summary */}
+            <div className="px-4 mt-6 col-span-10">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
         </div>
       </div>

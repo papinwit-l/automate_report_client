@@ -33,7 +33,7 @@ function TiktokConversionEcommerceSlide01() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([4, 4]);
+  const [maxTableRows, setMaxTableRows] = useState([3, 3]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -344,10 +344,25 @@ function TiktokConversionEcommerceSlide01() {
         TikTokConversionAudienceComparison?.addToCart,
         "number"
       ),
+      addToCartValueData: formatDisplayData(
+        TikTokConversionAudienceTotals?.addToCartValue,
+        TikTokConversionAudienceComparison?.addToCartValue,
+        "compact"
+      ),
+      conversionValueData: formatDisplayData(
+        TikTokConversionAudienceTotals?.conversionValue,
+        TikTokConversionAudienceComparison?.conversionValue,
+        "compact"
+      ),
       view6secData: formatDisplayData(
         TikTokConversionAudienceTotals?.view6sec,
         TikTokConversionAudienceComparison?.view6sec,
         "number"
+      ),
+      roasData: formatDisplayData(
+        TikTokConversionAudienceTotals?.roas,
+        TikTokConversionAudienceComparison?.roas,
+        "compact"
       ),
     };
   }, [TikTokConversionAudienceTotals, TikTokConversionAudienceComparison]);
@@ -395,8 +410,8 @@ function TiktokConversionEcommerceSlide01() {
     );
   }
 
-  console.log("🎯 TikTokAudienceData", TikTokConversionAudienceData);
-  console.log("🎯 TikTokAudienceTotals", TikTokConversionAudienceTotals);
+  // console.log("🎯 TikTokAudienceData", TikTokConversionAudienceData);
+  // console.log("🎯 TikTokAudienceTotals", TikTokConversionAudienceTotals);
 
   return (
     <div
@@ -416,18 +431,25 @@ function TiktokConversionEcommerceSlide01() {
       <SlideHeader title={"TikTok Conversion - Ecommerce"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+          <div className="col-span-16 flex flex-col gap-2">
+            <div className="grid grid-cols-9 gap-2">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-5 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
                 value={formattedMetrics.impressionData?.displayValue}
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"Reach"}
+                value={formattedMetrics.reachData?.displayValue}
+                compareValue={formattedMetrics.reachData?.compareValue}
+                isNegative={formattedMetrics.reachData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -462,20 +484,29 @@ function TiktokConversionEcommerceSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
-                value={formattedMetrics.cplData?.displayValue}
-                compareValue={formattedMetrics.cplData?.compareValue}
-                isNegative={formattedMetrics.cplData?.isNegative}
-                isConversion={true}
-                invertCompareColor={true}
-              />
-
-              <NumberDisplayBox
                 title={"Spent"}
                 value={formattedMetrics.spentData?.displayValue}
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"Conversion Value"}
+                value={formattedMetrics.conversionValueData?.displayValue}
+                compareValue={
+                  formattedMetrics.conversionValueData?.compareValue
+                }
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
+                isConversion={true}
+              />
+
+              <NumberDisplayBox
+                title={"ROAS"}
+                value={formattedMetrics.roasData?.displayValue}
+                compareValue={formattedMetrics.roasData?.compareValue}
+                isNegative={formattedMetrics.roasData?.isNegative}
+                isConversion={true}
               />
             </div>
             <div>
@@ -488,12 +519,16 @@ function TiktokConversionEcommerceSlide01() {
                 metrics={[
                   "Ad group name",
                   "impressions",
+                  "reach",
                   "clicks",
                   "ctr",
+                  "addToCart",
+                  "addToCartValue",
                   "conversions",
                   "cvr",
-                  "cpl",
                   "spent",
+                  "conversionValue",
+                  "roas",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
@@ -510,12 +545,16 @@ function TiktokConversionEcommerceSlide01() {
                 metrics={[
                   "Ad name",
                   "impressions",
+                  "reach",
                   "clicks",
                   "ctr",
+                  "addToCart",
+                  "addToCartValue",
                   "conversions",
                   "cvr",
-                  "cpl",
                   "spent",
+                  "conversionValue",
+                  "roas",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[1]}
@@ -525,12 +564,24 @@ function TiktokConversionEcommerceSlide01() {
               />
             </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
+            {/* Summary */}
+            <div className="px-4 mt-6 col-span-10">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
+          {/* <div className="px-4 mt-6 col-span-10">
             <h4 className="text-lg font-semibold">Summary</h4>
             <ul className="list-disc pl-6">
               <div
@@ -540,7 +591,7 @@ function TiktokConversionEcommerceSlide01() {
                 }}
               />
             </ul>
-          </div>
+          </div> */}
         </div>
       </div>
       <TextEditorModal
