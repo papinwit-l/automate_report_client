@@ -340,18 +340,22 @@ const SlideGeneratorSidebar = ({
 
                 {sheetsID && (
                   <div className="space-y-2">
-                    <Label className="text-sm text-muted-foreground">
-                      Sheet ID
-                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm text-muted-foreground">
+                        Sheet ID
+                      </Label>
+                      <Badge
+                        variant={ableToGenerate ? "default" : "destructive"}
+                        className={`text-xs ${
+                          ableToGenerate ? "bg-green-200 text-green-700" : ""
+                        }`}
+                      >
+                        {ableToGenerate ? "Valid" : "Invalid"}
+                      </Badge>
+                    </div>
                     <div className="p-3 bg-muted rounded-md text-sm font-mono break-all">
                       {sheetsID}
                     </div>
-                    <Badge
-                      variant={ableToGenerate ? "default" : "destructive"}
-                      className="text-xs"
-                    >
-                      {ableToGenerate ? "Valid" : "Invalid"}
-                    </Badge>
                   </div>
                 )}
 
