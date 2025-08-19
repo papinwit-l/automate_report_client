@@ -62,12 +62,12 @@ function TiktokConversionEcommerceSlide01() {
         TikTokConversionAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} conversions`;
       summaryTextTemp = `<li>${overallText}**</li>`;
-      // summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
-      //   TikTokConversionAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
-      // )?.toLocaleString()} THB with ${parseFloat(
-      //   TikTokConversionAudienceTotals["roas"]?.toFixed(2) || 0
-      // )?.toLocaleString()} of ROAS**</li>`;
-      summaryTextTemp += `<li>Average CPL: **${averageCPL} THB**</li>`;
+      summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
+        TikTokConversionAudienceTotals["conversionValue"]?.toFixed(2) || 0
+      )?.toLocaleString()} THB with ${parseFloat(
+        TikTokConversionAudienceTotals["roas"]?.toFixed(2) || 0
+      )?.toLocaleString()} of ROAS**</li>`;
+      // summaryTextTemp += `<li>Average CPL: **${averageCPL} THB**</li>`;
 
       // Find top audience by reach (with error handling)
       const topAudience = TikTokConversionAudienceData

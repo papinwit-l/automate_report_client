@@ -282,9 +282,7 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
 
       case "cpf":
         enhanced[field.key] =
-          data.followers > 0
-            ? Number((data.spent / data.followers).toFixed(2))
-            : 0;
+          data.follows > 0 ? Number((data.spent / data.follows).toFixed(2)) : 0;
         break;
 
       case "engagementRate":
@@ -302,13 +300,30 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         break;
 
       case "roas":
-        // ROAS = Website purchases conversion value / cost
+        // Try to find conversion value from multiple possible field names
+        // Priority order: purchaseConValue > conversionValue > "Conversion value"
+        const conversionValueFields = [
+          "purchaseConValue",
+          "conversionValue",
+          "Conversion value",
+        ];
+
+        let conversionValue = 0;
+
+        // Find the first available field with a valid value
+        for (const fieldName of conversionValueFields) {
+          const value = Number(data[fieldName]) || 0;
+          if (value > 0) {
+            conversionValue = value;
+            break;
+          }
+        }
+
+        const spent = Number(data.spent) || 0;
+
+        // Calculate ROAS: Conversion Value / Spent
         enhanced[field.key] =
-          data.spent > 0
-            ? Number((data.purchaseConValue / data.spent).toFixed(2))
-            : Number((data.purchaseConValue / data.spent).toFixed(2)) === 0
-            ? Number((data["Conversion value"] / data.spent).toFixed(2))
-            : 0;
+          spent > 0 ? Number((conversionValue / spent).toFixed(2)) : 0;
         break;
 
       case "custom":

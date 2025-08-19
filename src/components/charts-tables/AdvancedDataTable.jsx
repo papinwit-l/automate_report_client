@@ -72,6 +72,10 @@ export const AdvancedDataTable = ({
         return "ROAS";
       case "view6sec":
         return "6-second video views";
+      case "follows":
+        return "Followers";
+      case "cpf":
+        return "CPFollow";
       default:
         return metric
           .split(/(?=[A-Z])/)

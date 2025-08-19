@@ -23,55 +23,55 @@ function TiktokFollowerSlide01() {
     refetch,
     FacebookAdsPicture,
     FBDemographicData,
-    TikTokLeadAudienceData,
-    TikTokLeadAudienceTotals,
-    TikTokLeadCreativeData,
-    TikTokLeadCreativeTotals,
-    TikTokLeadAudienceMetrics,
-    TikTokLeadAudienceComparison,
+    TikTokFollowerAudienceData,
+    TikTokFollowerAudienceTotals,
+    TikTokFollowerCreativeData,
+    TikTokFollowerCreativeTotals,
+    TikTokFollowerAudienceMetrics,
+    TikTokFollowerAudienceComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([5, 0]);
+  const [maxTableRows, setMaxTableRows] = useState([3, 3]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
-    const KEY = "conversions";
+    const KEY = "follows";
     const ENABLE_CONVERSION = false;
     try {
       // Handle "No Data" case
       if (
-        TikTokLeadAudienceTotals[KEY] === "No Data" ||
-        !TikTokLeadAudienceTotals ||
-        Object.keys(TikTokLeadAudienceTotals).length === 0
+        TikTokFollowerAudienceTotals[KEY] === "No Data" ||
+        !TikTokFollowerAudienceTotals ||
+        Object.keys(TikTokFollowerAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");
         return;
       }
 
       let summaryTextTemp = "";
-      const averageCPL = TikTokLeadAudienceTotals.cpl?.toLocaleString(
+      const averageCPF = TikTokFollowerAudienceTotals.cpf?.toLocaleString(
         undefined,
         {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall conversions: ** ${parseFloat(
-        TikTokLeadAudienceTotals[KEY]?.toFixed(2) || 0
-      )?.toLocaleString()} conversions`;
+      const overallText = `Overall Follower: ** ${parseFloat(
+        TikTokFollowerAudienceTotals[KEY]?.toFixed(2) || 0
+      )?.toLocaleString()} followers`;
       summaryTextTemp = `<li>${overallText}**</li>`;
       // summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
-      //   TikTokLeadAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
+      //   TikTokFollowerAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
       // )?.toLocaleString()} THB with ${parseFloat(
-      //   TikTokLeadAudienceTotals["roas"]?.toFixed(2) || 0
+      //   TikTokFollowerAudienceTotals["roas"]?.toFixed(2) || 0
       // )?.toLocaleString()} of ROAS**</li>`;
-      summaryTextTemp += `<li>Average CPL: **${averageCPL} THB**</li>`;
+      summaryTextTemp += `<li>Average Cost per Follower: **${averageCPF} THB**</li>`;
 
       // Find top audience by reach (with error handling)
-      const topAudience = TikTokLeadAudienceData
-        ? Object.entries(TikTokLeadAudienceData).reduce(
+      const topAudience = TikTokFollowerAudienceData
+        ? Object.entries(TikTokFollowerAudienceData).reduce(
             (max, [key, value]) =>
               (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
             { key: "", value: { KEY: 0 } }
@@ -81,13 +81,13 @@ function TiktokFollowerSlide01() {
       if (topAudience.key) {
         const topAudienceText = `Top audience: **${
           topAudience.key
-        } with ${topAudience.value[KEY]?.toLocaleString()} conversions**`;
+        } with ${topAudience.value[KEY]?.toLocaleString()} followers**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
       // Find top creative by reach (with error handling)
-      const topCreative = TikTokLeadCreativeData
-        ? Object.entries(TikTokLeadCreativeData).reduce(
+      const topCreative = TikTokFollowerCreativeData
+        ? Object.entries(TikTokFollowerCreativeData).reduce(
             (max, [key, value]) =>
               (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
             { key: "", value: { KEY: 0 } }
@@ -98,11 +98,11 @@ function TiktokFollowerSlide01() {
       // Fix: Added missing closing parenthesis
       const topCreativeText = `Top Creative: **${
         topCreative.key
-      } with ${topCreative.value[KEY]?.toLocaleString()} conversions**`;
+      } with ${topCreative.value[KEY]?.toLocaleString()} followers**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 
-      const totalConversions = TikTokLeadAudienceTotals?.Conversions;
+      const totalConversions = TikTokFollowerAudienceTotals?.Conversions;
       // if (totalConversions > 0 && ENABLE_CONVERSION) {
       //   summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
       //     undefined,
@@ -116,9 +116,9 @@ function TiktokFollowerSlide01() {
       setSummaryText("<li>Error generating summary</li>");
     }
   }, [
-    TikTokLeadAudienceTotals,
-    TikTokLeadAudienceData,
-    TikTokLeadCreativeData,
+    TikTokFollowerAudienceTotals,
+    TikTokFollowerAudienceData,
+    TikTokFollowerCreativeData,
   ]);
 
   //Demographic for chart
@@ -221,133 +221,143 @@ function TiktokFollowerSlide01() {
 
   // Fix: Memoize formatted metrics to prevent unnecessary recalculations
   const formattedMetrics = useMemo(() => {
-    if (!TikTokLeadAudienceTotals || !TikTokLeadAudienceComparison) {
+    if (!TikTokFollowerAudienceTotals || !TikTokFollowerAudienceComparison) {
       return {};
     }
 
     return {
       impressionData: formatDisplayData(
-        TikTokLeadAudienceTotals?.impressions,
-        TikTokLeadAudienceComparison?.impressions,
+        TikTokFollowerAudienceTotals?.impressions,
+        TikTokFollowerAudienceComparison?.impressions,
         "compact"
       ),
       clicksData: formatDisplayData(
-        TikTokLeadAudienceTotals?.clicks,
-        TikTokLeadAudienceComparison?.clicks,
+        TikTokFollowerAudienceTotals?.clicks,
+        TikTokFollowerAudienceComparison?.clicks,
         "compact"
       ),
       ctrData: formatDisplayData(
-        TikTokLeadAudienceTotals?.ctr,
-        TikTokLeadAudienceComparison?.ctr,
+        TikTokFollowerAudienceTotals?.ctr,
+        TikTokFollowerAudienceComparison?.ctr,
         "percentage"
       ),
       cpcData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpc,
-        TikTokLeadAudienceComparison?.cpc,
+        TikTokFollowerAudienceTotals?.cpc,
+        TikTokFollowerAudienceComparison?.cpc,
         "compact"
       ),
       conversionsData: formatDisplayData(
-        TikTokLeadAudienceTotals?.conversions,
-        TikTokLeadAudienceComparison?.conversions,
+        TikTokFollowerAudienceTotals?.conversions,
+        TikTokFollowerAudienceComparison?.conversions,
         "number"
       ),
       cplData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpl,
-        TikTokLeadAudienceComparison?.cpl,
+        TikTokFollowerAudienceTotals?.cpl,
+        TikTokFollowerAudienceComparison?.cpl,
         "compact"
       ),
       spentData: formatDisplayData(
-        TikTokLeadAudienceTotals?.spent,
-        TikTokLeadAudienceComparison?.spent,
+        TikTokFollowerAudienceTotals?.spent,
+        TikTokFollowerAudienceComparison?.spent,
         "compact"
       ),
       conRate: formatDisplayData(
-        TikTokLeadAudienceTotals?.cvr,
-        TikTokLeadAudienceComparison?.cvr,
+        TikTokFollowerAudienceTotals?.cvr,
+        TikTokFollowerAudienceComparison?.cvr,
         "percentage"
       ),
       cpmData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpm,
-        TikTokLeadAudienceComparison?.cpm,
+        TikTokFollowerAudienceTotals?.cpm,
+        TikTokFollowerAudienceComparison?.cpm,
         "compact"
       ),
       reachData: formatDisplayData(
-        TikTokLeadAudienceTotals?.reach,
-        TikTokLeadAudienceComparison?.reach,
+        TikTokFollowerAudienceTotals?.reach,
+        TikTokFollowerAudienceComparison?.reach,
         "compact"
       ),
       frequencyData: formatDisplayData(
-        TikTokLeadAudienceTotals?.frequency,
-        TikTokLeadAudienceComparison?.frequency,
+        TikTokFollowerAudienceTotals?.frequency,
+        TikTokFollowerAudienceComparison?.frequency,
         "compact"
       ),
       cprData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpr,
-        TikTokLeadAudienceComparison?.cpr,
+        TikTokFollowerAudienceTotals?.cpr,
+        TikTokFollowerAudienceComparison?.cpr,
         "compact"
       ),
       engagementData: formatDisplayData(
-        TikTokLeadAudienceTotals?.engagements,
-        TikTokLeadAudienceComparison?.engagements,
+        TikTokFollowerAudienceTotals?.engagements,
+        TikTokFollowerAudienceComparison?.engagements,
         "compact"
       ),
       engagementRateData: formatDisplayData(
-        TikTokLeadAudienceTotals?.engagementRate,
-        TikTokLeadAudienceComparison?.engagementRate,
+        TikTokFollowerAudienceTotals?.engagementRate,
+        TikTokFollowerAudienceComparison?.engagementRate,
         "percentage"
       ),
       cpeData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpe,
-        TikTokLeadAudienceComparison?.cpe,
+        TikTokFollowerAudienceTotals?.cpe,
+        TikTokFollowerAudienceComparison?.cpe,
         "compact"
       ),
       viewRateData: formatDisplayData(
-        TikTokLeadAudienceTotals?.viewRate,
-        TikTokLeadAudienceComparison?.viewRate,
+        TikTokFollowerAudienceTotals?.viewRate,
+        TikTokFollowerAudienceComparison?.viewRate,
         "percentage"
       ),
       VideoViewsData: formatDisplayData(
-        TikTokLeadAudienceTotals["views"],
-        TikTokLeadAudienceComparison["views"],
+        TikTokFollowerAudienceTotals["views"],
+        TikTokFollowerAudienceComparison["views"],
         "number"
       ),
       cpvData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cpv,
-        TikTokLeadAudienceComparison?.cpv,
+        TikTokFollowerAudienceTotals?.cpv,
+        TikTokFollowerAudienceComparison?.cpv,
         "compact"
       ),
       conRateData: formatDisplayData(
-        TikTokLeadAudienceTotals?.cvr,
-        TikTokLeadAudienceComparison?.cvr,
+        TikTokFollowerAudienceTotals?.cvr,
+        TikTokFollowerAudienceComparison?.cvr,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(
-        TikTokLeadAudienceTotals?.purchaseConValue,
-        TikTokLeadAudienceComparison?.purchaseConValue,
+        TikTokFollowerAudienceTotals?.purchaseConValue,
+        TikTokFollowerAudienceComparison?.purchaseConValue,
         "compact"
       ),
       roasData: formatDisplayData(
-        TikTokLeadAudienceTotals?.roas,
-        TikTokLeadAudienceComparison?.roas,
+        TikTokFollowerAudienceTotals?.roas,
+        TikTokFollowerAudienceComparison?.roas,
         "compact"
       ),
       purchaseData: formatDisplayData(
-        TikTokLeadAudienceTotals?.purchase,
-        TikTokLeadAudienceComparison?.purchase,
+        TikTokFollowerAudienceTotals?.purchase,
+        TikTokFollowerAudienceComparison?.purchase,
         "number"
       ),
       addToCartData: formatDisplayData(
-        TikTokLeadAudienceTotals?.addToCart,
-        TikTokLeadAudienceComparison?.addToCart,
+        TikTokFollowerAudienceTotals?.addToCart,
+        TikTokFollowerAudienceComparison?.addToCart,
         "number"
       ),
       view6secData: formatDisplayData(
-        TikTokLeadAudienceTotals?.view6sec,
-        TikTokLeadAudienceComparison?.view6sec,
+        TikTokFollowerAudienceTotals?.view6sec,
+        TikTokFollowerAudienceComparison?.view6sec,
+        "number"
+      ),
+      cpfData: formatDisplayData(
+        TikTokFollowerAudienceTotals?.cpf,
+        TikTokFollowerAudienceComparison?.cpf,
+        "compact"
+      ),
+      followsData: formatDisplayData(
+        TikTokFollowerAudienceTotals?.follows,
+        TikTokFollowerAudienceComparison?.follows,
         "number"
       ),
     };
-  }, [TikTokLeadAudienceTotals, TikTokLeadAudienceComparison]);
+  }, [TikTokFollowerAudienceTotals, TikTokFollowerAudienceComparison]);
 
   // Memoize text formatter
   const renderFormattedText = useCallback((text) => {
@@ -394,7 +404,7 @@ function TiktokFollowerSlide01() {
 
   return (
     <div
-      id="tiktok-lead-01-component"
+      id="tiktok-follower-01-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -407,21 +417,28 @@ function TiktokFollowerSlide01() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"TikTok Lead"} />
+      <SlideHeader title={"TikTok Community Interaction - Followers"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
           <div className="col-span-14 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
                 value={formattedMetrics.impressionData?.displayValue}
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"Reach"}
+                value={formattedMetrics.reachData?.displayValue}
+                compareValue={formattedMetrics.reachData?.compareValue}
+                isNegative={formattedMetrics.reachData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -439,27 +456,18 @@ function TiktokFollowerSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Conversions"}
-                value={formattedMetrics.conversionsData?.displayValue}
+                title={"Followers"}
+                value={formattedMetrics.followsData?.displayValue}
                 isConversion={true}
-                compareValue={formattedMetrics.conversionsData?.compareValue}
-                isNegative={formattedMetrics.conversionsData?.isNegative}
+                compareValue={formattedMetrics.followsData?.compareValue}
+                isNegative={formattedMetrics.followsData?.isNegative}
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
-                value={formattedMetrics.conRateData?.displayValue}
-                compareValue={formattedMetrics.conRateData?.compareValue}
-                isNegative={formattedMetrics.conRateData?.isNegative}
-                isConversion={true}
-                invertCompareColor={true}
-              />
-
-              <NumberDisplayBox
-                title={"CPL"}
-                value={formattedMetrics.cplData?.displayValue}
-                compareValue={formattedMetrics.cplData?.compareValue}
-                isNegative={formattedMetrics.cplData?.isNegative}
+                title={"CPFollow"}
+                value={formattedMetrics.cpfData?.displayValue}
+                compareValue={formattedMetrics.cpfData?.compareValue}
+                isNegative={formattedMetrics.cpfData?.isNegative}
                 isConversion={true}
                 invertCompareColor={true}
               />
@@ -477,21 +485,20 @@ function TiktokFollowerSlide01() {
 
               <AdvancedDataTable
                 firstMetric="Ad group name"
-                channelData={TikTokLeadAudienceData}
-                totalData={TikTokLeadAudienceTotals}
+                channelData={TikTokFollowerAudienceData}
+                totalData={TikTokFollowerAudienceTotals}
                 metrics={[
                   "Ad group name",
                   "impressions",
                   "clicks",
                   "ctr",
-                  "conversions",
-                  "cvr",
-                  "cpl",
+                  "follows",
+                  "cpf",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="conversions"
+                defaultSortBy="follows"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
@@ -499,21 +506,20 @@ function TiktokFollowerSlide01() {
 
               <AdvancedDataTable
                 firstMetric="Ad name"
-                channelData={TikTokLeadCreativeData}
-                totalData={TikTokLeadAudienceTotals}
+                channelData={TikTokFollowerCreativeData}
+                totalData={TikTokFollowerAudienceTotals}
                 metrics={[
                   "Ad name",
                   "impressions",
                   "clicks",
                   "ctr",
-                  "conversions",
-                  "cvr",
-                  "cpl",
+                  "follows",
+                  "cpf",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[1]}
-                defaultSortBy="conversions"
+                defaultSortBy="follows"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />

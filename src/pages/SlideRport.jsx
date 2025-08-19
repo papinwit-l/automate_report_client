@@ -61,6 +61,7 @@ import { tableProcessing } from "@/utils/mediaPlanProcessing";
 import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
 import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversionEcommerceSlide01";
+import TiktokFollowerSlide01 from "@/components/slides/TiktokFollowerSlide01";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -633,6 +634,7 @@ function SlideReport() {
                 <TiktokReachSlide01 />
                 <TiktokVideoSlide01 />
                 <TiktokTrafficSlide01 />
+                <TiktokFollowerSlide01 />
                 <TiktokLeadSlide01 />
                 <TiktokConversionSlide01 />
                 <TiktokConversionEcommerceSlide01 />
