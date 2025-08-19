@@ -62,6 +62,7 @@ import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
 import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversionEcommerceSlide01";
 import TiktokFollowerSlide01 from "@/components/slides/TiktokFollowerSlide01";
+import MediaPlanBlank from "@/components/slides/MediaPlanBlank";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -593,6 +594,7 @@ function SlideReport() {
             {slideGenerated ? (
               <div className="w-full flex flex-col items-center gap-10">
                 <TitleSlide projectName={projectName} reportType={reportType} />
+                <MediaPlanBlank />
                 <Overall />
                 <SectionSlide
                   title={"Facebook"}

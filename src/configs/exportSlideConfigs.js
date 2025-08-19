@@ -1,5 +1,6 @@
 export const EXPORT_SLIDE_COMPONENT_LISTS = [
   { id: "title-component", title: "Title" },
+  { id: "media-plan-component", title: "Media Plan" },
   { id: "overall-component", title: "Overall" },
   { id: "facebook-section-component", title: "Facebook" },
   { id: "facebook-awareness-01-component", title: "Facebook Awareness (1/2)" },
