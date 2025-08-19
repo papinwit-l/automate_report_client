@@ -28,10 +28,10 @@ function SidebarProjectFilterSection({ sheetsID }) {
   };
 
   useEffect(() => {
-    if (enableProjectFilter) {
+    if (sheetsID.length > 0) {
       fetchProjectList();
     }
-  }, [enableProjectFilter]);
+  }, [sheetsID]);
 
   return sheetsID.length ? (
     <div className="space-y-3">
