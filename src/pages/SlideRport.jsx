@@ -73,7 +73,7 @@ function SlideReport() {
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [slideGenerated, setSlideGenerated] = React.useState(false);
   const [projectName, setProjectName] = React.useState("");
-  const [reportType, setReportType] = React.useState("");
+  const [reportType, setReportType] = React.useState("Monthly Report");
 
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
@@ -85,7 +85,8 @@ function SlideReport() {
   };
 
   const handleReportTypeChange = (event) => {
-    setReportType(event.target.value);
+    // setReportType(event.target.value);
+    setReportType(event);
   };
 
   const handleSheetsLinkChange = (event) => {
@@ -544,10 +545,10 @@ function SlideReport() {
             <h1 className="text-xl font-bold text-slate-900">
               Slide Report Generator
             </h1>
-            <button onClick={() => handleGetMediaPlan()}>TEST</button>
+            {/* <button onClick={() => handleGetMediaPlan()}>TEST</button> */}
           </div>
           <div className="ml-auto text-sm text-slate-600">
-            Transform your Google Sheets data into beautiful presentation slides
+            {/* Transform your Google Sheets data into beautiful presentation slides */}
           </div>
         </header>
 

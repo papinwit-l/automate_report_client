@@ -35,6 +35,7 @@ import {
   Clock,
 } from "lucide-react";
 import DateRangePickerV2 from "./utils/DateRangePickerV2";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -231,14 +232,28 @@ const SlideGeneratorSidebar = ({
                   <Label htmlFor="report-type" className="text-sm font-medium">
                     Report Type
                   </Label>
-                  <Input
+                  {/* <Input
                     id="report-type"
                     type="text"
                     placeholder="Monthly Report/Weekly Report..."
                     value={reportType}
                     onChange={onReportTypeChange}
                     className="font-mono text-sm"
-                  />
+                  /> */}
+                  <RadioGroup
+                    className="flex flex-col ml-2 gap-2 w-fit"
+                    value={reportType}
+                    onValueChange={onReportTypeChange}
+                  >
+                    <Label className="flex items-center space-x-2 text-sm font-[400] cursor-pointer">
+                      <RadioGroupItem value="Monthly Report" />
+                      Monthly Report
+                    </Label>
+                    <Label className="flex items-center space-x-2 text-sm font-[400] cursor-pointer">
+                      <RadioGroupItem value="Weekly Report" />
+                      Weekly Report
+                    </Label>
+                  </RadioGroup>
                 </div>
 
                 {/* Google Sheets URL with Remember Feature */}
@@ -444,7 +459,7 @@ const SlideGeneratorSidebar = ({
                     )}
                   </Button>
 
-                  <Separator />
+                  {/* <Separator /> */}
                 </CardContent>
               </Card>
             </div>
