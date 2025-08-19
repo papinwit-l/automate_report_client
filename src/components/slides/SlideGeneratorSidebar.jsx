@@ -245,7 +245,7 @@ const SlideGeneratorSidebar = ({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="sheet-link" className="text-sm font-medium">
-                      Google Sheets URL
+                      Raw Dashboard
                     </Label>
                     <div className="flex items-center gap-1">
                       {sheetsLink && (

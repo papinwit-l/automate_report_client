@@ -563,7 +563,7 @@ function SlideReport() {
             )}
 
             {presentationUrl && (
-              <Alert className="border-green-200 bg-green-50 sticky top-0 z-10 opacity-90 w-fit ml-auto">
+              <Alert className="border-green-200 bg-green-50 fixed top-20 right-10 z-10 w-fit">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800 pr-8">
                   Presentation created successfully!{" "}

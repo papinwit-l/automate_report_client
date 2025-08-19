@@ -44,8 +44,13 @@ export const EXPORT_SLIDE_COMPONENT_LISTS = [
   { id: "tiktok-reach-01-component", title: "Tiktok Reach" },
   { id: "tiktok-video-01-component", title: "Tiktok Video" },
   { id: "tiktok-traffic-01-component", title: "Tiktok Traffic" },
+  { id: "tiktok-follower-01-component", title: "Tiktok Follower" },
   { id: "tiktok-lead-01-component", title: "Tiktok Lead" },
   { id: "tiktok-conversion-01-component", title: "Tiktok Conversion" },
+  {
+    id: "tiktok-conversion-ecommerce-01-component",
+    title: "Tiktok Conversion - Ecommerce",
+  },
   { id: "line-section-component", title: "Line" },
   { id: "line-reach-01-component", title: "Line Reach" },
   { id: "line-gain-friends-01-component", title: "Line Gain Friends" },
