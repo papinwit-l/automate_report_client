@@ -33,9 +33,11 @@ import {
   Trash2,
   MoreVertical,
   Clock,
+  FilterIcon,
 } from "lucide-react";
 import DateRangePickerV2 from "./utils/DateRangePickerV2";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import SidebarProjectFilterSection from "./SidebarProjectFilterSection";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -373,6 +375,9 @@ const SlideGeneratorSidebar = ({
                     </div>
                   </div>
                 )}
+
+                {/* Project Filter Section */}
+                <SidebarProjectFilterSection sheetsID={sheetsID} />
 
                 {/* Date Range Section */}
                 <div className="space-y-3">

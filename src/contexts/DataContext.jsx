@@ -22,6 +22,9 @@ export const DataProvider = ({ children }) => {
     from: undefined,
     to: undefined,
   });
+  const [enableProjectFilter, setEnableProjectFilter] = useState(false);
+  const [projectList, setProjectList] = useState([]);
+  const [projectFilter, setProjectFilter] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -1139,6 +1142,12 @@ export const DataProvider = ({ children }) => {
     setEnableDateRange,
     dateRange,
     setDateRange,
+    enableProjectFilter,
+    setEnableProjectFilter,
+    projectList,
+    setProjectList,
+    projectFilter,
+    setProjectFilter,
 
     // Fetch functions
     fetchData,
