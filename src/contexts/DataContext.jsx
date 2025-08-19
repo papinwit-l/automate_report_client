@@ -336,6 +336,24 @@ export const DataProvider = ({ children }) => {
   const [TikTokVideoAudienceComparison, setTikTokVideoAudienceComparison] =
     useState({});
 
+  // TikTok Follower Data
+  const [TikTokFollowerAudienceData, setTikTokFollowerAudienceData] = useState(
+    {}
+  );
+  const [TikTokFollowerAudienceTotals, setTikTokFollowerAudienceTotals] =
+    useState({});
+  const [TikTokFollowerCreativeData, setTikTokFollowerCreativeData] = useState(
+    {}
+  );
+  const [TikTokFollowerCreativeTotals, setTikTokFollowerCreativeTotals] =
+    useState({});
+  const [TikTokFollowerAudienceMetrics, setTikTokFollowerAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokFollower);
+  const [
+    TikTokFollowerAudienceComparison,
+    setTikTokFollowerAudienceComparison,
+  ] = useState({});
+
   // Line Reach
   const [LineReachAudienceData, setLineReachAudienceData] = useState({});
   const [LineReachAudienceTotals, setLineReachAudienceTotals] = useState({});
@@ -395,6 +413,7 @@ export const DataProvider = ({ children }) => {
     TikTokTraffic: TikTokTrafficAudienceMetrics,
     TikTokConversion: TikTokConversionAudienceMetrics,
     TikTokVideo: TikTokVideoAudienceMetrics,
+    TikTokFollower: TikTokFollowerAudienceMetrics,
     LineReach: LineReachAudienceMetrics,
     LineGainFriends: LineGainFriendsAudienceMetrics,
     Taboola: TaboolaMetrics,
@@ -532,6 +551,12 @@ export const DataProvider = ({ children }) => {
     setTikTokVideoCreativeTotals,
     setTikTokVideoAudienceMetrics,
     setTikTokVideoAudienceComparison,
+    setTikTokFollowerAudienceData,
+    setTikTokFollowerAudienceTotals,
+    setTikTokFollowerCreativeData,
+    setTikTokFollowerCreativeTotals,
+    setTikTokFollowerAudienceMetrics,
+    setTikTokFollowerAudienceComparison,
     setLineReachAudienceData,
     setLineReachAudienceTotals,
     setLineReachCreativeData,
@@ -844,7 +869,7 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue)
     );
-    console.log("🎯 getTikTokConversionData result:", result);
+    // console.log("🎯 getTikTokConversionData result:", result);
     return result;
   };
 
@@ -859,6 +884,20 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue)
     );
     // console.log("🎯 getTikTokVideoData result:", result);
+    return result;
+  };
+
+  const getTikTokFollowerData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "TikTokFollower",
+      id,
+      buildFetchOptions(filterBy, filterValue)
+    );
+    console.log("🎯 getTikTokFollowerData result:", result);
     return result;
   };
 
@@ -943,6 +982,7 @@ export const DataProvider = ({ children }) => {
           getTikTokTrafficData(id, "Channel", "TikTok Traffic"),
           getTikTokLeadData(id, "Channel", "TikTok Lead"),
           getTikTokConversionData(id, "Channel", "TikTok Conversion"),
+          getTikTokFollowerData(id, "Channel", "TikTok Follower"),
           getLineReachData(id, "Channel", "Line Reach"),
           getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
           getTaboolaData(id),
@@ -998,6 +1038,7 @@ export const DataProvider = ({ children }) => {
           TikTokConversion: getTikTokConversionData,
           TikTokVideo: getTikTokVideoData,
           TikTokTraffic: getTikTokTrafficData,
+          TikTokFollower: getTikTokFollowerData,
           LineReach: getLineReachData,
           LineGainFriends: getLineGainFriendsData,
           Taboola: getTaboolaData,
@@ -1279,6 +1320,14 @@ export const DataProvider = ({ children }) => {
     TikTokVideoCreativeTotals,
     TikTokVideoAudienceMetrics,
     TikTokVideoAudienceComparison,
+
+    // TikTok Follower
+    TikTokFollowerAudienceData,
+    TikTokFollowerAudienceTotals,
+    TikTokFollowerCreativeData,
+    TikTokFollowerCreativeTotals,
+    TikTokFollowerAudienceMetrics,
+    TikTokFollowerAudienceComparison,
 
     // Line Reach
     LineReachAudienceData,

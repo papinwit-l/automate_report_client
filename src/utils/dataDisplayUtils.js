@@ -222,6 +222,7 @@ export const METRIC_CONFIGS = {
   frequency: { valueType: "decimal" },
   engagements: { valueType: "number" },
   "Conversion value": { valueType: "decimal" },
+  follows: { valueType: "number" },
 };
 
 /**

@@ -158,6 +158,13 @@ export const SOCIAL_MEDIA_CONFIGS = {
     calculatedFields: TIKTOK_CALCULATED_FIELDS,
   },
 
+  TikTokFollower: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
   //Line
   LineReach: {
     audienceGroupBy: "Ad group name",
@@ -511,6 +518,16 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokVideo,
   },
 
+  TikTokFollower: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokFollower,
+  },
+
   LineReach: {
     endpoint: "line-data",
     processFields: LINE_PROCESSED_FIELDS,
@@ -620,6 +637,7 @@ export const DEFAULT_METRICS = {
   TikTokTraffic: TIKTOK_METRICS,
   TikTokConversion: TIKTOK_METRICS,
   TikTokVideo: TIKTOK_METRICS,
+  TikTokFollower: TIKTOK_METRICS,
   LineReach: LINE_METRICS,
   LineGainFriends: LINE_METRICS,
   Taboola: [

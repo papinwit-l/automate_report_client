@@ -280,6 +280,14 @@ export const createStateSettersMap = (stateSetter) => {
       setMetrics: stateSetter.setTikTokVideoAudienceMetrics,
       setComparison: stateSetter.setTikTokVideoAudienceComparison,
     },
+    TikTokFollower: {
+      setAudienceData: stateSetter.setTikTokFollowerAudienceData,
+      setAudienceTotals: stateSetter.setTikTokFollowerAudienceTotals,
+      setCreativeData: stateSetter.setTikTokFollowerCreativeData,
+      setCreativeTotals: stateSetter.setTikTokFollowerCreativeTotals,
+      setMetrics: stateSetter.setTikTokFollowerAudienceMetrics,
+      setComparison: stateSetter.setTikTokFollowerAudienceComparison,
+    },
     LineReach: {
       setAudienceData: stateSetter.setLineReachAudienceData,
       setAudienceTotals: stateSetter.setLineReachAudienceTotals,
