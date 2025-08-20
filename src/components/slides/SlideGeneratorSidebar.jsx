@@ -388,7 +388,7 @@ const SlideGeneratorSidebar = ({
                   </div>
 
                   <Card className="shadow-sm py-1">
-                    <CardContent className="p-4 space-y-4">
+                    <CardContent className="p-4 space-y-1 py-2">
                       <div className="flex items-center space-x-2">
                         <input
                           type="checkbox"

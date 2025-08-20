@@ -1,11 +1,13 @@
 "use client";
 
-import { FilterIcon } from "lucide-react";
+import { FilterIcon, X } from "lucide-react";
 import React, { useEffect } from "react";
 import { Card, CardContent } from "../ui/card";
 import { useData } from "@/contexts/DataContext";
 import axiosInstance from "@/configs/axiosConfigs";
 import SearchCheckbox from "../custom-ui/SearchCheckbox";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 
 function SidebarProjectFilterSection({ sheetsID }) {
   const {
@@ -32,7 +34,7 @@ function SidebarProjectFilterSection({ sheetsID }) {
         `/data-sheets/project-list/${sheetsID}`
       );
       const rawData = response.data.data;
-      console.log("🎯 rawData:", rawData);
+      // console.log("🎯 rawData:", rawData);
       setProjectList(rawData);
       setProjectFilter(rawData);
     } catch (error) {
@@ -79,7 +81,7 @@ function SidebarProjectFilterSection({ sheetsID }) {
       </div>
 
       <Card className="shadow-sm py-1">
-        <CardContent className="p-4 space-y-1 py-2">
+        <CardContent className="p-4 space-y-2 py-2">
           {/* <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -111,6 +113,30 @@ function SidebarProjectFilterSection({ sheetsID }) {
                 setSelectedItem={setProjectFilter}
                 className="w-full"
               />
+            </div>
+          )}
+          {projectFilter && projectFilter.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {projectFilter.map((item, id) => {
+                return (
+                  <Badge
+                    id={id}
+                    key={id}
+                    className="text-xs font-medium bg-amber-100 text-amber-700 hover:border-amber-300"
+                  >
+                    {item}{" "}
+                    <button
+                      onClick={() =>
+                        setProjectFilter(
+                          projectFilter.filter((i) => i !== item)
+                        )
+                      }
+                    >
+                      <X className="text-xs w-3 h-3 hover:cursor-pointer" />
+                    </button>
+                  </Badge>
+                );
+              })}
             </div>
           )}
         </CardContent>
