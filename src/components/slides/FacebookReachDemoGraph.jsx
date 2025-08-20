@@ -440,7 +440,7 @@ function FacebookReachDemoGraph() {
     );
   }
 
-  console.log(chartData);
+  // console.log(chartData);
 
   return (
     <div

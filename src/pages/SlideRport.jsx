@@ -64,6 +64,7 @@ import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversi
 import TiktokFollowerSlide01 from "@/components/slides/TiktokFollowerSlide01";
 import MediaPlanBlank from "@/components/slides/MediaPlanBlank";
 import FacebookReachDemoGraph from "@/components/slides/FacebookReachDemoGraph";
+import OverallGraph from "@/components/slides/OverallGraph";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -597,6 +598,7 @@ function SlideReport() {
                 <TitleSlide projectName={projectName} reportType={reportType} />
                 {/* <MediaPlanBlank /> */}
                 <Overall />
+                <OverallGraph />
                 <SectionSlide
                   title={"Facebook"}
                   componentID={"facebook-section-component"}
