@@ -356,28 +356,29 @@ const SlideGeneratorSidebar = ({
                 </div>
 
                 {sheetsID && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm text-muted-foreground">
-                        Sheet ID
-                      </Label>
-                      <Badge
-                        variant={ableToGenerate ? "default" : "destructive"}
-                        className={`text-xs ${
-                          ableToGenerate ? "bg-green-200 text-green-700" : ""
-                        }`}
-                      >
-                        {ableToGenerate ? "Valid" : "Invalid"}
-                      </Badge>
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-muted-foreground">
+                          Sheet ID
+                        </Label>
+                        <Badge
+                          variant={ableToGenerate ? "default" : "destructive"}
+                          className={`text-xs ${
+                            ableToGenerate ? "bg-green-200 text-green-700" : ""
+                          }`}
+                        >
+                          {ableToGenerate ? "Valid" : "Invalid"}
+                        </Badge>
+                      </div>
+                      <div className="p-3 bg-muted rounded-md text-sm font-mono break-all">
+                        {sheetsID}
+                      </div>
                     </div>
-                    <div className="p-3 bg-muted rounded-md text-sm font-mono break-all">
-                      {sheetsID}
-                    </div>
-                  </div>
+                    {/* Project Filter Section */}
+                    <SidebarProjectFilterSection sheetsID={sheetsID} />
+                  </>
                 )}
-
-                {/* Project Filter Section */}
-                <SidebarProjectFilterSection sheetsID={sheetsID} />
 
                 {/* Date Range Section */}
                 <div className="space-y-3">
