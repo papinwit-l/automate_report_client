@@ -24,7 +24,10 @@ function SidebarProjectFilterSection({ sheetsID }) {
       `/data-sheets/project-list/${sheetsID}`
     );
     const rawData = response.data.data;
+    const projectIndex = rawData[0].findIndex((item) => item === "Project");
     console.log("🎯 rawData:", rawData);
+    console.log("🎯 projectIndex:", projectIndex);
+    console.log("🎯 projectList:", rawData[0][projectIndex]);
   };
 
   useEffect(() => {

@@ -359,11 +359,6 @@ function TiktokConversionEcommerceSlide01() {
         TikTokConversionAudienceComparison?.view6sec,
         "number"
       ),
-      roasData: formatDisplayData(
-        TikTokConversionAudienceTotals?.roas,
-        TikTokConversionAudienceComparison?.roas,
-        "compact"
-      ),
     };
   }, [TikTokConversionAudienceTotals, TikTokConversionAudienceComparison]);
 
