@@ -593,7 +593,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "overall",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     return result;
   };
@@ -602,7 +603,8 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "SEM",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
   };
 
@@ -610,7 +612,8 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "GGDemographic",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
   };
 
@@ -618,7 +621,8 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "GDN",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
   };
 
@@ -626,7 +630,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "Disc",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getDiscData result:", result);
     return result;
@@ -636,7 +641,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "Youtube",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getYoutubeData result:", result);
     return result;
@@ -650,7 +656,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "ShoppingAds",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getShoppingAdsData result:", result);
     return result;
@@ -664,7 +671,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "PerformanceMax",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getPerformanceMaxData result:", result);
     return result;
@@ -674,7 +682,8 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "FacebookAudience",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
   };
 
@@ -686,7 +695,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookAwareness",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getFacebookAwarenessData result:", result);
     return result;
@@ -706,7 +716,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookReach",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
 
     // console.log("📊 getFacebookReachData result:", result);
@@ -718,16 +729,11 @@ export const DataProvider = ({ children }) => {
     filterBy = null,
     filterValue = null
   ) => {
-    // console.log("🎯 getFacebookReachData called with:", {
-    //   id,
-    //   filterBy,
-    //   filterValue,
-    // });
-
     const result = await fetchDataSheet(
       "FacebookEngagement",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
 
     // console.log("📊 getFacebookReachData result:", result);
@@ -742,7 +748,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookMessage",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     return result;
   };
@@ -755,7 +762,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookLead",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     return result;
   };
@@ -768,7 +776,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookConversion",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getFacebookConversionData result:", result);
     return result;
@@ -782,7 +791,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookTraffic",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getFacebookTrafficData result:", result);
     return result;
@@ -796,7 +806,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookVideo",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getFacebookVideoData result:", result);
     return result;
@@ -810,7 +821,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FacebookCatalog",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getFacebookCatalogData result:", result);
     return result;
@@ -820,7 +832,8 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "TikTokAudience",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
   };
 
@@ -828,7 +841,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokLead",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTikTokLeadData result:", result);
     return result;
@@ -842,7 +856,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokReach",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTikTokReachData result:", result);
     return result;
@@ -856,7 +871,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokTraffic",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTikTokTrafficData result:", result);
     return result;
@@ -870,7 +886,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokConversion",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     console.log("🎯 getTikTokConversionData result:", result);
     return result;
@@ -884,7 +901,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokVideo",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTikTokVideoData result:", result);
     return result;
@@ -898,7 +916,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "TikTokFollower",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTikTokFollowerData result:", result);
     return result;
@@ -908,7 +927,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "LineReach",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getLineReachData result:", result);
     return result;
@@ -922,7 +942,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "LineGainFriends",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getLineGainFriendsData result:", result);
     return result;
@@ -932,7 +953,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "Taboola",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("🎯 getTaboolaData result:", result);
     return result;
@@ -946,7 +968,8 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "FBDemographic",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter
     );
     // console.log("FB Demo", result);
     return result;

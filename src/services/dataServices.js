@@ -14,7 +14,12 @@ import {
 } from "../utils/dataUtils";
 
 // Main data fetching service
-export const fetchDataSheet = async (dataType, id, options = {}) => {
+export const fetchDataSheet = async (
+  dataType,
+  id,
+  options = {},
+  projectList = []
+) => {
   const {
     enableDateRange = false,
     dateRange = { from: null, to: null },
@@ -39,8 +44,26 @@ export const fetchDataSheet = async (dataType, id, options = {}) => {
     const headers = rawData[0];
     const dataRows = rawData.slice(1);
 
+    // find project column index
+    const projectIndex = headers.findIndex((header) => header === "Project");
+
+    const projectFilteredData = [];
+
+    // Filter data by project list
+    if (projectList.length > 0) {
+      for (const project of projectList) {
+        const projectData = dataRows.filter((row) => {
+          const projectValue = row[projectIndex];
+          return projectValue === project;
+        });
+        projectFilteredData.push(...projectData);
+      }
+    } else {
+      projectFilteredData.push(...dataRows);
+    }
+
     // Transform raw data to objects
-    const dataObjects = dataRows.map((row) =>
+    const dataObjects = projectFilteredData.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
 
