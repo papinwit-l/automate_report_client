@@ -2,11 +2,13 @@ export const EXPORT_SLIDE_COMPONENT_LISTS = [
   { id: "title-component", title: "Title" },
   // { id: "media-plan-component", title: "Media Plan" },
   { id: "overall-component", title: "Overall" },
+  { id: "overall-graph-component", title: "Overall Graph" },
   { id: "facebook-section-component", title: "Facebook" },
   { id: "facebook-awareness-01-component", title: "Facebook Awareness (1/2)" },
   { id: "facebook-awareness-02-component", title: "Facebook Awareness (2/2)" },
   { id: "facebook-reach-01-component", title: "Facebook Reach (1/2)" },
   { id: "facebook-reach-02-component", title: "Facebook Reach (2/2)" },
+  { id: "facebook-reach-demo-component", title: "Facebook Reach Demo" },
   // {
   //   id: "facebook-engagement-01-component",
   //   title: "Facebook Engagement (1/2)",

@@ -444,7 +444,7 @@ function FacebookReachDemoGraph() {
 
   return (
     <div
-      id="facebook-reach-02-component"
+      id="facebook-reach-demo-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
