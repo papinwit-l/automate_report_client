@@ -304,6 +304,11 @@ function FacebookConversionSlide01() {
         FacebookConversionAudienceComparison?.cpe,
         "compact"
       ),
+      cpaData: formatDisplayData(
+        FacebookConversionAudienceTotals?.cpa,
+        FacebookConversionAudienceComparison?.cpa,
+        "compact"
+      ),
     };
   }, [FacebookConversionAudienceTotals, FacebookConversionAudienceComparison]);
 
@@ -404,7 +409,7 @@ function FacebookConversionSlide01() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRate?.displayValue}
                 compareValue={formattedMetrics.conRate?.compareValue}
                 isNegative={formattedMetrics.conRate?.isNegative}
@@ -412,11 +417,11 @@ function FacebookConversionSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
-                value={formattedMetrics.cplData?.displayValue}
+                title={"CPA"}
+                value={formattedMetrics.cpaData?.displayValue}
                 isConversion={true}
-                compareValue={formattedMetrics.cplData?.compareValue}
-                isNegative={formattedMetrics.cplData?.isNegative}
+                compareValue={formattedMetrics.cpaData?.compareValue}
+                isNegative={formattedMetrics.cpaData?.isNegative}
                 invertCompareColor={true}
               />
 
@@ -444,7 +449,7 @@ function FacebookConversionSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpl",
+                  "cpa",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
