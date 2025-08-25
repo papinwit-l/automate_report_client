@@ -35,7 +35,7 @@ function FacebookMessageSlide02() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [maxTableRows, setMaxTableRows] = useState([7]);
   const [adsPicture, setAdsPicture] = useState(null);
   const [topAds, setTopAds] = useState(null);
 

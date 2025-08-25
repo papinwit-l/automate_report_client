@@ -34,7 +34,7 @@ function FacebookConversionSlide02() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([8]);
+  const [maxTableRows, setMaxTableRows] = useState([7]);
   const [adsPicture, setAdsPicture] = useState(null);
   const [topAds, setTopAds] = useState(null);
 
@@ -470,6 +470,18 @@ function FacebookConversionSlide02() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           {/* Ads Preview */}
           {adsPicture &&
@@ -482,20 +494,7 @@ function FacebookConversionSlide02() {
             )}
         </div>
         <div className="grid grid-cols-16">
-          <div className="col-span-16">
-            {/* Summary */}
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal
