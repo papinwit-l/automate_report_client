@@ -361,8 +361,8 @@ function FacebookAwarenessSlide01() {
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-8 gap-2">
-              <h4 className="col-span-6 text-lg font-semibold">
+            <div className="grid grid-cols-7 gap-2">
+              <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
               <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
@@ -387,24 +387,24 @@ function FacebookAwarenessSlide01() {
                 isNegative={reachData.isNegative}
               />
               <NumberDisplayBox
-                title={"Post Engagements"}
+                title={"Engagements"}
                 value={engagementData.displayValue}
                 compareValue={engagementData.compareValue}
                 isNegative={engagementData.isNegative}
               />
               <NumberDisplayBox
-                title={"% Engagement Rate"}
+                title={"%Engage Rate"}
                 value={engagementRateData.displayValue}
                 compareValue={engagementRateData.compareValue}
                 isNegative={engagementRateData.isNegative}
               />
-              <NumberDisplayBox
+              {/* <NumberDisplayBox
                 title={"CPE"}
                 value={cpeData.displayValue}
                 compareValue={cpeData.compareValue}
                 isNegative={cpeData.isNegative}
                 invertCompareColor={true}
-              />
+              /> */}
               <NumberDisplayBox
                 title={"Conversions"}
                 value={conversionsData.displayValue}
@@ -438,7 +438,6 @@ function FacebookAwarenessSlide01() {
                   "cpc",
                   "engagements",
                   "engagementRate",
-                  "cpe",
                   "conversions",
                   "spent",
                 ]}
