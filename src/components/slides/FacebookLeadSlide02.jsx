@@ -15,6 +15,7 @@ import {
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import ImageFallback from "./utils/ImageFallback";
 
 function FacebookLeadSlide02() {
   const {

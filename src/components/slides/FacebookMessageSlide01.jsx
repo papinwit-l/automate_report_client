@@ -403,11 +403,11 @@ function FacebookMessageSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
-                compareValue={cplData.compareValue}
+                title={"CPA"}
+                value={cpaData.displayValue}
+                compareValue={cpaData.compareValue}
                 isConversion={true}
-                isNegative={cplData.isNegative}
+                isNegative={cpaData.isNegative}
                 invertCompareColor={true}
               />
 
@@ -432,19 +432,33 @@ function FacebookMessageSlide01() {
                   "impressions",
                   "reach",
                   "clicks",
-                  "messages",
+                  // "messages",
                   "ctr",
                   "conversions",
                   "conRate",
-                  "cpl",
+                  "cpa",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="messages"
+                defaultSortBy="conversions"
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
               />
+            </div>
+            {/* Summary */}
+            <div className="">
+              <div className="px-4">
+                <h4 className="text-lg font-semibold">Summary</h4>
+                <ul className="list-disc pl-6">
+                  <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{
+                      __html: renderFormattedText(summaryText),
+                    }}
+                  />
+                </ul>
+              </div>
             </div>
           </div>
           {/* Chart */}
@@ -469,20 +483,6 @@ function FacebookMessageSlide01() {
               isPercentage={true}
               isLegendWrap={false}
             />
-          </div>
-          {/* Summary */}
-          <div className="col-span-16">
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
           </div>
         </div>
       </div>
