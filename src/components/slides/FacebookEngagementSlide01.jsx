@@ -363,14 +363,14 @@ function FacebookEngagementSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Post Engagement"}
+                title={"Engagement"}
                 value={engagementData.displayValue}
                 compareValue={engagementData.compareValue}
                 isNegative={engagementData.isNegative}
               />
 
               <NumberDisplayBox
-                title={"% Engagement Rate"}
+                title={"%Engage Rate"}
                 value={engagementRateData.displayValue}
                 compareValue={engagementRateData.compareValue}
                 isNegative={engagementRateData.isNegative}
