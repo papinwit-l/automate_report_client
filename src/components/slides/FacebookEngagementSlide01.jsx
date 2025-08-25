@@ -425,6 +425,18 @@ function FacebookEngagementSlide01() {
                 enableSorting={true} // Can disable sorting if needed
               />
             </div>
+            {/* Summary */}
+            <div className="px-4 ">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           {/* Chart */}
           <div className="col-span-3">
@@ -448,20 +460,7 @@ function FacebookEngagementSlide01() {
               isLegendWrap={false}
             />
           </div>
-          {/* Summary */}
-          <div className="col-span-16">
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal

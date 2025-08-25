@@ -439,19 +439,8 @@ function FacebookEngagementSlide02() {
                 enableSorting={true} // Can disable sorting if needed
               />
             </div>
-          </div>
-          {/* Images */}
-          {adsPicture &&
-            typeof adsPicture === "string" &&
-            adsPicture.startsWith("http") && (
-              <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
-                <ImageFallback src={adsPicture} alt="ads preview" />
-                <p className="mx-auto">{topAds}</p>
-              </div>
-            )}
-          {/* Summary */}
-          <div className="col-span-16">
-            <div className="px-4 mt-6">
+            {/* Summary */}
+            <div className="px-4">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
                 <div
@@ -463,6 +452,16 @@ function FacebookEngagementSlide02() {
               </ul>
             </div>
           </div>
+          {/* Images */}
+          {adsPicture &&
+            typeof adsPicture === "string" &&
+            adsPicture.startsWith("http") && (
+              <div className="col-span-4 flex flex-col p-4 pt-10 gap-4">
+                <ImageFallback src={adsPicture} alt="ads preview" />
+                <p className="mx-auto">{topAds}</p>
+              </div>
+            )}
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal
