@@ -472,6 +472,18 @@ function FacebookVideoSlide02() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           {/* Images */}
           {adsPicture &&
@@ -484,20 +496,7 @@ function FacebookVideoSlide02() {
             )}
         </div>
         <div className="grid grid-cols-16">
-          <div className="col-span-16">
-            {/* Summary */}
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal
