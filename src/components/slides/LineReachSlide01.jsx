@@ -96,7 +96,7 @@ function LineReachSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} reaches**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
@@ -487,6 +487,7 @@ function LineReachSlide01() {
                 defaultSortBy="reach"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -509,24 +510,25 @@ function LineReachSlide01() {
                 defaultSortBy="reach"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
+            </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
             </div>
           </div>
           <div className="col-span-6 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
           </div>
         </div>
       </div>

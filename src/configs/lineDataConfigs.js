@@ -4,7 +4,7 @@ export const LINE_FIELDS = [
   { key: "impressions", sourceField: "Impressions" },
   { key: "reach", sourceField: "Reach (estimated)" },
   { key: "clicks", sourceField: "Clicks" },
-  { key: "conversions", sourceField: "Conversions" },
+  { key: "conversions", sourceField: "Clicks" },
   { key: "spent", sourceField: "Spent" },
 ];
 

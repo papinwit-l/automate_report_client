@@ -58,7 +58,7 @@ function LineGainFriendsSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Friends: ** ${parseFloat(
+      const overallText = `Overall friends: ** ${parseFloat(
         LineGainFriendsAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} friends`;
       summaryTextTemp = `<li>${overallText}**</li>`;
@@ -96,7 +96,7 @@ function LineGainFriendsSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} friends**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
@@ -411,11 +411,11 @@ function LineGainFriendsSlide01() {
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
           <div className="col-span-14 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-6 gap-2">
               <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -446,13 +446,13 @@ function LineGainFriendsSlide01() {
                 isConversion={true}
               />
 
-              <NumberDisplayBox
+              {/* <NumberDisplayBox
                 title={"%Conv Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}
                 isConversion={true}
-              />
+              /> */}
 
               <NumberDisplayBox
                 title={"CPL"}
@@ -493,6 +493,7 @@ function LineGainFriendsSlide01() {
                 defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -515,24 +516,25 @@ function LineGainFriendsSlide01() {
                 defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
+            </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
             </div>
           </div>
           <div className="col-span-6 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
           </div>
         </div>
       </div>
