@@ -353,6 +353,18 @@ function GDNSlide() {
                 defaultSortBy="Clicks"
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           <div className="col-span-4 flex flex-col">
             {/* AD Preview Picture */}
@@ -381,20 +393,7 @@ function GDNSlide() {
           </div>
         </div>
         <div className="grid grid-cols-3">
-          <div className="col-span-1 flex flex-col">
-            {/* Summary */}
-            <div className="px-4">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-1 flex flex-col"></div>
           {/* <div className="col-span-2 flex">
             {clicksByGender && Object.keys(clicksByGender).length > 0 && (
               <DonutChart
