@@ -401,7 +401,7 @@ function FacebookLeadSlide01() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRate?.displayValue}
                 compareValue={formattedMetrics.conRate?.compareValue}
                 isNegative={formattedMetrics.conRate?.isNegative}

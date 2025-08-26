@@ -34,7 +34,7 @@ function FacebookCatalogSlide02() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([7]);
+  const [maxTableRows, setMaxTableRows] = useState([6]);
   const [adsPicture, setAdsPicture] = useState(null);
   const [topAds, setTopAds] = useState(null);
 
@@ -418,10 +418,10 @@ function FacebookCatalogSlide02() {
         <div className="grid grid-cols-16">
           <div className="col-span-13 flex flex-col gap-2">
             <div className="grid grid-cols-8 gap-2">
-              <h4 className="col-span-4 text-lg font-semibold">
+              <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-5 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -451,7 +451,7 @@ function FacebookCatalogSlide02() {
                 isConversion={true}
               />
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 isConversion={true}
                 compareValue={formattedMetrics.conRateData?.compareValue}
@@ -468,7 +468,7 @@ function FacebookCatalogSlide02() {
               />
 
               <NumberDisplayBox
-                title={"Purchase Conversion Value"}
+                title={"Con value"}
                 value={formattedMetrics.purchaseConValueData?.displayValue}
                 isConversion={true}
                 compareValue={
@@ -512,6 +512,18 @@ function FacebookCatalogSlide02() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
           {/* Images */}
           {/* Ads Preview */}
@@ -525,20 +537,7 @@ function FacebookCatalogSlide02() {
             )}
         </div>
         <div className="grid grid-cols-16">
-          <div className="col-span-16">
-            {/* Summary */}
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal

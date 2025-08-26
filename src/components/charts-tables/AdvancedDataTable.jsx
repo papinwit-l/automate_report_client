@@ -70,7 +70,7 @@ export const AdvancedDataTable = ({
       case "cpe":
         return "CPE";
       case "purchaseconvalue":
-        return "Purchase Conversion Value";
+        return "Con value";
       case "roas":
         return "ROAS";
       case "view6sec":
