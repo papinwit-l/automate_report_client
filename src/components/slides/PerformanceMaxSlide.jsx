@@ -432,7 +432,7 @@ function PerformanceMaxSlide() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}

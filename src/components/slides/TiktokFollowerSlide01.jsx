@@ -420,7 +420,7 @@ function TiktokFollowerSlide01() {
       <SlideHeader title={"TikTok Community Interaction - Followers"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
+          <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
@@ -442,17 +442,17 @@ function TiktokFollowerSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Clicks"}
-                value={formattedMetrics.clicksData?.displayValue}
-                compareValue={formattedMetrics.clicksData?.compareValue}
-                isNegative={formattedMetrics.clicksData?.isNegative}
+                title={"Video views"}
+                value={formattedMetrics.VideoViewsData?.displayValue}
+                compareValue={formattedMetrics.VideoViewsData?.compareValue}
+                isNegative={formattedMetrics.VideoViewsData?.isNegative}
               />
 
               <NumberDisplayBox
-                title={"%CTR"}
-                value={formattedMetrics.ctrData?.displayValue}
-                compareValue={formattedMetrics.ctrData?.compareValue}
-                isNegative={formattedMetrics.ctrData?.isNegative}
+                title={"%View Rate"}
+                value={formattedMetrics.viewRateData?.displayValue}
+                compareValue={formattedMetrics.viewRateData?.compareValue}
+                isNegative={formattedMetrics.viewRateData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -490,8 +490,8 @@ function TiktokFollowerSlide01() {
                 metrics={[
                   "Ad group name",
                   "impressions",
-                  "clicks",
-                  "ctr",
+                  "views",
+                  "viewRate",
                   "follows",
                   "cpf",
                   "spent",
@@ -501,6 +501,7 @@ function TiktokFollowerSlide01() {
                 defaultSortBy="follows"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -511,8 +512,8 @@ function TiktokFollowerSlide01() {
                 metrics={[
                   "Ad name",
                   "impressions",
-                  "clicks",
-                  "ctr",
+                  "views",
+                  "viewRate",
                   "follows",
                   "cpf",
                   "spent",
@@ -522,24 +523,25 @@ function TiktokFollowerSlide01() {
                 defaultSortBy="follows"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
           </div>
         </div>
       </div>
