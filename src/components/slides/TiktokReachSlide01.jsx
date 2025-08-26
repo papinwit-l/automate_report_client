@@ -410,7 +410,7 @@ function TiktokReachSlide01() {
       <SlideHeader title={"TikTok Reach"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
+          <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
@@ -445,10 +445,10 @@ function TiktokReachSlide01() {
                 invertCompareColor={true}
               />
               <NumberDisplayBox
-                title={"6-second video views"}
-                value={formattedMetrics.view6secData?.displayValue}
-                compareValue={formattedMetrics.view6secData?.compareValue}
-                isNegative={formattedMetrics.view6secData?.isNegative}
+                title={"Video views"}
+                value={formattedMetrics.VideoViewsData?.displayValue}
+                compareValue={formattedMetrics.VideoViewsData?.compareValue}
+                isNegative={formattedMetrics.VideoViewsData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -480,7 +480,7 @@ function TiktokReachSlide01() {
                   "reach",
                   "cpr",
                   "frequency",
-                  "view6sec",
+                  "views",
                   "conversions",
                   "spent",
                 ]}
@@ -502,7 +502,7 @@ function TiktokReachSlide01() {
                   "reach",
                   "cpr",
                   "frequency",
-                  "view6sec",
+                  "views",
                   "conversions",
                   "spent",
                 ]}
@@ -513,22 +513,22 @@ function TiktokReachSlide01() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
           </div>
         </div>
       </div>
