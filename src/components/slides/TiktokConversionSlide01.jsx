@@ -33,7 +33,7 @@ function TiktokConversionSlide01() {
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([5, 5]);
+  const [maxTableRows, setMaxTableRows] = useState([4, 4]);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -96,7 +96,7 @@ function TiktokConversionSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} conversions**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
@@ -413,7 +413,7 @@ function TiktokConversionSlide01() {
       <SlideHeader title={"TikTok Conversion"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
+          <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
@@ -450,7 +450,7 @@ function TiktokConversionSlide01() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}
@@ -522,7 +522,7 @@ function TiktokConversionSlide01() {
               />
             </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
             {/* Summary */}

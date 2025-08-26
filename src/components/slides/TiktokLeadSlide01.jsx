@@ -410,7 +410,7 @@ function TiktokLeadSlide01() {
       <SlideHeader title={"TikTok Lead"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
+          <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
@@ -533,7 +533,7 @@ function TiktokLeadSlide01() {
               </ul>
             </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
           </div>

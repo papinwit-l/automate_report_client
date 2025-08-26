@@ -96,7 +96,7 @@ function TiktokConversionEcommerceSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} conversions**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
@@ -426,7 +426,7 @@ function TiktokConversionEcommerceSlide01() {
       <SlideHeader title={"TikTok Conversion - Ecommerce"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-16 flex flex-col gap-2">
+          <div className="col-span-20 flex flex-col gap-2">
             <div className="grid grid-cols-9 gap-2">
               <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
@@ -470,7 +470,7 @@ function TiktokConversionEcommerceSlide01() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}
@@ -487,7 +487,7 @@ function TiktokConversionEcommerceSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Conversion Value"}
+                title={"Con value"}
                 value={formattedMetrics.conversionValueData?.displayValue}
                 compareValue={
                   formattedMetrics.conversionValueData?.compareValue
@@ -530,6 +530,7 @@ function TiktokConversionEcommerceSlide01() {
                 defaultSortBy="conversions"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -556,14 +557,13 @@ function TiktokConversionEcommerceSlide01() {
                 defaultSortBy="conversions"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
             </div>
           </div>
-          <div className="col-span-4 flex flex-col justify-between">
-            {/* Image Preview */}
-            <div className=""></div>
+          <div className="col-span-20 flex flex-col justify-between">
             {/* Summary */}
-            <div className="px-4 mt-6 col-span-10">
+            <div className="px-4">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
                 <div
