@@ -92,7 +92,7 @@ function FacebookConversionSlide02() {
         : { key: "", value: { conversions: 0 } };
 
       if (topCreative.key) {
-        const topCreativeText = `Top Creative: **${
+        const topCreativeText = `Top creative: **${
           topCreative.key
         } (with ${topCreative.value.conversions?.toLocaleString()} conversions)**`;
         summaryTextTemp += `<li>${topCreativeText}</li>`;

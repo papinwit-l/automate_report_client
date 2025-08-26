@@ -63,7 +63,7 @@ function ShoppingAdsSlide() {
         ShoppingAdsTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} conversions`;
       summaryTextTemp = `<li>${overallText}**</li>`;
-      summaryTextTemp += `<li>Total conversion Value: **${parseFloat(
+      summaryTextTemp += `<li>Total conversion value: **${parseFloat(
         ShoppingAdsTotals["Conversion value"]?.toFixed(2) || 0
       )?.toLocaleString()} THB with ${parseFloat(
         ShoppingAdsTotals["roas"]?.toFixed(2) || 0
@@ -80,7 +80,7 @@ function ShoppingAdsSlide() {
         : { key: "", value: { KEY: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Product sold: **${
+        const topAudienceText = `Top product sold: **${
           topAudience.key
         } with ${topAudience.value[KEY]?.toLocaleString()} conversions**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;

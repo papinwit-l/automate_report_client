@@ -87,18 +87,16 @@ function FacebookVideoSlide02() {
       const topCreative = FacebookVideoCreativeData
         ? Object.entries(FacebookVideoCreativeData).reduce(
             (max, [key, value]) =>
-              (value?.viewRate || 0) > (max.value?.viewRate || 0)
-                ? { key, value }
-                : max,
-            { key: "", value: { viewRate: 0 } }
+              (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
+            { key: "", value: { KEY: 0 } }
           )
-        : { key: "", value: { viewRate: 0 } };
+        : { key: "", value: { KEY: 0 } };
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
-      } (with ${topCreative.value.viewRate?.toLocaleString()} %view rate)**`;
+      } (with ${topCreative.value[KEY].toLocaleString()} views)**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 

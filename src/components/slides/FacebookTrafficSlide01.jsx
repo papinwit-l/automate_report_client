@@ -58,7 +58,7 @@ function FacebookTrafficSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Clicks: ** ${parseFloat(
+      const overallText = `Overall clicks: ** ${parseFloat(
         FacebookTrafficAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} clicks**`;
       summaryTextTemp = `<li>${overallText}</li>`;

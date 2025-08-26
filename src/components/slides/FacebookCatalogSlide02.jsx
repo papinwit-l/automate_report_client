@@ -82,7 +82,7 @@ function FacebookCatalogSlide02() {
         : { key: "", value: { KEY: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Creative: **${
+        const topAudienceText = `Top creative: **${
           topAudience.key
         } (with ${topAudience.value[KEY]?.toLocaleString()} purchases)**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;

@@ -49,7 +49,7 @@ function FacebookReachSlide01() {
       }
 
       let summaryTextTemp = "";
-      const overallText = `Overall Reach: ** ${parseFloat(
+      const overallText = `Overall reach: ** ${parseFloat(
         FacebookReachAudienceTotals?.reach?.toFixed(2) || 0
       )?.toLocaleString()} reaches**`;
       summaryTextTemp = `<li>${overallText}</li>`;
@@ -71,7 +71,7 @@ function FacebookReachSlide01() {
         : { key: "", value: { reach: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Audience: **${
+        const topAudienceText = `Top audience: **${
           topAudience.key
         } (with ${topAudience.value.reach?.toLocaleString()} reaches)**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
@@ -90,7 +90,7 @@ function FacebookReachSlide01() {
 
       if (topCreative.key) {
         // Fix: Added missing closing parenthesis
-        const topCreativeText = `Top Creative: **${
+        const topCreativeText = `Top creative: **${
           topCreative.key
         } (with ${topCreative.value.reach?.toLocaleString()} reaches)**`;
         // summaryTextTemp += `<li>${topCreativeText}</li>`;

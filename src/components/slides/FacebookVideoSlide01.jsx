@@ -58,7 +58,7 @@ function FacebookVideoSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Video View: ** ${parseFloat(
+      const overallText = `Overall video view: ** ${parseFloat(
         FacebookVideoAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} views**`;
       summaryTextTemp = `<li>${overallText}</li>`;

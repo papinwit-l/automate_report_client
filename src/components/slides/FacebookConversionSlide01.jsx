@@ -48,7 +48,7 @@ function FacebookConversionSlide01() {
       }
 
       let summaryTextTemp = "";
-      const overallText = `Overall Conversions: ** ${parseFloat(
+      const overallText = `Overall conversions: ** ${parseFloat(
         FacebookConversionAudienceTotals?.conversions?.toFixed(2) || 0
       )?.toLocaleString()} conversions**`;
       summaryTextTemp = `<li>${overallText}</li>`;
@@ -70,7 +70,7 @@ function FacebookConversionSlide01() {
         : { key: "", value: { conversions: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Audience: **${
+        const topAudienceText = `Top audience: **${
           topAudience.key
         } (with ${topAudience.value.conversions?.toLocaleString()} conversions)**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;

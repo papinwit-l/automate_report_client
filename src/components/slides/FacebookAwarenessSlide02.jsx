@@ -72,7 +72,7 @@ function FacebookAwarenessSlide02() {
 
     const topAudienceText = `Top Audience: **${
       topAudience.key
-    } (with ${topAudience.value.impressions?.toLocaleString()} Impressions)**`;
+    } (with ${topAudience.value.impressions?.toLocaleString()} impressions)**`;
     // summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
@@ -83,9 +83,9 @@ function FacebookAwarenessSlide02() {
           : max,
       { key: "", value: { impressions: 0 } }
     );
-    const topCreativeText = `Top Creative: **${
+    const topCreativeText = `Top creative: **${
       topCreative.key
-    } (with ${topCreative.value.impressions?.toLocaleString()} Impressions)**`;
+    } (with ${topCreative.value.impressions?.toLocaleString()} impressions)**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     prepareAdsPicture(topCreative.key);

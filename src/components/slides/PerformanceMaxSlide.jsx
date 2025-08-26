@@ -53,7 +53,7 @@ function PerformanceMaxSlide() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
-      const overallText = `Overall Clicks: ** ${parseFloat(
+      const overallText = `Overall clicks: ** ${parseFloat(
         PerformanceMaxTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} clicks`;
       summaryTextTemp = `<li>${overallText}**</li>`;

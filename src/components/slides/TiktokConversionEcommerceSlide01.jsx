@@ -62,7 +62,7 @@ function TiktokConversionEcommerceSlide01() {
         TikTokConversionAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} conversions`;
       summaryTextTemp = `<li>${overallText}**</li>`;
-      summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
+      summaryTextTemp += `<li>Overall conversion value: **${parseFloat(
         TikTokConversionAudienceTotals["conversionValue"]?.toFixed(2) || 0
       )?.toLocaleString()} THB with ${parseFloat(
         TikTokConversionAudienceTotals["roas"]?.toFixed(2) || 0

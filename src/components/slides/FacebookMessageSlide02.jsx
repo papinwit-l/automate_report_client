@@ -51,7 +51,7 @@ function FacebookMessageSlide02() {
     }
 
     let summaryTextTemp = "";
-    const overallText = `Overall Messages: ** ${parseFloat(
+    const overallText = `Overall messages: ** ${parseFloat(
       FacebookMessageAudienceTotals?.messages?.toFixed(2) || 0
     )?.toLocaleString()} messages**`;
     // summaryTextTemp = `<li>${overallText}</li>`;
@@ -70,7 +70,7 @@ function FacebookMessageSlide02() {
       { key: "", value: { messages: 0 } }
     );
 
-    const topAudienceText = `Top Audience: **${
+    const topAudienceText = `Top audience: **${
       topAudience.key
     } (with ${topAudience.value.messages?.toLocaleString()} messages)**`;
     // summaryTextTemp += `<li>${topAudienceText}</li>`;
@@ -83,7 +83,7 @@ function FacebookMessageSlide02() {
           : max,
       { key: "", value: { engagements: 0 } }
     );
-    const topCreativeText = `Top Creative: **${
+    const topCreativeText = `Top creative: **${
       topCreative.key
     } (with ${topCreative.value.messages?.toLocaleString()} messages)**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;

@@ -62,7 +62,7 @@ function FacebookCatalogSlide01() {
         FacebookCatalogAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} purchases`;
       summaryTextTemp = `<li>${overallText} with average CPA: ${averageCPA} THB**</li>`;
-      summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
+      summaryTextTemp += `<li>Overall conversion value: **${parseFloat(
         FacebookCatalogAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
       )?.toLocaleString()} THB with ${parseFloat(
         FacebookCatalogAudienceTotals["roas"]?.toFixed(2) || 0

@@ -47,7 +47,7 @@ function FacebookEngagementSlide01() {
     }
 
     let summaryTextTemp = "";
-    const overallText = `Overall Engagements: ** ${parseFloat(
+    const overallText = `Overall engagements: ** ${parseFloat(
       FacebookEngagementAudienceTotals?.engagements?.toFixed(2) || 0
     )?.toLocaleString()} post engagements**`;
     summaryTextTemp = `<li>${overallText}</li>`;
@@ -66,7 +66,7 @@ function FacebookEngagementSlide01() {
       { key: "", value: { engagements: 0 } }
     );
 
-    const topAudienceText = `Top Audience: **${
+    const topAudienceText = `Top audience: **${
       topAudience.key
     } (with ${topAudience.value.engagements?.toLocaleString()} post engagements)**`;
     summaryTextTemp += `<li>${topAudienceText}</li>`;
@@ -79,7 +79,7 @@ function FacebookEngagementSlide01() {
           : max,
       { key: "", value: { engagements: 0 } }
     );
-    const topCreativeText = `Top Creative: **${
+    const topCreativeText = `Top creative: **${
       topCreative.key
     } (with ${topCreative.value.engagements?.toLocaleString()} post engagements)**`;
     // summaryTextTemp += `<li>${topCreativeText}</li>`;

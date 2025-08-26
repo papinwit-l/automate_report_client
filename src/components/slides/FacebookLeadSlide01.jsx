@@ -48,7 +48,7 @@ function FacebookLeadSlide01() {
       }
 
       let summaryTextTemp = "";
-      const overallText = `Overall Conversions: ** ${parseFloat(
+      const overallText = `Overall conversions: ** ${parseFloat(
         FacebookLeadAudienceTotals?.conversions?.toFixed(2) || 0
       )?.toLocaleString()} leads**`;
       summaryTextTemp = `<li>${overallText}</li>`;
@@ -70,7 +70,7 @@ function FacebookLeadSlide01() {
         : { key: "", value: { conversions: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Audience: **${
+        const topAudienceText = `Top audience: **${
           topAudience.key
         } (with ${topAudience.value.conversions?.toLocaleString()} leads)**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
@@ -88,10 +88,10 @@ function FacebookLeadSlide01() {
         : { key: "", value: { conversions: 0 } };
 
       if (topCreative.key) {
-        const topCreativeText = `Top Creative: **${
+        const topCreativeText = `Top creative: **${
           topCreative.key
         } (with ${topCreative.value.conversions?.toLocaleString()} leads)**`;
-        summaryTextTemp += `<li>${topCreativeText}</li>`;
+        // summaryTextTemp += `<li>${topCreativeText}</li>`;
       }
 
       setSummaryText(summaryTextTemp);

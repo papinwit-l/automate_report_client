@@ -75,7 +75,7 @@ function FacebookReachSlide02() {
         : { key: "", value: { reach: 0 } };
 
       if (topAudience.key) {
-        const topAudienceText = `Top Audience: **${
+        const topAudienceText = `Top audience: **${
           topAudience.key
         } (with ${topAudience.value.reach?.toLocaleString()} reaches)**`;
         // summaryTextTemp += `<li>${topAudienceText}</li>`;
@@ -94,7 +94,7 @@ function FacebookReachSlide02() {
 
       if (topCreative.key) {
         // Fix: Added missing closing parenthesis
-        const topCreativeText = `Top Creative: **${
+        const topCreativeText = `Top creative: **${
           topCreative.key
         } (with ${topCreative.value.reach?.toLocaleString()} reaches)**`;
         summaryTextTemp += `<li>${topCreativeText}</li>`;
