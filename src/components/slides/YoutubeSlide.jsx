@@ -414,7 +414,7 @@ function YoutubeSlide() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={formattedMetrics.conRateData?.displayValue}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}
@@ -445,11 +445,12 @@ function YoutubeSlide() {
                   "viewRate",
                   "cpv",
                   "Conversions",
+                  "conRate",
                   "Spent",
-                  "Watch 25% views",
-                  "Watch 50% views",
-                  "Watch 75% views",
-                  "Watch 100% views",
+                  // "Watch 25% views",
+                  // "Watch 50% views",
+                  // "Watch 75% views",
+                  // "Watch 100% views",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
@@ -457,6 +458,18 @@ function YoutubeSlide() {
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
+            </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
             </div>
           </div>
           {/* Chart */}
@@ -482,20 +495,7 @@ function YoutubeSlide() {
           </div>
         </div>
         <div className="grid grid-cols-16">
-          <div className="col-span-16">
-            {/* Summary */}
-            <div className="px-4 mt-6">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
-          </div>
+          <div className="col-span-16"></div>
         </div>
       </div>
       <TextEditorModal
