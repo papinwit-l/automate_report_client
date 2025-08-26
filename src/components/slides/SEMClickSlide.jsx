@@ -337,7 +337,17 @@ function SEMClickSlide() {
               firstMetric={"Keyword"}
               channelData={SEMData}
               totalData={SEMTotals}
-              metrics={SEMMetrics}
+              metrics={[
+                "Keyword",
+                "Impressions",
+                "Clicks",
+                "ctr",
+                "cpc",
+                "Conversions",
+                "conRate",
+                "cpl",
+                "Spent",
+              ]}
               formatValue={formatTableValue}
               maxRows={maxTableRows[0]}
               defaultSortBy="Clicks"
