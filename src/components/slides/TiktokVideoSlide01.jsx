@@ -58,9 +58,9 @@ function TiktokVideoSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall VDO View: ** ${parseFloat(
+      const overallText = `Overall VDO view: ** ${parseFloat(
         TikTokVideoAudienceTotals[KEY]?.toFixed(2) || 0
-      )?.toLocaleString()} VDO Views`;
+      )?.toLocaleString()} views`;
       summaryTextTemp = `<li>${overallText}**</li>`;
       // summaryTextTemp += `<li>Overall conversion Value: **${parseFloat(
       //   TikTokVideoAudienceTotals["purchaseConValue"]?.toFixed(2) || 0
@@ -81,7 +81,7 @@ function TiktokVideoSlide01() {
       if (topAudience.key) {
         const topAudienceText = `Top audience: **${
           topAudience.key
-        } with ${topAudience.value[KEY]?.toLocaleString()} VDO Views**`;
+        } with ${topAudience.value[KEY]?.toLocaleString()} views**`;
         summaryTextTemp += `<li>${topAudienceText}</li>`;
       }
 
@@ -96,9 +96,9 @@ function TiktokVideoSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
-      } with ${topCreative.value[KEY]?.toLocaleString()} VDO Views**`;
+      } with ${topCreative.value[KEY]?.toLocaleString()} views**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
       // }
 
@@ -410,7 +410,7 @@ function TiktokVideoSlide01() {
       <SlideHeader title={"TikTok VDO View"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-14 flex flex-col gap-2">
+          <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
@@ -514,22 +514,22 @@ function TiktokVideoSlide01() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
-          <div className="col-span-6 flex flex-col justify-between">
+          <div className="col-span-4 flex flex-col justify-between">
             {/* Image Preview */}
             <div className=""></div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
           </div>
         </div>
       </div>

@@ -58,7 +58,7 @@ function TiktokReachSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Reach: ** ${parseFloat(
+      const overallText = `Overall reach: ** ${parseFloat(
         TikTokReachAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} reaches`;
       summaryTextTemp = `<li>${overallText}**</li>`;
@@ -96,7 +96,7 @@ function TiktokReachSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} reaches**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;
