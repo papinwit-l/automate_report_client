@@ -29,54 +29,47 @@ export const fetchDataSheet = async (
     filterValue = null,
   } = options;
 
-  try {
-    const config = DATA_CONFIGS[dataType];
-    if (!config) {
-      throw new Error(`Configuration for ${dataType} not found`);
-    }
+  // Prepare empty data structure
+  const emptyData = [];
+  const emptyTotals = {};
+  const emptyMetrics = {};
+  const emptyComparison = {};
 
-    // Fetch data from API using centralized axios instance
+  let config;
+  let setters;
+
+  try {
+    config = DATA_CONFIGS[dataType];
+    if (!config) throw new Error(`Configuration for ${dataType} not found`);
+
+    setters = settersMap[dataType];
+
+    // Fetch data from API
     const response = await axiosInstance.get(
       `/data-sheets/${config.endpoint}/${id}`
     );
-
     const rawData = response.data.data;
     const headers = rawData[0];
     const dataRows = rawData.slice(1);
 
-    // find project column index
     const projectIndex = headers.findIndex((header) => header === "Project");
 
-    const projectFilteredData = [];
+    const projectFilteredData =
+      projectList.length > 0
+        ? dataRows.filter((row) => projectList.includes(row[projectIndex]))
+        : dataRows;
 
-    // Filter data by project list
-    if (projectList.length > 0) {
-      for (const project of projectList) {
-        const projectData = dataRows.filter((row) => {
-          const projectValue = row[projectIndex];
-          return projectValue === project;
-        });
-        projectFilteredData.push(...projectData);
-      }
-    } else {
-      projectFilteredData.push(...dataRows);
-    }
-
-    // Transform raw data to objects
     const dataObjects = projectFilteredData.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
 
-    // Get metrics for processing and display
-    const displayMetrics = metricsMap[dataType] || []; // For final display
-    const processMetrics = config.processFields || displayMetrics; // For data cleaning
+    const displayMetrics = metricsMap[dataType] || [];
+    const processMetrics = config.processFields || displayMetrics;
 
-    // ✅ FIX: Use processMetrics (source field names) for cleaning
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
-    // For debugging
-    if (config.endpoint === "performance-max-data") {
-      // console.log("🎯 cleanedData result:", cleanedData);
+    if (config.endpoint == "overall-data") {
+      console.log("cleanedData", cleanedData);
     }
 
     // Apply date range filtering
@@ -91,18 +84,11 @@ export const fetchDataSheet = async (
         dateRange.to
       );
 
-      //for debugging
-      if (config.endpoint === "performance-max-data") {
-        // console.log("🎯 currentPeriodData result:", currentPeriodData);
-      }
-
-      // Get previous period data for comparison
       if (config.hasComparison) {
         const previousPeriodDates = getPreviousPeriodDates(
           dateRange.from,
           dateRange.to
         );
-
         previousPeriodData = filterDataByDateRange(
           cleanedData,
           previousPeriodDates.from,
@@ -111,24 +97,22 @@ export const fetchDataSheet = async (
       }
     }
 
-    // Process data based on processor type
+    // Process data if needed
     if (config.processData) {
       let currentPeriodResults;
       let previousPeriodResults;
 
-      // Prepare filter options for processing
       const filterOptions = {};
       if (filterBy && filterValue) {
         filterOptions.filterBy = filterBy;
         filterOptions.filterValue = filterValue;
       }
 
-      // Choose processor based on type
       if (config.processorType === "social") {
         currentPeriodResults = processSocialMediaData(
           currentPeriodData,
-          processMetrics, // ✅ Use source field names for processing
-          displayMetrics, // ✅ Use display field names for final result
+          processMetrics,
+          displayMetrics,
           config.socialConfig,
           filterOptions
         );
@@ -136,8 +120,8 @@ export const fetchDataSheet = async (
         if (config.hasComparison && previousPeriodData.length > 0) {
           previousPeriodResults = processSocialMediaData(
             previousPeriodData,
-            processMetrics, // ✅ Use source field names for processing
-            displayMetrics, // ✅ Use display field names for final result
+            processMetrics,
+            displayMetrics,
             config.socialConfig,
             filterOptions
           );
@@ -146,13 +130,23 @@ export const fetchDataSheet = async (
             previousPeriodResults.enhancedTotals
           );
         }
+
+        // Update state
+        if (setters) {
+          setters.setAudienceData?.(currentPeriodResults.audienceData);
+          setters.setAudienceTotals?.(currentPeriodResults.audienceTotals);
+          setters.setCreativeData?.(currentPeriodResults.creativeData);
+          setters.setCreativeTotals?.(currentPeriodResults.creativeTotals);
+          setters.setMetrics?.(currentPeriodResults.allMetrics);
+          setters.setComparison?.(comparison);
+        }
       } else if (config.processorType === "advertising") {
         const platform = dataType === "Youtube" ? "Youtube" : "default";
 
         currentPeriodResults = processAdvertisingData(
           currentPeriodData,
-          processMetrics, // ✅ Use source field names
-          displayMetrics, // ✅ Use display field names
+          processMetrics,
+          displayMetrics,
           config.groupBy,
           platform
         );
@@ -160,8 +154,8 @@ export const fetchDataSheet = async (
         if (config.hasComparison && previousPeriodData.length > 0) {
           previousPeriodResults = processAdvertisingData(
             previousPeriodData,
-            processMetrics, // ✅ Use source field names
-            displayMetrics, // ✅ Use display field names
+            processMetrics,
+            displayMetrics,
             config.groupBy,
             platform
           );
@@ -170,26 +164,9 @@ export const fetchDataSheet = async (
             previousPeriodResults.enhancedTotals
           );
         }
-      }
 
-      // for debugging
-      if (dataType === "PerformanceMax") {
-        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
-      }
-
-      // Update state based on processor type
-      const setters = settersMap[dataType];
-      if (setters) {
-        if (config.processorType === "social") {
-          // Social media platform state updates
-          setters.setAudienceData?.(currentPeriodResults.audienceData);
-          setters.setAudienceTotals?.(currentPeriodResults.audienceTotals);
-          setters.setCreativeData?.(currentPeriodResults.creativeData);
-          setters.setCreativeTotals?.(currentPeriodResults.creativeTotals);
-          setters.setMetrics?.(currentPeriodResults.allMetrics);
-          setters.setComparison?.(comparison);
-        } else if (config.processorType === "advertising") {
-          // Advertising platform state updates
+        // Update state
+        if (setters) {
           setters.setData?.(currentPeriodResults.enhancedFieldData);
           setters.setTotals?.(currentPeriodResults.enhancedTotals);
           setters.setMetrics?.(currentPeriodResults.allMetrics);
@@ -199,16 +176,42 @@ export const fetchDataSheet = async (
 
       return currentPeriodResults;
     } else {
-      // For data types that don't use processing (like GGDemographic)
-      const setters = settersMap[dataType];
-      if (setters) {
-        setters.setData?.(currentPeriodData);
-      }
+      if (setters) setters.setData?.(currentPeriodData);
       return { data: currentPeriodData };
     }
   } catch (error) {
     console.error(`Error fetching ${dataType} data:`, error);
-    throw error;
+
+    // Safely set empty state if setters exist
+    if (!setters && settersMap[dataType]) setters = settersMap[dataType];
+
+    if (setters) {
+      if (config?.processorType === "social") {
+        setters.setAudienceData?.(emptyData);
+        setters.setAudienceTotals?.(emptyTotals);
+        setters.setCreativeData?.(emptyData);
+        setters.setCreativeTotals?.(emptyTotals);
+        setters.setMetrics?.(emptyMetrics);
+        setters.setComparison?.(emptyComparison);
+      } else if (config?.processorType === "advertising") {
+        setters.setData?.(emptyData);
+        setters.setTotals?.(emptyTotals);
+        setters.setMetrics?.(emptyMetrics);
+        setters.setComparison?.(emptyComparison);
+      } else {
+        setters.setData?.(emptyData);
+      }
+    }
+
+    return {
+      data: emptyData,
+      totals: emptyTotals,
+      metrics: emptyMetrics,
+      comparison: emptyComparison,
+      error:
+        error?.response?.data?.message ||
+        "Failed to fetch data. Please try again.",
+    };
   }
 };
 

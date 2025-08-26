@@ -602,7 +602,6 @@ function SlideReport() {
                 />
                 <FacebookAwarenessSlide01 />
                 <FacebookAwarenessSlide02 />
-                {/* <FacebookAwarenessSlide02PicTable /> */}
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
                 <FacebookEngagementSlide01 />
@@ -630,7 +629,7 @@ function SlideReport() {
                 <YoutubeSlide />
                 <ShoppingAdsSlide />
                 <PerformanceMaxSlide />
-                <SectionSlide
+                {/* <SectionSlide
                   title={"Tiktok"}
                   componentID={"tiktok-section-component"}
                 />
@@ -652,7 +651,7 @@ function SlideReport() {
                   componentID={"taboola-section-component"}
                 />
                 <TaboolaSlide />
-                <EndSlide />
+                <EndSlide /> */}
               </div>
             ) : (
               <Card className="h-96 flex items-center justify-center">

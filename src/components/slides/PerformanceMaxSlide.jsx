@@ -94,98 +94,99 @@ function PerformanceMaxSlide() {
   }, [PerformanceMaxTotals, PerformanceMaxData]);
 
   //Demographic for chart
-  const { chartByGender, chartByDevice } = useMemo(() => {
-    const GRAPH_KEY = "conversions";
-    const CHANNEL = "Shopping";
-    try {
-      if (!GGDemographicData || GGDemographicData.length === 0) {
-        return {
-          chartByGender: {},
-          chartByDevice: {},
-        };
-      }
+  // const { chartByGender, chartByDevice } = useMemo(() => {
+  //   const GRAPH_KEY = "conversions";
+  //   const CHANNEL = "Shopping";
+  //   try {
+  //     if (!GGDemographicData || GGDemographicData.length === 0) {
+  //       return {
+  //         chartByGender: {},
+  //         chartByDevice: {},
+  //       };
+  //     }
 
-      // Filter Channel
-      const filteredDemographicData = GGDemographicData.filter((item) => {
-        return item?.Channel?.trim() === CHANNEL;
-      });
+  //     // Filter Channel
+  //     const filteredDemographicData = GGDemographicData.filter((item) => {
+  //       return item?.Channel?.trim() === CHANNEL;
+  //     });
 
-      if (filteredDemographicData.length === 0) {
-        return {
-          chartByGender: {},
-          chartByDevice: {},
-        };
-      }
+  //     if (filteredDemographicData.length === 0) {
+  //       return {
+  //         chartByGender: {},
+  //         chartByDevice: {},
+  //       };
+  //     }
 
-      // Helper function for consistent parsing
-      const parseHelper = (value) => {
-        if (value === null || value === undefined || value === "") return 0;
-        const parsed = parseInt(value);
-        return isNaN(parsed) ? 0 : parsed;
-      };
+  //     // Helper function for consistent parsing
+  //     const parseHelper = (value) => {
+  //       if (value === null || value === undefined || value === "") return 0;
+  //       const parsed = parseInt(value);
+  //       return isNaN(parsed) ? 0 : parsed;
+  //     };
 
-      // Group by the specified field
-      const sumGraphHelper = (key, graphBy) => {
-        return filteredDemographicData.reduce((acc, item) => {
-          if (item[graphBy] && item[key] !== undefined) {
-            acc[item[graphBy]] =
-              (acc[item[graphBy]] || 0) + parseHelper(item[key]);
-          }
-          return acc;
-        }, {});
-      };
+  //     // Group by the specified field
+  //     const sumGraphHelper = (key, graphBy) => {
+  //       return filteredDemographicData.reduce((acc, item) => {
+  //         if (item[graphBy] && item[key] !== undefined) {
+  //           acc[item[graphBy]] =
+  //             (acc[item[graphBy]] || 0) + parseHelper(item[key]);
+  //         }
+  //         return acc;
+  //       }, {});
+  //     };
 
-      // By Gender
-      const sumGraphByGender = sumGraphHelper(GRAPH_KEY, "Gender");
-      const totalGraphByGender = Object.values(sumGraphByGender).reduce(
-        (a, b) => a + b,
-        0
-      );
+  //     // By Gender
+  //     const sumGraphByGender = sumGraphHelper(GRAPH_KEY, "Gender");
+  //     const totalGraphByGender = Object.values(sumGraphByGender).reduce(
+  //       (a, b) => a + b,
+  //       0
+  //     );
 
-      // By Device
-      const sumGraphByDevice = sumGraphHelper(GRAPH_KEY, "Device");
-      const totalGraphByDevice = Object.values(sumGraphByDevice).reduce(
-        (a, b) => a + b,
-        0
-      );
+  //     // By Device
+  //     const sumGraphByDevice = sumGraphHelper(GRAPH_KEY, "Device");
+  //     const totalGraphByDevice = Object.values(sumGraphByDevice).reduce(
+  //       (a, b) => a + b,
+  //       0
+  //     );
 
-      // Early return if no impressions
-      if (totalGraphByGender === 0 && totalGraphByDevice === 0) {
-        return {
-          chartByGender: {},
-          chartByDevice: {},
-        };
-      }
+  //     // Early return if no impressions
+  //     if (totalGraphByGender === 0 && totalGraphByDevice === 0) {
+  //       return {
+  //         chartByGender: {},
+  //         chartByDevice: {},
+  //       };
+  //     }
 
-      // Calculate percentages with correct totals
-      const genderPercentages =
-        totalGraphByGender > 0
-          ? Object.entries(sumGraphByGender).reduce((acc, [gender, key]) => {
-              acc[gender] = ((key / totalGraphByGender) * 100).toFixed(2) + "%";
-              return acc;
-            }, {})
-          : {};
+  //     // Calculate percentages with correct totals
+  //     const genderPercentages =
+  //       totalGraphByGender > 0
+  //         ? Object.entries(sumGraphByGender).reduce((acc, [gender, key]) => {
+  //             acc[gender] = ((key / totalGraphByGender) * 100).toFixed(2) + "%";
+  //             return acc;
+  //           }, {})
+  //         : {};
 
-      const agePercentages =
-        totalGraphByDevice > 0
-          ? Object.entries(sumGraphByDevice).reduce((acc, [age, key]) => {
-              acc[age] = ((key / totalGraphByDevice) * 100).toFixed(2) + "%";
-              return acc;
-            }, {})
-          : {};
+  //     const agePercentages =
+  //       totalGraphByDevice > 0
+  //         ? Object.entries(sumGraphByDevice).reduce((acc, [age, key]) => {
+  //             acc[age] = ((key / totalGraphByDevice) * 100).toFixed(2) + "%";
+  //             return acc;
+  //           }, {})
+  //         : {};
 
-      return {
-        chartByGender: genderPercentages,
-        chartByDevice: agePercentages,
-      };
-    } catch (error) {
-      console.error("Error processing demographic data:", error);
-      return {
-        chartByGender: {},
-        chartByDevice: {},
-      };
-    }
-  }, [GGDemographicData]);
+  //     return {
+  //       chartByGender: genderPercentages,
+  //       chartByDevice: agePercentages,
+  //     };
+  //   } catch (error) {
+  //     console.error("Error processing demographic data:", error);
+  //     return {
+  //       chartByGender: {},
+  //       chartByDevice: {},
+  //     };
+  //   }
+  // }, [GGDemographicData]);
+
   // Fix: Add summarizeData to dependency array
   useEffect(() => {
     summarizeData();
