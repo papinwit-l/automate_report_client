@@ -412,7 +412,7 @@ function ShoppingAdsSlide() {
       <SlideHeader title={"Shopping Ads"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">
-          <div className="col-span-16 flex flex-col gap-2">
+          <div className="col-span-20 flex flex-col gap-2">
             <div className="grid grid-cols-9 gap-2">
               <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
@@ -467,7 +467,7 @@ function ShoppingAdsSlide() {
               />
 
               <NumberDisplayBox
-                title={"Conversion value"}
+                title={"Con value"}
                 value={formattedMetrics.conversionValueData?.displayValue}
                 compareValue={
                   formattedMetrics.conversionValueData?.compareValue
@@ -518,10 +518,22 @@ function ShoppingAdsSlide() {
                 enableSorting={true}
               />
             </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
           </div>
-          <div className="col-span-4 flex flex-col justify-between">
-            {/* Chart */}
-            <div className="col-span-4 flex flex-col">
+          {/* <div className="col-span-4 flex flex-col justify-between"> */}
+          {/* Chart */}
+          {/* <div className="col-span-4 flex flex-col">
               <DonutChart
                 data={chartByGender}
                 title="Conversions By Gender"
@@ -540,20 +552,8 @@ function ShoppingAdsSlide() {
                 outerRadius={60}
                 isPercentage={true}
               />
-            </div>
-          </div>
-          {/* Summary */}
-          <div className="px-4 mt-6 col-span-10">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
-          </div>
+            </div> */}
+          {/* </div> */}
         </div>
       </div>
       <TextEditorModal
