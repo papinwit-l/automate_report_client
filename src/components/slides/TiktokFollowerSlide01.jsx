@@ -58,7 +58,7 @@ function TiktokFollowerSlide01() {
           maximumFractionDigits: 2,
         }
       );
-      const overallText = `Overall Follower: ** ${parseFloat(
+      const overallText = `Overall follower: ** ${parseFloat(
         TikTokFollowerAudienceTotals[KEY]?.toFixed(2) || 0
       )?.toLocaleString()} followers`;
       summaryTextTemp = `<li>${overallText}**</li>`;
@@ -96,7 +96,7 @@ function TiktokFollowerSlide01() {
 
       // if (topCreative.key) {
       // Fix: Added missing closing parenthesis
-      const topCreativeText = `Top Creative: **${
+      const topCreativeText = `Top creative: **${
         topCreative.key
       } with ${topCreative.value[KEY]?.toLocaleString()} followers**`;
       summaryTextTemp += `<li>${topCreativeText}</li>`;

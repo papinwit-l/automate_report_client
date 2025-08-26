@@ -490,6 +490,7 @@ function TiktokVideoSlide01() {
                 defaultSortBy="views"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -512,6 +513,7 @@ function TiktokVideoSlide01() {
                 defaultSortBy="views"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={false}
               />
             </div>
             {/* Summary */}
