@@ -241,6 +241,11 @@ function GDNSlide() {
     GDNComparison?.Spent,
     "compact"
   );
+  const conRateData = formatDisplayData(
+    GDNTotals?.conRate,
+    GDNComparison?.conRate,
+    "percentage"
+  );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(GDNTotals, GDNComparison, METRIC_CONFIGS);
@@ -308,11 +313,11 @@ function GDNSlide() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
+                title={"%Con Rate"}
+                value={conRateData.displayValue}
                 isConversion={true}
-                compareValue={cplData.compareValue}
-                isNegative={cplData.isNegative}
+                compareValue={conRateData.compareValue}
+                isNegative={conRateData.isNegative}
                 invertCompareColor={true}
               />
 
@@ -333,7 +338,16 @@ function GDNSlide() {
                 firstMetric={"Ad group name"}
                 channelData={GDNData}
                 totalData={GDNTotals}
-                metrics={GDNMetrics}
+                metrics={[
+                  "Ad group name",
+                  "Impressions",
+                  "Clicks",
+                  "ctr",
+                  "cpc",
+                  "Conversions",
+                  "conRate",
+                  "Spent",
+                ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
                 defaultSortBy="Clicks"
