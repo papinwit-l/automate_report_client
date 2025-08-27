@@ -212,7 +212,7 @@ function FacebookEngagementSlide02() {
 
   useEffect(() => {
     summarizeData();
-  }, [FacebookEngagementAudienceTotals, FacebookEngagementAudienceData]);
+  }, [FacebookEngagementAudienceTotals, FacebookEngagementCreativeData]);
 
   // Show loading state
   if (loading) {
@@ -419,11 +419,11 @@ function FacebookEngagementSlide02() {
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
               <AdvancedDataTable
-                firstMetric="Ad set name"
-                channelData={FacebookEngagementAudienceData}
+                firstMetric="Ad name"
+                channelData={FacebookEngagementCreativeData}
                 totalData={FacebookEngagementAudienceTotals}
                 metrics={[
-                  "Ad set name",
+                  "Ad name",
                   "impressions",
                   "reach",
                   "engagements",
@@ -434,7 +434,7 @@ function FacebookEngagementSlide02() {
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="reach"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
               />

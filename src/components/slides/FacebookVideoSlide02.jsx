@@ -471,7 +471,7 @@ function FacebookVideoSlide02() {
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="views"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />
