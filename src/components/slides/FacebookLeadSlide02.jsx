@@ -465,6 +465,7 @@ function FacebookLeadSlide02() {
                 defaultSortBy="conversions"
                 defaultSortOrder="desc"
                 enableSorting={true}
+                isLimitWidth={true}
               />
             </div>
             {/* Summary */}

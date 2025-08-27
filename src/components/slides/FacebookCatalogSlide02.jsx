@@ -525,16 +525,18 @@ function FacebookCatalogSlide02() {
               </ul>
             </div>
           </div>
-          {/* Images */}
-          {/* Ads Preview */}
-          {adsPicture &&
-            typeof adsPicture === "string" &&
-            adsPicture.startsWith("http") && (
-              <div className="p-6 flex flex-col gap-2">
-                <ImageFallback src={adsPicture} alt="ads preview" />
-                <p className="mx-auto">{topAds}</p>
-              </div>
-            )}
+          <div className="col-span-3">
+            {/* Images */}
+            {/* Ads Preview */}
+            {adsPicture &&
+              typeof adsPicture === "string" &&
+              adsPicture.startsWith("http") && (
+                <div className="p-6 flex flex-col gap-2">
+                  <ImageFallback src={adsPicture} alt="ads preview" />
+                  <p className="mx-auto">{topAds}</p>
+                </div>
+              )}
+          </div>
         </div>
         <div className="grid grid-cols-16">
           <div className="col-span-16"></div>
