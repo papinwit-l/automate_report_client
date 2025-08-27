@@ -477,7 +477,7 @@ function FacebookTrafficSlide02() {
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="clicks"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true}
               />

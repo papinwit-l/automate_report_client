@@ -420,7 +420,7 @@ function FacebookEngagementSlide01() {
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="reach"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
               />
