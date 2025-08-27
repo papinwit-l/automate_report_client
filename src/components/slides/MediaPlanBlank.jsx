@@ -215,9 +215,9 @@ function MediaPlanBlank() {
     }
   }, [FBDemographicData]);
   // Fix: Add summarizeData to dependency array
-  useEffect(() => {
-    summarizeData();
-  }, [summarizeData]);
+  // useEffect(() => {
+  //   summarizeData();
+  // }, [summarizeData]);
 
   // Fix: Memoize formatted metrics to prevent unnecessary recalculations
   const formattedMetrics = useMemo(() => {

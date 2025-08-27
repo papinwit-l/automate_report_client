@@ -10,13 +10,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useData } from "@/contexts/dataContext";
 import domtoimage from "dom-to-image";
 import axios from "axios";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Presentation,
   CheckCircle,
   AlertCircle,
   ExternalLink,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import GDNSlide from "@/components/slides/GDNSlide";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
@@ -63,6 +64,15 @@ import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 import TiktokConversionEcommerceSlide01 from "@/components/slides/TiktokConversionEcommerceSlide01";
 import TiktokFollowerSlide01 from "@/components/slides/TiktokFollowerSlide01";
 import MediaPlanBlank from "@/components/slides/MediaPlanBlank";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -78,7 +88,13 @@ function SlideReport() {
 
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
-  const { fetchData, enableDateRange, setEnableDateRange } = useData();
+  const {
+    fetchData,
+    enableDateRange,
+    setEnableDateRange,
+    notFoundSheetList,
+    setNotFoundSheetList,
+  } = useData();
   const [mediaPlanData, setMediaPlanData] = React.useState(null);
 
   const handleProjectNameChange = (event) => {
@@ -510,6 +526,13 @@ function SlideReport() {
     }
   };
 
+  const { isSheetNotFound, sheetNotFoundList } = useMemo(() => {
+    return {
+      isSheetNotFound: notFoundSheetList.length > 0,
+      sheetNotFoundList: notFoundSheetList,
+    };
+  }, [notFoundSheetList]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Sidebar Component */}
@@ -676,6 +699,41 @@ function SlideReport() {
           </div>
         </main>
       </div>
+      <Dialog
+        open={isSheetNotFound}
+        onOpenChange={() => setNotFoundSheetList([])}
+      >
+        <DialogContent className="max-w-lg gap-2">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-800">
+              <AlertTriangle className="h-5 w-5" />
+              Sheets Not Found
+            </DialogTitle>
+            <DialogDescription className="text-black">
+              The following sheets were not found in your Google Spreadsheet.
+              Please verify the sheet names are correct, or continue if these
+              sheets are not required for your report.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 my-2 max-h-48 overflow-y-auto">
+            {sheetNotFoundList.map((sheet, index) => (
+              <div
+                key={index}
+                className="px-3 py-2 bg-red-50 text-red-800 rounded-md border border-red-800 font-medium"
+              >
+                {sheet}
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="default" onClick={() => setNotFoundSheetList([])}>
+              Got It
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

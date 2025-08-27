@@ -18,7 +18,8 @@ export const fetchDataSheet = async (
   dataType,
   id,
   options = {},
-  projectList = []
+  projectList = [],
+  setNotFoundSheetList
 ) => {
   const {
     enableDateRange = false,
@@ -69,7 +70,7 @@ export const fetchDataSheet = async (
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
     if (config.endpoint == "overall-data") {
-      console.log("cleanedData", cleanedData);
+      // console.log("cleanedData", cleanedData);
     }
 
     // Apply date range filtering
@@ -180,8 +181,24 @@ export const fetchDataSheet = async (
       return { data: currentPeriodData };
     }
   } catch (error) {
-    console.error(`Error fetching ${dataType} data:`, error);
-
+    const errorMessage =
+      error?.response?.data?.message ||
+      "Failed to fetch data. Please try again.";
+    // console.log("🎯 fetchDataSheet error:", errorMessage);
+    if (errorMessage.includes("Unable to parse range")) {
+      console.log("🎯 fetchDataSheet error:", errorMessage);
+      // example message "Unable to parse range: Shopping Detials!A:T"
+      const SHEET_W_RANGE = errorMessage.split("Unable to parse range: ")[1];
+      // include if SHEET contain ! ex. GOOGLE!SHEET!A!T
+      if (SHEET_W_RANGE.includes("!")) {
+        const parts = SHEET_W_RANGE.split("!");
+        const sheet = parts.slice(0, -1).join("!"); // all except last
+        const range = parts.at(-1);
+        setNotFoundSheetList((prev) => [...prev, sheet]);
+      }
+    } else {
+      console.error(`Error fetching ${dataType} data:`, error);
+    }
     // Safely set empty state if setters exist
     if (!setters && settersMap[dataType]) setters = settersMap[dataType];
 

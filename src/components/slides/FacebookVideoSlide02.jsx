@@ -40,6 +40,11 @@ function FacebookVideoSlide02() {
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
+    // console.log(
+    //   "🎯 summarizeData | facebookVideoSlide02:",
+    //   FacebookVideoCreativeTotals
+    // );
+    // console.log("FacebookVideoCreativeData:", FacebookVideoCreativeData);
     const KEY = "views";
     const ENABLE_CONVERSION = false;
     try {
@@ -47,7 +52,8 @@ function FacebookVideoSlide02() {
       if (
         FacebookVideoCreativeTotals[KEY] === "No Data" ||
         !FacebookVideoCreativeTotals ||
-        Object.keys(FacebookVideoCreativeTotals).length === 0
+        Object.keys(FacebookVideoCreativeTotals).length === 0 ||
+        Object.keys(FacebookVideoCreativeData).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");
         return;

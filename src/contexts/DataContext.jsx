@@ -28,6 +28,8 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [notFoundSheetList, setNotFoundSheetList] = useState([]);
+
   //Overall Data
   const [overallData, setOverallData] = useState({});
   const [overallTotals, setOverallTotals] = useState({});
@@ -594,7 +596,8 @@ export const DataProvider = ({ children }) => {
       "overall",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     return result;
   };
@@ -604,7 +607,8 @@ export const DataProvider = ({ children }) => {
       "SEM",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -613,7 +617,8 @@ export const DataProvider = ({ children }) => {
       "GGDemographic",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -622,7 +627,8 @@ export const DataProvider = ({ children }) => {
       "GDN",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -631,7 +637,8 @@ export const DataProvider = ({ children }) => {
       "Disc",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getDiscData result:", result);
     return result;
@@ -642,7 +649,8 @@ export const DataProvider = ({ children }) => {
       "Youtube",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getYoutubeData result:", result);
     return result;
@@ -657,7 +665,8 @@ export const DataProvider = ({ children }) => {
       "ShoppingAds",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getShoppingAdsData result:", result);
     return result;
@@ -672,7 +681,8 @@ export const DataProvider = ({ children }) => {
       "PerformanceMax",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getPerformanceMaxData result:", result);
     return result;
@@ -683,7 +693,8 @@ export const DataProvider = ({ children }) => {
       "FacebookAudience",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -696,7 +707,8 @@ export const DataProvider = ({ children }) => {
       "FacebookAwareness",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getFacebookAwarenessData result:", result);
     return result;
@@ -717,7 +729,8 @@ export const DataProvider = ({ children }) => {
       "FacebookReach",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
 
     // console.log("📊 getFacebookReachData result:", result);
@@ -733,7 +746,8 @@ export const DataProvider = ({ children }) => {
       "FacebookEngagement",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
 
     // console.log("📊 getFacebookReachData result:", result);
@@ -749,7 +763,8 @@ export const DataProvider = ({ children }) => {
       "FacebookMessage",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     return result;
   };
@@ -763,7 +778,8 @@ export const DataProvider = ({ children }) => {
       "FacebookLead",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     return result;
   };
@@ -777,7 +793,8 @@ export const DataProvider = ({ children }) => {
       "FacebookConversion",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getFacebookConversionData result:", result);
     return result;
@@ -792,7 +809,8 @@ export const DataProvider = ({ children }) => {
       "FacebookTraffic",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getFacebookTrafficData result:", result);
     return result;
@@ -807,7 +825,8 @@ export const DataProvider = ({ children }) => {
       "FacebookVideo",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getFacebookVideoData result:", result);
     return result;
@@ -822,7 +841,8 @@ export const DataProvider = ({ children }) => {
       "FacebookCatalog",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getFacebookCatalogData result:", result);
     return result;
@@ -833,7 +853,8 @@ export const DataProvider = ({ children }) => {
       "TikTokAudience",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -842,7 +863,8 @@ export const DataProvider = ({ children }) => {
       "TikTokLead",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokLeadData result:", result);
     return result;
@@ -857,7 +879,8 @@ export const DataProvider = ({ children }) => {
       "TikTokReach",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokReachData result:", result);
     return result;
@@ -872,7 +895,8 @@ export const DataProvider = ({ children }) => {
       "TikTokTraffic",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokTrafficData result:", result);
     return result;
@@ -887,7 +911,8 @@ export const DataProvider = ({ children }) => {
       "TikTokConversion",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokConversionData result:", result);
     return result;
@@ -902,7 +927,8 @@ export const DataProvider = ({ children }) => {
       "TikTokVideo",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokVideoData result:", result);
     return result;
@@ -917,7 +943,8 @@ export const DataProvider = ({ children }) => {
       "TikTokFollower",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTikTokFollowerData result:", result);
     return result;
@@ -928,7 +955,8 @@ export const DataProvider = ({ children }) => {
       "LineReach",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getLineReachData result:", result);
     return result;
@@ -943,7 +971,8 @@ export const DataProvider = ({ children }) => {
       "LineGainFriends",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getLineGainFriendsData result:", result);
     return result;
@@ -954,7 +983,8 @@ export const DataProvider = ({ children }) => {
       "Taboola",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("🎯 getTaboolaData result:", result);
     return result;
@@ -969,7 +999,8 @@ export const DataProvider = ({ children }) => {
       "FBDemographic",
       id,
       buildFetchOptions(filterBy, filterValue),
-      projectFilter
+      projectFilter,
+      setNotFoundSheetList
     );
     // console.log("FB Demo", result);
     return result;
@@ -981,6 +1012,7 @@ export const DataProvider = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
+        setNotFoundSheetList([]);
 
         // Fetch all data types in parallel for better performance
         const promises = [
@@ -1171,6 +1203,10 @@ export const DataProvider = ({ children }) => {
     setProjectList,
     projectFilter,
     setProjectFilter,
+
+    // sheet not found list
+    notFoundSheetList,
+    setNotFoundSheetList,
 
     // Fetch functions
     fetchData,
