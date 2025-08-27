@@ -386,13 +386,6 @@ function FacebookReachSlide01() {
               />
 
               <NumberDisplayBox
-                title={"Reach"}
-                value={formattedMetrics.reachData?.displayValue}
-                compareValue={formattedMetrics.reachData?.compareValue}
-                isNegative={formattedMetrics.reachData?.isNegative}
-              />
-
-              <NumberDisplayBox
                 title={"CPR"}
                 value={formattedMetrics.cprData?.displayValue}
                 compareValue={formattedMetrics.cprData?.compareValue}
@@ -405,6 +398,13 @@ function FacebookReachSlide01() {
                 value={formattedMetrics.clicksData?.displayValue}
                 compareValue={formattedMetrics.clicksData?.compareValue}
                 isNegative={formattedMetrics.clicksData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"%CTR"}
+                value={formattedMetrics.ctrData?.displayValue}
+                compareValue={formattedMetrics.ctrData?.compareValue}
+                isNegative={formattedMetrics.ctrData?.isNegative}
               />
 
               <NumberDisplayBox

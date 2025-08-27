@@ -307,8 +307,8 @@ function Overall() {
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-16 flex flex-col gap-2">
-            <div className="grid grid-cols-8 gap-2">
-              <h4 className="col-span-4 text-lg font-semibold">
+            <div className="grid grid-cols-7 gap-2">
+              <h4 className="col-span-3 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
               <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
@@ -319,12 +319,12 @@ function Overall() {
                 compareValue={impressionData.compareValue}
                 isNegative={impressionData.isNegative}
               />
-              <NumberDisplayBox
+              {/* <NumberDisplayBox
                 title={"Reach"}
                 value={reachData.displayValue}
                 compareValue={reachData.compareValue}
                 isNegative={reachData.isNegative}
-              />
+              /> */}
               <NumberDisplayBox
                 title={"Clicks"}
                 value={clicksData.displayValue}
@@ -378,7 +378,7 @@ function Overall() {
                 metrics={[
                   "Channel",
                   "Impressions",
-                  "Reach",
+                  // "Reach",
                   "Clicks",
                   "ctr",
                   "Conversions",
