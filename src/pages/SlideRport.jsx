@@ -493,7 +493,8 @@ function SlideReport() {
         "/data-sheets/create-multi-slide-presentation",
         {
           slides: slideData,
-          presentationTitle: "Monthly Performance Report",
+          presentationTitle:
+            projectName.length > 0 ? projectName : "Monthly Performance Report",
         }
       );
 
