@@ -599,7 +599,7 @@ export const DataProvider = ({ children }) => {
       projectFilter,
       setNotFoundSheetList
     );
-    console.log("Overall Data", result);
+    // console.log("Overall Data", result);
     return result;
   };
 
@@ -1047,8 +1047,6 @@ export const DataProvider = ({ children }) => {
           getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
           getTaboolaData(id),
           fetchFacebookPicture(id),
-
-          // getTikTokData(id),
         ];
 
         await Promise.all(promises);

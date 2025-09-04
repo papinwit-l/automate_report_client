@@ -258,10 +258,29 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         break;
 
       case "cvr":
-        enhanced[field.key] =
-          data.clicks > 0
-            ? Number(((data.conversions / data.clicks) * 100).toFixed(2))
-            : 0;
+        try {
+          // Ensure we have valid numbers
+          const clicks = parseFloat(data.clicks) || 0;
+          const conversions = parseFloat(data.conversions) || 0;
+
+          // Calculate CVR with proper validation
+          let cvrResult = 0;
+
+          if (clicks > 0 && isFinite(clicks) && isFinite(conversions)) {
+            const rawCvr = (conversions / clicks) * 100;
+
+            // Validate the calculation result
+            if (isFinite(rawCvr) && !isNaN(rawCvr)) {
+              cvrResult = Math.round(rawCvr * 100) / 100; // Round to 2 decimal places
+            }
+          }
+
+          // Always assign a valid number, never null
+          enhanced[field.key] = cvrResult;
+        } catch (error) {
+          console.error("CVR calculation error:", error);
+          enhanced[field.key] = 0;
+        }
         break;
 
       case "cpa":
@@ -358,11 +377,36 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
 const filterDataByField = (data, filterBy, filterValue) => {
   if (!filterBy || !filterValue) return data;
 
-  return data.filter((item) => {
+  // for debugging
+  // console.log("🎯 filterBy:", filterBy);
+  // console.log("🎯 filterValue:", filterValue);
+  // console.log("🎯 data:", data);
+
+  return data.filter((item, index) => {
     const itemValue = item[filterBy];
+
+    // for debugging
+    if (index >= 0 && index < 10) {
+      // console.log("🎯 itemValue:", itemValue);
+      // console.log("🎯 filterValue:", filterValue);
+      // console.log(
+      //   "🎯 result:",
+      //   itemValue.toString().toLowerCase() === filterValue.toLowerCase()
+      // );
+    }
+
+    function removeFinalS(str) {
+      if (str.endsWith("s")) {
+        return str.slice(0, -1);
+      }
+      return str;
+    }
+
     return (
       itemValue &&
-      itemValue.toString().toLowerCase() === filterValue.toLowerCase()
+      (itemValue.toString().toLowerCase() === filterValue.toLowerCase() ||
+        itemValue.toString().toLowerCase() ===
+          removeFinalS(filterValue.toLowerCase()))
     );
   });
 };
@@ -386,16 +430,24 @@ export const processSocialMediaData = (
       creativeData: {},
     };
   }
+  // console.log("🎯 cleanedData:", cleanedData);
 
   // Apply filtering if specified
-  let processedData = cleanedData;
+  let processedData = [...cleanedData];
+
   if (filterOptions.filterBy && filterOptions.filterValue) {
+    // for debugging
+    // console.log("🎯 filterOptions:", filterOptions);
+
     processedData = filterDataByField(
       cleanedData,
       filterOptions.filterBy,
       filterOptions.filterValue
     );
   }
+
+  // for debugging
+  // console.log("🎯 processedData:", processedData);
 
   // Process data for Performance by Audiences table
   const audienceData = processedData.reduce((acc, item) => {

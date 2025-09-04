@@ -435,7 +435,7 @@ function FacebookMessageSlide01() {
                   // "messages",
                   "ctr",
                   "conversions",
-                  "conRate",
+                  "cvr",
                   "cpa",
                   "spent",
                 ]}

@@ -112,6 +112,12 @@ export const fetchDataSheet = async (
       }
     }
 
+    // for debugging
+    if (config.endpoint == "facebook-data") {
+      // console.log("🎯 currentPeriodData:", currentPeriodData);
+      // console.log("🎯 previousPeriodData:", previousPeriodData);
+    }
+
     // Process data if needed
     if (config.processData) {
       let currentPeriodResults;
@@ -124,6 +130,10 @@ export const fetchDataSheet = async (
       }
 
       if (config.processorType === "social") {
+        // for debugging
+        if (config.endpoint == "facebook-data") {
+          // console.log("🎯 currentPeriodData:", currentPeriodData);
+        }
         currentPeriodResults = processSocialMediaData(
           currentPeriodData,
           processMetrics,

@@ -11,7 +11,7 @@ export const FACEBOOK_FIELDS = [
   { key: "views", sourceField: "Video views" },
   {
     key: "messages",
-    sourceField: "New messaging conversations within 7 days",
+    sourceField: "Messaging conversations started",
   },
   { key: "addToCart", sourceField: "Website adds to cart" },
   { key: "purchase", sourceField: "Website purchases" },
@@ -49,7 +49,7 @@ export const FACEBOOK_PROCESSED_FIELDS = [
   "Video watches at 25%",
   "Video views",
   "Post engagements",
-  "New messaging conversations within 7 days", // Original field
+  "Messaging conversations started", // Original field
   "Website adds to cart",
   "Website purchases",
   "Website purchases conversion value",
@@ -68,7 +68,7 @@ export const FACEBOOK_METRICS = [
   "views",
   "Post engagements",
   "Channel", // From FacebookReach & FacebookEngagement
-  "New messaging conversations within 7 days", // From FacebookMessage
+  "Messaging conversations started", // From FacebookMessage
   "Website adds to cart",
   "Website purchases",
   "Website purchases conversion value",
