@@ -53,7 +53,15 @@ export const fetchDataSheet = async (
     const headers = rawData[0];
     const dataRows = rawData.slice(1);
 
-    const projectIndex = headers.findIndex((header) => header === "Project");
+    //for debugging
+    if (config.endpoint == "facebook-data") {
+      // console.log("🎯 dataRows:", rawData);
+    }
+
+    const projectIndex = headers.findIndex((header) => {
+      // if Project is not found use Projects instead
+      return header === "Project" || header === "Projects";
+    });
 
     const projectFilteredData =
       projectList.length > 0
@@ -64,12 +72,18 @@ export const fetchDataSheet = async (
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
 
+    //for debugging
+    if (config.endpoint == "facebook-data") {
+      // console.log("🎯 dataObjects:", dataObjects);
+    }
+
     const displayMetrics = metricsMap[dataType] || [];
     const processMetrics = config.processFields || displayMetrics;
 
     const cleanedData = cleanObjectData(dataObjects, processMetrics);
 
-    if (config.endpoint == "overall-data") {
+    //for debugging
+    if (config.endpoint == "facebook-data") {
       // console.log("cleanedData", cleanedData);
     }
 
@@ -166,6 +180,12 @@ export const fetchDataSheet = async (
           );
         }
 
+        //for debugging
+        if (config.endpoint == "overall-data") {
+          // console.log("currentPeriodResults", currentPeriodResults);
+          // console.log("previousPeriodResults", previousPeriodResults);
+        }
+
         // Update state
         if (setters) {
           setters.setData?.(currentPeriodResults.enhancedFieldData);
@@ -194,7 +214,13 @@ export const fetchDataSheet = async (
         const parts = SHEET_W_RANGE.split("!");
         const sheet = parts.slice(0, -1).join("!"); // all except last
         const range = parts.at(-1);
-        setNotFoundSheetList((prev) => [...prev, sheet]);
+        setNotFoundSheetList((prev) => {
+          if (prev.includes(sheet)) {
+            return prev;
+          } else {
+            return [...prev, sheet];
+          }
+        });
       }
     } else {
       console.error(`Error fetching ${dataType} data:`, error);

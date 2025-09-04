@@ -599,6 +599,7 @@ export const DataProvider = ({ children }) => {
       projectFilter,
       setNotFoundSheetList
     );
+    console.log("Overall Data", result);
     return result;
   };
 
@@ -766,6 +767,7 @@ export const DataProvider = ({ children }) => {
       projectFilter,
       setNotFoundSheetList
     );
+    console.log("FacebookMessage", result);
     return result;
   };
 

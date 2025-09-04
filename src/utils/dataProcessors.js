@@ -46,13 +46,32 @@ export const processAdvertisingData = (
         }
       } else {
         // Handle numeric fields - sum them up
-        const numValue = Number(item[key]) || 0;
-        acc[fieldValue][key] += numValue;
+        if (key === "Conversions") {
+          // if item["Conversions"] is not available, use item["Conversion"] instead
+          const numValue =
+            Number(item["Conversions"]) || Number(item["Conversion"]) || 0;
+          acc[fieldValue][key] += numValue;
+        } else {
+          const numValue = Number(item[key]) || 0;
+          acc[fieldValue][key] += numValue;
+        }
+        //for debugging
+        if (key === "Conversions") {
+          // console.log("🎯 fieldValue:", fieldValue);
+          // console.log("🎯 key:", key);
+          // console.log("🎯 item:", item);
+          // console.log("🎯 item[key]:", item[key]);
+          // console.log("🎯 acc[fieldValue][key]:", acc[fieldValue][key]);
+          // console.log("numValue", numValue);
+        }
       }
     }
 
     return acc;
   }, {});
+
+  //for debugging
+  // console.log("🎯 summaryByField:", summaryByField);
 
   if (groupBy === "Updated Date") {
     // console.log("🎯 summaryByField:", summaryByField);
