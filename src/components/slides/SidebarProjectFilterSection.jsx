@@ -29,16 +29,20 @@ function SidebarProjectFilterSection({ sheetsID }) {
 
   const fetchProjectList = async () => {
     setIsLoading(true);
+    setProjectList([]);
+    setProjectFilter([]);
     try {
       const response = await axiosInstance.get(
         `/data-sheets/project-list/${sheetsID}`
       );
       const rawData = response.data.data;
-      // console.log("🎯 rawData:", rawData);
+      console.log("🎯 rawData:", rawData);
       setProjectList(rawData);
       setProjectFilter(rawData);
     } catch (error) {
       console.error("Error fetching project list:", error);
+      setProjectList([]);
+      setProjectFilter([]);
     } finally {
       setIsLoading(false);
     }
@@ -98,23 +102,21 @@ function SidebarProjectFilterSection({ sheetsID }) {
             </Label>
           </div> */}
 
-          {projectList.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {/* <Label htmlFor="project-filter" className="text-sm font-medium">
+          <div className="flex flex-col gap-2">
+            {/* <Label htmlFor="project-filter" className="text-sm font-medium">
                 Projects
               </Label> */}
-              <SearchCheckbox
-                inputValue={projectSearch}
-                setInputValue={setProjectSearch}
-                items={projectList}
-                filteredItems={projectSearchResults}
-                setFilteredItems={setProjectSearchResults}
-                selectedItem={projectFilter}
-                setSelectedItem={setProjectFilter}
-                className="w-full"
-              />
-            </div>
-          )}
+            <SearchCheckbox
+              inputValue={projectSearch}
+              setInputValue={setProjectSearch}
+              items={projectList}
+              filteredItems={projectSearchResults}
+              setFilteredItems={setProjectSearchResults}
+              selectedItem={projectFilter}
+              setSelectedItem={setProjectFilter}
+              className="w-full"
+            />
+          </div>
           {projectFilter && projectFilter.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {projectFilter.map((item, id) => {
