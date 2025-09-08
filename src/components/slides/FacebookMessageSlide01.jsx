@@ -99,7 +99,7 @@ function FacebookMessageSlide01() {
 
       // Filter for FB Reach data
       const filteredDemographicData = FBDemographicData.filter((item) => {
-        return item?.Channel?.trim() === "FB Messages";
+        return item?.Channel?.trim() === "FB Messages" || "FB Message";
       });
 
       if (filteredDemographicData.length === 0) {
@@ -121,13 +121,20 @@ function FacebookMessageSlide01() {
         (acc, item) => {
           if (
             item?.Gender &&
-            item["New messaging conversations within 7 days"] !== undefined
+            (item["New messaging conversations within 7 days"] !== undefined ||
+              item["Messaging conversations started"] !== undefined)
           ) {
-            acc[item.Gender] =
-              (acc[item.Gender] || 0) +
-              parseImpressions(
-                item["New messaging conversations within 7 days"]
-              );
+            if (item["New messaging conversations within 7 days"]) {
+              acc[item.Gender] =
+                (acc[item.Gender] || 0) +
+                parseImpressions(
+                  item["New messaging conversations within 7 days"]
+                );
+            } else {
+              acc[item.Gender] =
+                (acc[item.Gender] || 0) +
+                parseImpressions(item["Messaging conversations started"]);
+            }
           }
           return acc;
         },
@@ -143,13 +150,20 @@ function FacebookMessageSlide01() {
         (acc, item) => {
           if (
             item?.Age &&
-            item["New messaging conversations within 7 days"] !== undefined
+            (item["New messaging conversations within 7 days"] !== undefined ||
+              item["Messaging conversations started"] !== undefined)
           ) {
-            acc[item.Age] =
-              (acc[item.Age] || 0) +
-              parseImpressions(
-                item["New messaging conversations within 7 days"]
-              );
+            if (item["New messaging conversations within 7 days"]) {
+              acc[item.Age] =
+                (acc[item.Age] || 0) +
+                parseImpressions(
+                  item["New messaging conversations within 7 days"]
+                );
+            } else {
+              acc[item.Age] =
+                (acc[item.Age] || 0) +
+                parseImpressions(item["Messaging conversations started"]);
+            }
           }
           return acc;
         },
