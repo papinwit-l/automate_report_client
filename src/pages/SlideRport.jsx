@@ -729,8 +729,12 @@ function SlideReport() {
           </div>
 
           <DialogFooter className="gap-2">
-            <Button variant="default" onClick={() => setNotFoundSheetList([])}>
-              Got It
+            <Button
+              variant="default"
+              onClick={() => setNotFoundSheetList([])}
+              disabled={isGenerating}
+            >
+              {isGenerating ? "Generating..." : "Got It"}
             </Button>
           </DialogFooter>
         </DialogContent>
