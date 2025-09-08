@@ -40,8 +40,7 @@ function FacebookReachSlide01() {
     try {
       // Handle "No Data" case
       if (
-        FacebookReachAudienceTotals?.clicks === "No Data" ||
-        !FacebookReachAudienceTotals ||
+        Object.keys(FacebookReachAudienceData).length === 0 ||
         Object.keys(FacebookReachAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");
