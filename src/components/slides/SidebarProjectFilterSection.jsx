@@ -36,7 +36,7 @@ function SidebarProjectFilterSection({ sheetsID }) {
         `/data-sheets/project-list/${sheetsID}`
       );
       const rawData = response.data.data;
-      console.log("🎯 rawData:", rawData);
+      // console.log("🎯 rawData:", rawData);
       setProjectList(rawData);
       setProjectFilter(rawData);
     } catch (error) {
