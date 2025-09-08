@@ -158,7 +158,7 @@ function DataSheet() {
             parseFloat(cleaned[key]?.toString().replace(/,/g, "")) || 0;
         }
         // Also clean the "Updated Date" for daily processing
-        cleaned["Updated Date"] = entry["Updated Date"];
+        cleaned["Updated Date"] = entry["Updated Date"] || entry["Date"];
         return cleaned;
       });
 
@@ -185,7 +185,7 @@ function DataSheet() {
   const processDailyData = (cleanedData) => {
     // Group data by "Updated Date"
     const dailyGrouped = cleanedData.reduce((acc, item) => {
-      const date = item["Updated Date"];
+      const date = item["Updated Date"] || item["Date"];
       if (!date) return acc;
 
       if (!acc[date]) {

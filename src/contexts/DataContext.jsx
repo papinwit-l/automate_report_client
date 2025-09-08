@@ -767,7 +767,7 @@ export const DataProvider = ({ children }) => {
       projectFilter,
       setNotFoundSheetList
     );
-    console.log("FacebookMessage", result);
+    // console.log("FacebookMessage", result);
     return result;
   };
 
@@ -1173,7 +1173,7 @@ export const DataProvider = ({ children }) => {
     const toDateStr = toDateUTC7.toISOString().split("T")[0];
 
     return data.filter((item) => {
-      const itemDate = item["Updated Date"];
+      const itemDate = item["Updated Date"] || item["Date"];
       return itemDate >= fromDateStr && itemDate <= toDateStr;
     });
   }

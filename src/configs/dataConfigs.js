@@ -31,7 +31,6 @@ export const NON_NUMERIC_COLUMNS = [
   "Date",
   "Updated Month",
   "Updated Week",
-  "Updated Date",
   "Campaign name",
   "Keyword",
   "Device",

@@ -571,7 +571,7 @@ export const cleanObjectData = (object, metrics) => {
 
     // Clean all text fields that could be used for grouping
     Object.keys(cleaned).forEach((key) => {
-      if (!metrics.includes(key) && key !== "Updated Date") {
+      if (!metrics.includes(key) && key !== "Updated Date" && key !== "Date") {
         if (cleaned[key] && typeof cleaned[key] === "string") {
           cleaned[key] = cleaned[key].trim();
         } else if (cleaned[key]) {
@@ -581,7 +581,7 @@ export const cleanObjectData = (object, metrics) => {
     });
 
     // Keep the Updated Date as is
-    cleaned["Updated Date"] = entry["Updated Date"];
+    cleaned["Updated Date"] = entry["Updated Date"] || entry["Date"];
 
     return cleaned;
   });

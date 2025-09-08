@@ -51,7 +51,7 @@ export const filterDataByDateRange = (data, from, to) => {
   const toStr = formatDateLocal(to);
 
   const filtered = data.filter((item) => {
-    const itemDate = item["Updated Date"];
+    const itemDate = item["Updated Date"] || item["Date"];
     if (!itemDate) return false;
 
     const itemDateStr = itemDate.toString().trim();
