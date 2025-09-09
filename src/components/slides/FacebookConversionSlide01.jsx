@@ -39,8 +39,7 @@ function FacebookConversionSlide01() {
     try {
       // Handle "No Data" case
       if (
-        FacebookConversionAudienceTotals?.clicks === "No Data" ||
-        !FacebookConversionAudienceTotals ||
+        Object.keys(FacebookConversionAudienceData).length === 0 ||
         Object.keys(FacebookConversionAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");

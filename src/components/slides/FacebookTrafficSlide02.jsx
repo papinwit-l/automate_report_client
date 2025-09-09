@@ -45,8 +45,7 @@ function FacebookTrafficSlide02() {
     try {
       // Handle "No Data" case
       if (
-        FacebookTrafficCreativeTotals[KEY] === "No Data" ||
-        !FacebookTrafficCreativeTotals ||
+        Object.keys(FacebookTrafficCreativeData).length === 0 ||
         Object.keys(FacebookTrafficCreativeTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");

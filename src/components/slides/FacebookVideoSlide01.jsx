@@ -42,8 +42,7 @@ function FacebookVideoSlide01() {
     try {
       // Handle "No Data" case
       if (
-        FacebookVideoAudienceTotals[KEY] === "No Data" ||
-        !FacebookVideoAudienceTotals ||
+        Object.keys(FacebookVideoAudienceData).length === 0 ||
         Object.keys(FacebookVideoAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");

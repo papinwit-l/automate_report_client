@@ -45,8 +45,7 @@ function FacebookCatalogSlide02() {
     try {
       // Handle "No Data" case
       if (
-        FacebookCatalogAudienceTotals[KEY] === "No Data" ||
-        !FacebookCatalogAudienceTotals ||
+        Object.keys(FacebookCatalogCreativeData).length === 0 ||
         Object.keys(FacebookCatalogAudienceTotals).length === 0
       ) {
         setSummaryText("<li>No data available for the selected period</li>");

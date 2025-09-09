@@ -38,8 +38,7 @@ function FacebookEngagementSlide01() {
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      FacebookEngagementAudienceTotals?.clicks === "No Data" ||
-      !FacebookEngagementAudienceTotals ||
+      Object.keys(FacebookEngagementAudienceData).length === 0 ||
       Object.keys(FacebookEngagementAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
