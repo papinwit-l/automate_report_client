@@ -211,6 +211,7 @@ function FacebookCatalogSlide01() {
       };
     }
   }, [FBDemographicData]);
+
   // Fix: Add summarizeData to dependency array
   useEffect(() => {
     summarizeData();

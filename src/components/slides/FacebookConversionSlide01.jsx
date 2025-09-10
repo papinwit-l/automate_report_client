@@ -105,110 +105,129 @@ function FacebookConversionSlide01() {
   ]);
 
   //Demographic for chart
-  const { impressionsByGender, impressionsByAge } = useMemo(() => {
+  const { chartByGender, chartByAge, chartByDevice } = useMemo(() => {
+    const GRAPH_KEY = "Conversions";
+    const CHANNEL = "FB Conversion";
+
     try {
       if (!FBDemographicData || FBDemographicData.length === 0) {
         return {
-          impressionsByGender: {},
-          impressionsByAge: {},
+          chartByGender: {},
+          chartByAge: {},
+          chartByDevice: {},
         };
       }
 
-      // Filter for FB Lead data
+      // Filter for FB Channel data
       const filteredDemographicData = FBDemographicData.filter((item) => {
-        return item?.Channel?.trim() === "FB Lead";
+        return (
+          item?.Channel?.trim() === CHANNEL ||
+          item?.Channel?.trim() === `${CHANNEL}s`
+        );
       });
+      // console.log(filteredDemographicData);
 
       if (filteredDemographicData.length === 0) {
         return {
-          impressionsByGender: {},
-          impressionsByAge: {},
+          chartByGender: {},
+          chartByAge: {},
+          chartByDevice: {},
         };
       }
 
       // Helper function for consistent parsing
-      const parseImpressions = (value) => {
+      const parseKey = (value) => {
         if (value === null || value === undefined || value === "") return 0;
         const parsed = parseInt(value);
         return isNaN(parsed) ? 0 : parsed;
       };
 
-      // Gender impressions
-      const sumImpressionsByGender = filteredDemographicData.reduce(
-        (acc, item) => {
-          if (item?.Gender && item?.Conversions !== undefined) {
-            acc[item.Gender] =
-              (acc[item.Gender] || 0) + parseImpressions(item.Conversions);
-          }
-          return acc;
-        },
-        {}
-      );
+      // Gender chart
+      const sumChartByGender = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Gender && item[GRAPH_KEY] !== undefined) {
+          acc[item.Gender] =
+            (acc[item.Gender] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
 
-      const totalGenderImpressions = Object.values(
-        sumImpressionsByGender
-      ).reduce((a, b) => a + b, 0);
-
-      // Age impressions
-      const sumImpressionsByAge = filteredDemographicData.reduce(
-        (acc, item) => {
-          if (item?.Age && item?.Conversions !== undefined) {
-            acc[item.Age] =
-              (acc[item.Age] || 0) + parseImpressions(item.Conversions);
-          }
-          return acc;
-        },
-        {}
-      );
-
-      const totalAgeImpressions = Object.values(sumImpressionsByAge).reduce(
+      const totalGenderKey = Object.values(sumChartByGender).reduce(
         (a, b) => a + b,
         0
       );
 
-      // Early return if no impressions
-      if (totalGenderImpressions === 0 && totalAgeImpressions === 0) {
+      // Age chart
+      const sumChartByAge = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Age && item[GRAPH_KEY] !== undefined) {
+          acc[item.Age] = (acc[item.Age] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
+
+      const totalAgeKey = Object.values(sumChartByAge).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Device chart
+      const sumChartByDevice = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Device && item[GRAPH_KEY] !== undefined) {
+          acc[item.Device] =
+            (acc[item.Device] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
+
+      const totalDeviceKey = Object.values(sumChartByDevice).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Early return if no key data
+      if (totalGenderKey === 0 && totalAgeKey === 0 && totalDeviceKey === 0) {
         return {
-          impressionsByGender: {},
-          impressionsByAge: {},
+          chartByGender: {},
+          chartByAge: {},
+          chartByDevice: {},
         };
       }
 
       // Calculate percentages with correct totals
       const genderPercentages =
-        totalGenderImpressions > 0
-          ? Object.entries(sumImpressionsByGender).reduce(
-              (acc, [gender, impressions]) => {
-                acc[gender] =
-                  ((impressions / totalGenderImpressions) * 100).toFixed(2) +
-                  "%";
-                return acc;
-              },
-              {}
-            )
+        totalGenderKey > 0
+          ? Object.entries(sumChartByGender).reduce((acc, [gender, key]) => {
+              acc[gender] = ((key / totalGenderKey) * 100).toFixed(2) + "%";
+              return acc;
+            }, {})
           : {};
 
       const agePercentages =
-        totalAgeImpressions > 0
-          ? Object.entries(sumImpressionsByAge).reduce(
-              (acc, [age, impressions]) => {
-                acc[age] =
-                  ((impressions / totalAgeImpressions) * 100).toFixed(2) + "%";
-                return acc;
-              },
-              {}
-            )
+        totalAgeKey > 0
+          ? Object.entries(sumChartByAge).reduce((acc, [age, key]) => {
+              acc[age] = ((key / totalAgeKey) * 100).toFixed(2) + "%";
+              return acc;
+            }, {})
+          : {};
+
+      const devicePercentages =
+        totalDeviceKey > 0
+          ? Object.entries(sumChartByDevice).reduce((acc, [device, key]) => {
+              acc[device] = ((key / totalDeviceKey) * 100).toFixed(2) + "%";
+              return acc;
+            }, {})
           : {};
 
       return {
-        impressionsByGender: genderPercentages,
-        impressionsByAge: agePercentages,
+        chartByGender: genderPercentages,
+        chartByAge: agePercentages,
+        chartByDevice: devicePercentages,
       };
     } catch (error) {
       console.error("Error processing demographic data:", error);
       return {
-        impressionsByGender: {},
-        impressionsByAge: {},
+        chartByGender: {},
+        chartByAge: {},
+        chartByDevice: {},
       };
     }
   }, [FBDemographicData]);
@@ -474,8 +493,8 @@ function FacebookConversionSlide01() {
           {/* Chart */}
           <div className="col-span-4 flex flex-col">
             <DonutChart
-              data={impressionsByGender}
-              title="Impression By Gender"
+              data={chartByGender}
+              title="Conversion By Gender"
               width={220}
               height={160}
               innerRadius={30}
@@ -483,8 +502,8 @@ function FacebookConversionSlide01() {
               isPercentage={true}
             />
             <DonutChart
-              data={impressionsByAge}
-              title="Impression By Age"
+              data={chartByAge}
+              title="Conversion By Age"
               width={220}
               height={160}
               innerRadius={30}

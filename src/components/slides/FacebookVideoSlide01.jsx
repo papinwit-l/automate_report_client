@@ -114,98 +114,133 @@ function FacebookVideoSlide01() {
   }, [FacebookVideoAudienceTotals, FacebookVideoAudienceData]);
 
   //Demographic for chart
-  const { chartByGender, chartByDevice } = useMemo(() => {
-    const GRAPH_KEY = "views";
-    const CHANNEL = "FB Video Views";
+  const { chartByGender, chartByAge, chartByDevice } = useMemo(() => {
+    const GRAPH_KEY = "Video views";
+    const CHANNEL = "FB Video View";
+
     try {
       if (!FBDemographicData || FBDemographicData.length === 0) {
         return {
           chartByGender: {},
+          chartByAge: {},
           chartByDevice: {},
         };
       }
 
-      // Filter Channel
+      // Filter for FB Channel data
       const filteredDemographicData = FBDemographicData.filter((item) => {
-        return item?.Channel?.trim() === CHANNEL;
+        return (
+          item?.Channel?.trim() === CHANNEL ||
+          item?.Channel?.trim() === `${CHANNEL}s`
+        );
       });
+      // console.log(filteredDemographicData);
 
       if (filteredDemographicData.length === 0) {
         return {
           chartByGender: {},
+          chartByAge: {},
           chartByDevice: {},
         };
       }
 
       // Helper function for consistent parsing
-      const parseHelper = (value) => {
+      const parseKey = (value) => {
         if (value === null || value === undefined || value === "") return 0;
         const parsed = parseInt(value);
         return isNaN(parsed) ? 0 : parsed;
       };
 
-      // Group by the specified field
-      const sumGraphHelper = (key, graphBy) => {
-        return filteredDemographicData.reduce((acc, item) => {
-          if (item[graphBy] && item[key] !== undefined) {
-            acc[item[graphBy]] =
-              (acc[item[graphBy]] || 0) + parseHelper(item[key]);
-          }
-          return acc;
-        }, {});
-      };
+      // Gender chart
+      const sumChartByGender = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Gender && item[GRAPH_KEY] !== undefined) {
+          acc[item.Gender] =
+            (acc[item.Gender] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
 
-      // By Gender
-      const sumGraphByGender = sumGraphHelper(GRAPH_KEY, "Gender");
-      const totalGraphByGender = Object.values(sumGraphByGender).reduce(
+      const totalGenderKey = Object.values(sumChartByGender).reduce(
         (a, b) => a + b,
         0
       );
 
-      // By Device
-      const sumGraphByDevice = sumGraphHelper(GRAPH_KEY, "Device");
-      const totalGraphByDevice = Object.values(sumGraphByDevice).reduce(
+      // Age chart
+      const sumChartByAge = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Age && item[GRAPH_KEY] !== undefined) {
+          acc[item.Age] = (acc[item.Age] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
+
+      const totalAgeKey = Object.values(sumChartByAge).reduce(
         (a, b) => a + b,
         0
       );
 
-      // Early return if no impressions
-      if (totalGraphByGender === 0 && totalGraphByDevice === 0) {
+      // Device chart
+      const sumChartByDevice = filteredDemographicData.reduce((acc, item) => {
+        if (item?.Device && item[GRAPH_KEY] !== undefined) {
+          acc[item.Device] =
+            (acc[item.Device] || 0) + parseKey(item[GRAPH_KEY]);
+        }
+        return acc;
+      }, {});
+
+      const totalDeviceKey = Object.values(sumChartByDevice).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Early return if no key data
+      if (totalGenderKey === 0 && totalAgeKey === 0 && totalDeviceKey === 0) {
         return {
           chartByGender: {},
+          chartByAge: {},
           chartByDevice: {},
         };
       }
 
       // Calculate percentages with correct totals
       const genderPercentages =
-        totalGraphByGender > 0
-          ? Object.entries(sumGraphByGender).reduce((acc, [gender, key]) => {
-              acc[gender] = ((key / totalGraphByGender) * 100).toFixed(2) + "%";
+        totalGenderKey > 0
+          ? Object.entries(sumChartByGender).reduce((acc, [gender, key]) => {
+              acc[gender] = ((key / totalGenderKey) * 100).toFixed(2) + "%";
               return acc;
             }, {})
           : {};
 
       const agePercentages =
-        totalGraphByDevice > 0
-          ? Object.entries(sumGraphByDevice).reduce((acc, [age, key]) => {
-              acc[age] = ((key / totalGraphByDevice) * 100).toFixed(2) + "%";
+        totalAgeKey > 0
+          ? Object.entries(sumChartByAge).reduce((acc, [age, key]) => {
+              acc[age] = ((key / totalAgeKey) * 100).toFixed(2) + "%";
+              return acc;
+            }, {})
+          : {};
+
+      const devicePercentages =
+        totalDeviceKey > 0
+          ? Object.entries(sumChartByDevice).reduce((acc, [device, key]) => {
+              acc[device] = ((key / totalDeviceKey) * 100).toFixed(2) + "%";
               return acc;
             }, {})
           : {};
 
       return {
         chartByGender: genderPercentages,
-        chartByDevice: agePercentages,
+        chartByAge: agePercentages,
+        chartByDevice: devicePercentages,
       };
     } catch (error) {
       console.error("Error processing demographic data:", error);
       return {
         chartByGender: {},
+        chartByAge: {},
         chartByDevice: {},
       };
     }
   }, [FBDemographicData]);
+
   // Fix: Add summarizeData to dependency array
   useEffect(() => {
     summarizeData();
@@ -475,7 +510,7 @@ function FacebookVideoSlide01() {
           <div className="col-span-4 flex flex-col">
             <DonutChart
               data={chartByGender}
-              title="Clicks By Gender"
+              title="Views By Gender"
               width={220}
               height={160}
               innerRadius={30}
@@ -483,6 +518,15 @@ function FacebookVideoSlide01() {
               isPercentage={true}
             />
             <DonutChart
+              data={chartByAge}
+              title="Views By Gender"
+              width={220}
+              height={160}
+              innerRadius={30}
+              outerRadius={60}
+              isPercentage={true}
+            />
+            {/* <DonutChart
               data={chartByDevice}
               title="Clicks By Device"
               width={220}
@@ -490,7 +534,7 @@ function FacebookVideoSlide01() {
               innerRadius={30}
               outerRadius={60}
               isPercentage={true}
-            />
+            /> */}
           </div>
         </div>
         <div className="grid grid-cols-16">
