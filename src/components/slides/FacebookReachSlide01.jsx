@@ -34,6 +34,7 @@ function FacebookReachSlide01() {
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([10]);
+  const [isNoData, setIsNoData] = useState(false);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -43,6 +44,7 @@ function FacebookReachSlide01() {
         Object.keys(FacebookReachAudienceData).length === 0 ||
         Object.keys(FacebookReachAudienceTotals).length === 0
       ) {
+        setIsNoData(true);
         setSummaryText("<li>No data available for the selected period</li>");
         return;
       }
@@ -394,20 +396,30 @@ function FacebookReachSlide01() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={formattedMetrics.impressionData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.impressionData?.displayValue
+                }
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Reach"}
-                value={formattedMetrics.reachData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.reachData?.displayValue
+                }
                 compareValue={formattedMetrics.reachData?.compareValue}
                 isNegative={formattedMetrics.reachData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"CPR"}
-                value={formattedMetrics.cprData?.displayValue}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.cprData?.displayValue
+                }
                 compareValue={formattedMetrics.cprData?.compareValue}
                 isNegative={formattedMetrics.cprData?.isNegative}
                 invertCompareColor={true}
@@ -415,21 +427,31 @@ function FacebookReachSlide01() {
 
               <NumberDisplayBox
                 title={"Clicks"}
-                value={formattedMetrics.clicksData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.clicksData?.displayValue
+                }
                 compareValue={formattedMetrics.clicksData?.compareValue}
                 isNegative={formattedMetrics.clicksData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"%CTR"}
-                value={formattedMetrics.ctrData?.displayValue}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.ctrData?.displayValue
+                }
                 compareValue={formattedMetrics.ctrData?.compareValue}
                 isNegative={formattedMetrics.ctrData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"Conversions"}
-                value={formattedMetrics.conversionsData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionsData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.conversionsData?.compareValue}
                 isNegative={formattedMetrics.conversionsData?.isNegative}
@@ -437,7 +459,11 @@ function FacebookReachSlide01() {
 
               <NumberDisplayBox
                 title={"Spent"}
-                value={formattedMetrics.spentData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.spentData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}

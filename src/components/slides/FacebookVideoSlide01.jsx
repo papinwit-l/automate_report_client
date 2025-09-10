@@ -34,6 +34,7 @@ function FacebookVideoSlide01() {
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [isNoData, setIsNoData] = useState(false);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -45,6 +46,7 @@ function FacebookVideoSlide01() {
         Object.keys(FacebookVideoAudienceData).length === 0 ||
         Object.keys(FacebookVideoAudienceTotals).length === 0
       ) {
+        setIsNoData(true);
         setSummaryText("<li>No data available for the selected period</li>");
         return;
       }
@@ -421,39 +423,61 @@ function FacebookVideoSlide01() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={formattedMetrics.impressionData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.impressionData?.displayValue
+                }
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Reach"}
-                value={formattedMetrics.reachData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.reachData?.displayValue
+                }
                 compareValue={formattedMetrics.reachData?.compareValue}
                 isNegative={formattedMetrics.reachData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"Video View"}
-                value={formattedMetrics.VideoViewsData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.VideoViewsData?.displayValue
+                }
                 compareValue={formattedMetrics.VideoViewsData?.compareValue}
                 isNegative={formattedMetrics.VideoViewsData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"%View Rate"}
-                value={formattedMetrics.viewRateData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.viewRateData?.displayValue
+                }
                 compareValue={formattedMetrics.viewRateData?.compareValue}
                 isNegative={formattedMetrics.viewRateData?.isNegative}
               />
               <NumberDisplayBox
                 title={"CPV"}
-                value={formattedMetrics.cpvData?.displayValue}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.cpvData?.displayValue
+                }
                 compareValue={formattedMetrics.cpvData?.compareValue}
                 isNegative={formattedMetrics.cpvData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Conversions"}
-                value={formattedMetrics.conversionsData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionsData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.conversionsData?.compareValue}
                 isNegative={formattedMetrics.conversionsData?.isNegative}
@@ -461,7 +485,11 @@ function FacebookVideoSlide01() {
 
               <NumberDisplayBox
                 title={"Spent"}
-                value={formattedMetrics.spentData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.spentData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
