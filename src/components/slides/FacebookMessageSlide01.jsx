@@ -34,6 +34,7 @@ function FacebookMessageSlide01() {
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [isNoData, setIsNoData] = useState(false);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -41,6 +42,7 @@ function FacebookMessageSlide01() {
       Object.keys(FacebookMessageAudienceData).length === 0 ||
       Object.keys(FacebookMessageAudienceTotals).length === 0
     ) {
+      setIsNoData(true);
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
@@ -374,27 +376,27 @@ function FacebookMessageSlide01() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={impressionData.displayValue}
+                value={isNoData ? "No Data" : impressionData.displayValue}
                 compareValue={impressionData.compareValue}
                 isNegative={impressionData.isNegative}
               />
               <NumberDisplayBox
                 title={"Link Clicks"}
-                value={clicksData.displayValue}
+                value={isNoData ? "No Data" : clicksData.displayValue}
                 compareValue={clicksData.compareValue}
                 isNegative={clicksData.isNegative}
               />
 
               <NumberDisplayBox
                 title={"%CTR"}
-                value={ctrData.displayValue}
+                value={isNoData ? "No Data" : ctrData.displayValue}
                 compareValue={ctrData.compareValue}
                 isNegative={ctrData.isNegative}
               />
 
               <NumberDisplayBox
                 title={"Conversions"}
-                value={conversionsData.displayValue}
+                value={isNoData ? "No Data" : conversionsData.displayValue}
                 isConversion={true}
                 compareValue={conversionsData.compareValue}
                 isNegative={conversionsData.isNegative}
@@ -402,7 +404,7 @@ function FacebookMessageSlide01() {
 
               <NumberDisplayBox
                 title={"%Con Rate"}
-                value={conRate.displayValue}
+                value={isNoData ? "No Data" : conRate.displayValue}
                 compareValue={conRate.compareValue}
                 isConversion={true}
                 isNegative={conRate.isNegative}
@@ -410,7 +412,7 @@ function FacebookMessageSlide01() {
 
               <NumberDisplayBox
                 title={"CPA"}
-                value={cpaData.displayValue}
+                value={isNoData ? "No Data" : cpaData.displayValue}
                 compareValue={cpaData.compareValue}
                 isConversion={true}
                 isNegative={cpaData.isNegative}
@@ -419,7 +421,7 @@ function FacebookMessageSlide01() {
 
               <NumberDisplayBox
                 title={"Spent"}
-                value={spentData.displayValue}
+                value={isNoData ? "No Data" : spentData.displayValue}
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}

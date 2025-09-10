@@ -34,6 +34,7 @@ function FacebookCatalogSlide01() {
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0]);
+  const [isNoData, setIsNoData] = useState(false);
 
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
@@ -45,6 +46,7 @@ function FacebookCatalogSlide01() {
         Object.keys(FacebookCatalogAudienceData).length === 0 ||
         Object.keys(FacebookCatalogAudienceTotals).length === 0
       ) {
+        setIsNoData(true);
         setSummaryText("<li>No data available for the selected period</li>");
         return;
       }
@@ -412,34 +414,52 @@ function FacebookCatalogSlide01() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={formattedMetrics.impressionData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.impressionData?.displayValue
+                }
                 compareValue={formattedMetrics.impressionData?.compareValue}
                 isNegative={formattedMetrics.impressionData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Clicks"}
-                value={formattedMetrics.clicksData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.clicksData?.displayValue
+                }
                 compareValue={formattedMetrics.clicksData?.compareValue}
                 isNegative={formattedMetrics.clicksData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"%CTR"}
-                value={formattedMetrics.ctrData?.displayValue}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.ctrData?.displayValue
+                }
                 compareValue={formattedMetrics.ctrData?.compareValue}
                 isNegative={formattedMetrics.ctrData?.isNegative}
               />
 
               <NumberDisplayBox
                 title={"Purchase"}
-                value={formattedMetrics.purchaseData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.purchaseData?.displayValue
+                }
                 compareValue={formattedMetrics.purchaseData?.compareValue}
                 isNegative={formattedMetrics.purchaseData?.isNegative}
                 isConversion={true}
               />
               <NumberDisplayBox
                 title={"%Con Rate"}
-                value={formattedMetrics.conRateData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conRateData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.conRateData?.compareValue}
                 isNegative={formattedMetrics.conRateData?.isNegative}
@@ -447,7 +467,11 @@ function FacebookCatalogSlide01() {
 
               <NumberDisplayBox
                 title={"Spent"}
-                value={formattedMetrics.spentData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.spentData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
@@ -456,7 +480,11 @@ function FacebookCatalogSlide01() {
 
               <NumberDisplayBox
                 title={"Con Value"}
-                value={formattedMetrics.purchaseConValueData?.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.purchaseConValueData?.displayValue
+                }
                 isConversion={true}
                 compareValue={
                   formattedMetrics.purchaseConValueData?.compareValue
@@ -466,7 +494,9 @@ function FacebookCatalogSlide01() {
 
               <NumberDisplayBox
                 title={"ROAS"}
-                value={formattedMetrics.roasData?.displayValue}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.roasData?.displayValue
+                }
                 isConversion={true}
                 compareValue={formattedMetrics.roasData?.compareValue}
                 isNegative={formattedMetrics.roasData?.isNegative}

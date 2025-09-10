@@ -38,6 +38,7 @@ function FacebookEngagementSlide02() {
   const [maxTableRows, setMaxTableRows] = useState([5, 4]);
   const [adsPicture, setAdsPicture] = useState(null);
   const [topAds, setTopAds] = useState(null);
+  const [isNoData, setIsNoData] = useState(false);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -45,6 +46,7 @@ function FacebookEngagementSlide02() {
       Object.keys(FacebookEngagementCreativeData).length === 0 ||
       Object.keys(FacebookEngagementAudienceTotals).length === 0
     ) {
+      setIsNoData(true);
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
@@ -364,34 +366,34 @@ function FacebookEngagementSlide02() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={impressionData.displayValue}
+                value={isNoData ? "No Data" : impressionData.displayValue}
                 compareValue={impressionData.compareValue}
                 isNegative={impressionData.isNegative}
               />
               <NumberDisplayBox
                 title={"Reach"}
-                value={reachData.displayValue}
+                value={isNoData ? "No Data" : reachData.displayValue}
                 compareValue={reachData.compareValue}
                 isNegative={reachData.isNegative}
               />
 
               <NumberDisplayBox
                 title={"Engagement"}
-                value={engagementData.displayValue}
+                value={isNoData ? "No Data" : engagementData.displayValue}
                 compareValue={engagementData.compareValue}
                 isNegative={engagementData.isNegative}
               />
 
               <NumberDisplayBox
                 title={"%Engage Rate"}
-                value={engagementRateData.displayValue}
+                value={isNoData ? "No Data" : engagementRateData.displayValue}
                 compareValue={engagementRateData.compareValue}
                 isNegative={engagementRateData.isNegative}
               />
 
               <NumberDisplayBox
                 title={"CPE"}
-                value={cpeData.displayValue}
+                value={isNoData ? "No Data" : cpeData.displayValue}
                 compareValue={cpeData.compareValue}
                 isNegative={cpeData.isNegative}
                 invertCompareColor={true}
@@ -399,7 +401,7 @@ function FacebookEngagementSlide02() {
 
               <NumberDisplayBox
                 title={"Conversions"}
-                value={conversionsData.displayValue}
+                value={isNoData ? "No Data" : conversionsData.displayValue}
                 isConversion={true}
                 compareValue={conversionsData.compareValue}
                 isNegative={conversionsData.isNegative}
@@ -407,7 +409,7 @@ function FacebookEngagementSlide02() {
 
               <NumberDisplayBox
                 title={"Spent"}
-                value={spentData.displayValue}
+                value={isNoData ? "No Data" : spentData.displayValue}
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
