@@ -169,7 +169,7 @@ const DonutChart = ({
             fill={fill}
             textAnchor={labelX > cx ? "start" : "end"}
             dominantBaseline="central"
-            fontSize="10"
+            fontSize="9"
             fontWeight="500"
           >
             {`${value}${isPercentage ? "%" : ""}`}
@@ -221,10 +221,10 @@ const DonutChart = ({
     <div className="w-full flex flex-col items-center ">
       {title && <h3 className="text-lg font-semibold text-center">{title}</h3>}
 
-      <div className="flex w-full items-center gap-4">
+      <div className="flex w-full items-center justify-center">
         {/* Chart */}
-        <div className="relative">
-          <PieChart width={width} height={height}>
+        <div className="relative flex-1 flex">
+          <PieChart width={width} height={height} className="flex-1">
             <Pie
               data={chartData}
               cx="50%"
