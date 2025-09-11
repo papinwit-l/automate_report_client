@@ -268,6 +268,137 @@ export const fetchDataSheet = async (
   }
 };
 
+export const fetchDataSheetEnhanced = async (
+  dataTypeMap,
+  id,
+  options = {},
+  projectList = [],
+  setNotFoundSheetList,
+  endpoint
+) => {
+  const {
+    enableDateRange = false,
+    dateRange = { from: null, to: null },
+    metricsMap = {},
+    settersMap = {},
+    filterBy = null,
+    filterValue = null,
+  } = options;
+
+  // Prepare empty data structure
+  const emptyData = [];
+  const emptyTotals = {};
+  const emptyMetrics = {};
+  const emptyComparison = {};
+
+  try {
+    // Validate dataTypeMap
+    if (typeof dataTypeMap !== "object" || dataTypeMap === null) {
+      throw new Error(`dataTypeMap must be an object`);
+    }
+
+    // Fetch data from API
+    const response = await axiosInstance.get(`/data-sheets/${endpoint}/${id}`);
+    const rawData = response.data.data;
+    const headers = rawData[0];
+    const dataRows = rawData.slice(1);
+
+    const projectIndex = headers.findIndex((header) => {
+      return header === "Project" || header === "Projects";
+    });
+
+    const projectFilteredData =
+      projectList.length > 0
+        ? dataRows.filter((row) => projectList.includes(row[projectIndex]))
+        : dataRows;
+
+    const dataObjects = projectFilteredData.map((row) =>
+      Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+    );
+
+    const results = {};
+
+    // Process each data type
+    const dataTypeKeys = Object.keys(dataTypeMap);
+    for (const key of dataTypeKeys) {
+      if (!DATA_CONFIGS[key]) {
+        throw new Error(`Configuration for ${key} not found`);
+      }
+
+      const config = DATA_CONFIGS[key];
+      const setters = settersMap[key];
+      const channelValue = dataTypeMap[key];
+
+      // Process data for this specific channel
+      const result = processData(
+        dataObjects,
+        { Channel: channelValue },
+        config,
+        setters,
+        metricsMap[key],
+        options
+      );
+
+      results[key] = result;
+    }
+
+    return results;
+  } catch (error) {
+    const errorMessage =
+      error?.response?.data?.message ||
+      "Failed to fetch data. Please try again.";
+
+    console.log("🎯 fetchDataSheetEnhanced error:", errorMessage);
+
+    if (errorMessage.includes("Unable to parse range")) {
+      const SHEET_W_RANGE = errorMessage.split("Unable to parse range: ")[1];
+      if (SHEET_W_RANGE.includes("!")) {
+        const parts = SHEET_W_RANGE.split("!");
+        const sheet = parts.slice(0, -1).join("!");
+        setNotFoundSheetList((prev) => {
+          if (prev.includes(sheet)) {
+            return prev;
+          } else {
+            return [...prev, sheet];
+          }
+        });
+      }
+    } else {
+      console.error(`Error fetching enhanced data:`, error);
+    }
+
+    // Set empty state for all data types in the map
+    const dataTypeKeys = Object.keys(dataTypeMap);
+    for (const key of dataTypeKeys) {
+      const config = DATA_CONFIGS[key];
+      const setters = settersMap[key];
+
+      if (setters) {
+        if (config?.processorType === "social") {
+          setters.setAudienceData?.(emptyData);
+          setters.setAudienceTotals?.(emptyTotals);
+          setters.setCreativeData?.(emptyData);
+          setters.setCreativeTotals?.(emptyTotals);
+          setters.setMetrics?.(emptyMetrics);
+          setters.setComparison?.(emptyComparison);
+        } else if (config?.processorType === "advertising") {
+          setters.setData?.(emptyData);
+          setters.setTotals?.(emptyTotals);
+          setters.setMetrics?.(emptyMetrics);
+          setters.setComparison?.(emptyComparison);
+        } else {
+          setters.setData?.(emptyData);
+        }
+      }
+    }
+
+    return {
+      error: errorMessage,
+      results: {},
+    };
+  }
+};
+
 // Helper function - updated to use centralized axios config
 export const getFilterValues = async (dataType, id, filterField) => {
   try {
@@ -308,3 +439,143 @@ export const getFilterValues = async (dataType, id, filterField) => {
     throw error;
   }
 };
+
+function processData(data, channel, config, setters, metrics, options) {
+  const { enableDateRange = false, dateRange = { from: null, to: null } } =
+    options;
+
+  try {
+    const displayMetrics = metrics || [];
+    const processMetrics = config.processFields || metrics || [];
+    const cleanedData = cleanObjectData(data, processMetrics);
+
+    const filterBy = Object.keys(channel)[0];
+    const filterValue = channel[filterBy];
+
+    // Apply date range filtering
+    let currentPeriodData = cleanedData;
+    let previousPeriodData = [];
+    let comparison = {};
+
+    if (enableDateRange && dateRange.from && dateRange.to) {
+      currentPeriodData = filterDataByDateRange(
+        cleanedData,
+        dateRange.from,
+        dateRange.to
+      );
+
+      if (config.hasComparison) {
+        const previousPeriodDates = getPreviousPeriodDates(
+          dateRange.from,
+          dateRange.to
+        );
+        previousPeriodData = filterDataByDateRange(
+          cleanedData,
+          previousPeriodDates.from,
+          previousPeriodDates.to
+        );
+      }
+    }
+
+    // Process data if needed
+    if (config.processData) {
+      let currentPeriodResults;
+      let previousPeriodResults;
+
+      const filterOptions = {};
+      if (filterBy && filterValue) {
+        filterOptions.filterBy = filterBy;
+        filterOptions.filterValue = filterValue;
+      }
+
+      if (config.processorType === "social") {
+        currentPeriodResults = processSocialMediaData(
+          currentPeriodData,
+          processMetrics,
+          displayMetrics,
+          config.socialConfig,
+          filterOptions
+        );
+
+        if (config.hasComparison && previousPeriodData.length > 0) {
+          previousPeriodResults = processSocialMediaData(
+            previousPeriodData,
+            processMetrics,
+            displayMetrics,
+            config.socialConfig,
+            filterOptions
+          );
+          comparison = calculateComparison(
+            currentPeriodResults.enhancedTotals,
+            previousPeriodResults.enhancedTotals
+          );
+        }
+
+        // Update state
+        if (setters) {
+          setters.setAudienceData?.(currentPeriodResults.audienceData);
+          setters.setAudienceTotals?.(currentPeriodResults.audienceTotals);
+          setters.setCreativeData?.(currentPeriodResults.creativeData);
+          setters.setCreativeTotals?.(currentPeriodResults.creativeTotals);
+          setters.setMetrics?.(currentPeriodResults.allMetrics);
+          setters.setComparison?.(comparison);
+        }
+
+        return currentPeriodResults;
+      } else if (config.processorType === "advertising") {
+        // Note: You might need to adjust this based on your specific needs
+        const platform = "default"; // Since we don't have dataType context here
+
+        currentPeriodResults = processAdvertisingData(
+          currentPeriodData,
+          processMetrics,
+          displayMetrics,
+          config.groupBy,
+          platform
+        );
+
+        if (config.hasComparison && previousPeriodData.length > 0) {
+          previousPeriodResults = processAdvertisingData(
+            previousPeriodData,
+            processMetrics,
+            displayMetrics,
+            config.groupBy,
+            platform
+          );
+          comparison = calculateComparison(
+            currentPeriodResults.enhancedTotals,
+            previousPeriodResults.enhancedTotals
+          );
+        }
+
+        // Update state
+        if (setters) {
+          setters.setData?.(currentPeriodResults.enhancedFieldData);
+          setters.setTotals?.(currentPeriodResults.enhancedTotals);
+          setters.setMetrics?.(currentPeriodResults.allMetrics);
+          setters.setComparison?.(comparison);
+        }
+
+        return currentPeriodResults;
+      }
+    } else {
+      if (setters) setters.setData?.(currentPeriodData);
+      return { data: currentPeriodData };
+    }
+  } catch (error) {
+    console.error("Error in processData:", error);
+    // Return empty results on error
+    return {
+      data: [],
+      audienceData: [],
+      creativeData: [],
+      enhancedFieldData: [],
+      totals: {},
+      audienceTotals: {},
+      creativeTotals: {},
+      enhancedTotals: {},
+      allMetrics: {},
+      comparison: {},
+    };
+  }
+}

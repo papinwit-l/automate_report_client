@@ -1,9 +1,14 @@
 // contexts/DataContext.js
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { fetchDataSheet } from "../services/dataServices";
+import {
+  fetchDataSheet,
+  fetchDataSheetEnhanced,
+} from "../services/dataServices";
 import { createStateSettersMap } from "../utils/dataUtils";
 import { DEFAULT_METRICS } from "../configs/dataConfigs";
 import axiosInstance from "../configs/axiosConfigs"; // ✅ Updated: Use centralized axios
+import { FACEBOOK_CHANNELS_MAP } from "@/configs/facebookDataConfigs";
+import { TIKTOK_CHANNELS_MAP } from "@/configs/tiktokDataConfigs";
 
 const DataContext = createContext();
 
@@ -689,175 +694,46 @@ export const DataProvider = ({ children }) => {
     return result;
   };
 
-  const getFacebookData = async (id, filterBy = null, filterValue = null) => {
-    return await fetchDataSheet(
-      "FacebookAudience",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-  };
-
-  const getFacebookAwarenessData = async (
-    id,
+  const getFacebookData = async (
+    parameters,
     filterBy = null,
     filterValue = null
   ) => {
-    const result = await fetchDataSheet(
-      "FacebookAwareness",
+    const { id, endpoint } = parameters;
+    const result = await fetchDataSheetEnhanced(
+      FACEBOOK_CHANNELS_MAP,
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      endpoint
     );
-    // console.log("🎯 getFacebookAwarenessData result:", result);
+
+    // The result now contains all Facebook data types
+    // You might want to log or handle the results appropriately
+    console.log("Enhanced Facebook Data Results:", result);
+
     return result;
   };
 
-  const getFacebookReachData = async (
-    id,
+  const getTikTokData = async (
+    parameters,
     filterBy = null,
     filterValue = null
   ) => {
-    // console.log("🎯 getFacebookReachData called with:", {
-    //   id,
-    //   filterBy,
-    //   filterValue,
-    // });
-
-    const result = await fetchDataSheet(
-      "FacebookReach",
+    const { id, endpoint } = parameters;
+    const result = await fetchDataSheetEnhanced(
+      TIKTOK_CHANNELS_MAP,
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      endpoint
     );
 
-    // console.log("📊 getFacebookReachData result:", result);
+    // debug log
+    console.log("📊 getTikTokData result:", result);
     return result;
-  };
-
-  const getFacebookEngagementData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookEngagement",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-
-    // console.log("📊 getFacebookReachData result:", result);
-    return result;
-  };
-
-  const getFacebookMessageData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookMessage",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("FacebookMessage", result);
-    return result;
-  };
-
-  const getFacebookLeadData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookLead",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    return result;
-  };
-
-  const getFacebookConversionData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookConversion",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getFacebookConversionData result:", result);
-    return result;
-  };
-
-  const getFacebookTrafficData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookTraffic",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getFacebookTrafficData result:", result);
-    return result;
-  };
-
-  const getFacebookVideoData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookVideo",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getFacebookVideoData result:", result);
-    return result;
-  };
-
-  const getFacebookCatalogData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "FacebookCatalog",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getFacebookCatalogData result:", result);
-    return result;
-  };
-
-  const getTikTokData = async (id, filterBy = null, filterValue = null) => {
-    return await fetchDataSheet(
-      "TikTokAudience",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
   };
 
   const getTikTokLeadData = async (id, filterBy = null, filterValue = null) => {
@@ -1027,22 +903,8 @@ export const DataProvider = ({ children }) => {
           getYoutubeData(id),
           getShoppingAdsData(id),
           getPerformanceMaxData(id),
-          getFacebookData(id),
-          getFacebookAwarenessData(id, "Channel", "FB Awareness"),
-          getFacebookReachData(id, "Channel", "FB Reach"),
-          getFacebookEngagementData(id, "Channel", "FB Engagement"),
-          getFacebookMessageData(id, "Channel", "FB Messages"),
-          getFacebookLeadData(id, "Channel", "FB Lead"),
-          getFacebookConversionData(id, "Channel", "FB Conversions"),
-          getFacebookTrafficData(id, "Channel", "FB Traffic"),
-          getFacebookVideoData(id, "Channel", "FB Video Views"),
-          getFacebookCatalogData(id, "Channel", "FB Catalog Sales"),
-          getTikTokReachData(id, "Channel", "TikTok Reach"),
-          getTikTokVideoData(id, "Channel", "TikTok VDO View"),
-          getTikTokTrafficData(id, "Channel", "TikTok Traffic"),
-          getTikTokLeadData(id, "Channel", "TikTok Lead"),
-          getTikTokConversionData(id, "Channel", "TikTok Conversion"),
-          getTikTokFollowerData(id, "Channel", "TikTok Follower"),
+          getFacebookData({ id, endpoint: "facebook-data" }),
+          getTikTokData({ id, endpoint: "tiktok-data" }),
           getLineReachData(id, "Channel", "Line Reach"),
           getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
           getTaboolaData(id),
@@ -1057,63 +919,6 @@ export const DataProvider = ({ children }) => {
           "Failed to fetch data. Please try again.";
         alert(errorMessage);
         setError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [enableDateRange, dateRange, metricsMap]
-  );
-
-  // ✅ FIXED: Updated fetchDataType to support filtering
-  const fetchDataType = useCallback(
-    async (dataType, id, filterBy = null, filterValue = null) => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const fetchFunction = {
-          overall: getOverallData,
-          SEM: getSEMData,
-          GGDemographic: getGGDemographic,
-          GDN: getGDNData,
-          Disc: getDiscData,
-          Youtube: getYoutubeData,
-          ShoppingAds: getShoppingAdsData,
-          PerformanceMax: getPerformanceMaxData,
-          FacebookAudience: getFacebookData,
-          FacebookAwareness: getFacebookAwarenessData,
-          FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
-          FacebookEngagement: getFacebookEngagementData,
-          FacebookMessage: getFacebookMessageData,
-          FacebookLead: getFacebookLeadData,
-          FacebookConversion: getFacebookConversionData,
-          FacebookTraffic: getFacebookTrafficData,
-          FacebookVideo: getFacebookVideoData,
-          FacebookCatalog: getFacebookCatalogData,
-          TikTokAudience: getTikTokData,
-          TikTokReach: getTikTokReachData,
-          TikTokLead: getTikTokLeadData,
-          TikTokConversion: getTikTokConversionData,
-          TikTokVideo: getTikTokVideoData,
-          TikTokTraffic: getTikTokTrafficData,
-          TikTokFollower: getTikTokFollowerData,
-          LineReach: getLineReachData,
-          LineGainFriends: getLineGainFriendsData,
-          Taboola: getTaboolaData,
-        }[dataType];
-
-        if (!fetchFunction) {
-          throw new Error(`Unknown data type: ${dataType}`);
-        }
-
-        return await fetchFunction(id, filterBy, filterValue); // ✅ FIXED: Pass filter parameters
-      } catch (err) {
-        console.error(`Error fetching ${dataType} data:`, err);
-        const errorMessage =
-          err?.response?.data?.message ||
-          `Failed to fetch ${dataType} data. Please try again.`;
-        setError(errorMessage);
-        throw err;
       } finally {
         setLoading(false);
       }
@@ -1210,7 +1015,6 @@ export const DataProvider = ({ children }) => {
 
     // Fetch functions
     fetchData,
-    fetchDataType,
 
     // Overall
     overallData,

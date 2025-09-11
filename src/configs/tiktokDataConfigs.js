@@ -87,3 +87,12 @@ export const TIKTOK_METRICS = [
   "Total add to cart value",
   "Total complete payment value",
 ];
+
+export const TIKTOK_CHANNELS_MAP = {
+  TikTokReach: "TikTok Reach",
+  TikTokVideo: "TikTok VDO View",
+  TikTokTraffic: "TikTok Traffic",
+  TikTokLead: "TikTok Lead",
+  TikTokConversion: "TikTok Conversion",
+  TikTokFollower: "TikTok Follower",
+};
