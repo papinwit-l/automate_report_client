@@ -73,3 +73,15 @@ export const FACEBOOK_METRICS = [
   "Website purchases",
   "Website purchases conversion value",
 ];
+
+export const FACEBOOK_CHANNELS_MAP = {
+  FacebookAwareness: "FB Awareness",
+  FacebookReach: "FB Reach",
+  FacebookEngagement: "FB Engagement",
+  FacebookMessage: "FB Messages",
+  FacebookLead: "FB Lead",
+  FacebookConversion: "FB Conversions",
+  FacebookTraffic: "FB Traffic",
+  FacebookVideo: "FB Video Views",
+  FacebookCatalog: "FB Catalog Sales",
+};

@@ -73,6 +73,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import FacebookTEST from "@/components/slides/FacebookTEST";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -626,6 +627,7 @@ function SlideReport() {
                 />
                 <FacebookAwarenessSlide01 />
                 <FacebookAwarenessSlide02 />
+                {/* <FacebookTEST /> */}
                 <FacebookReachSlide01 />
                 <FacebookReachSlide02 />
                 <FacebookEngagementSlide01 />
