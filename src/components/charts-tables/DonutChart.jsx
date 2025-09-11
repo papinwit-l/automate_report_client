@@ -13,6 +13,7 @@ const DonutChart = ({
   paddingAngle = 2,
   labelDistance = 140,
   isPercentage = false,
+  isLegendWrap = true,
 }) => {
   // Transform percentage string data to chart format
   const transformDataForChart = (dataObj, defaultColors = {}) => {
@@ -168,7 +169,7 @@ const DonutChart = ({
             fill={fill}
             textAnchor={labelX > cx ? "start" : "end"}
             dominantBaseline="central"
-            fontSize="10"
+            fontSize="9"
             fontWeight="500"
           >
             {`${value}${isPercentage ? "%" : ""}`}
@@ -180,20 +181,23 @@ const DonutChart = ({
   );
 
   // Early return if no valid data
+  // if (!hasValidData(data)) {
+  //   return (
+  //     <div className="w-full flex flex-col items-center">
+  //       {title && (
+  //         <h3 className="text-lg font-semibold text-center">{title}</h3>
+  //       )}
+  //       <div
+  //         className="flex items-center justify-center text-gray-500 text-sm"
+  //         style={{ width, height }}
+  //       >
+  //         No data available
+  //       </div>
+  //     </div>
+  //   );
+  // }
   if (!hasValidData(data)) {
-    return (
-      <div className="w-full flex flex-col items-center">
-        {title && (
-          <h3 className="text-lg font-semibold text-center">{title}</h3>
-        )}
-        <div
-          className="flex items-center justify-center text-gray-500 text-sm"
-          style={{ width, height }}
-        >
-          No data available
-        </div>
-      </div>
-    );
+    return <div className="w-full flex flex-col items-center"></div>;
   }
 
   // Final check - if no valid chart data after processing
@@ -217,10 +221,10 @@ const DonutChart = ({
     <div className="w-full flex flex-col items-center ">
       {title && <h3 className="text-lg font-semibold text-center">{title}</h3>}
 
-      <div className="flex w-full items-center gap-4">
+      <div className="flex w-full items-center justify-center">
         {/* Chart */}
-        <div className="relative">
-          <PieChart width={width} height={height}>
+        <div className="relative flex-1 flex">
+          <PieChart width={width} height={height} className="flex-1">
             <Pie
               data={chartData}
               cx="50%"
@@ -249,7 +253,13 @@ const DonutChart = ({
                   className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-gray-700 leading-tight">{item.name}</span>
+                <span
+                  className={`text-gray-700 leading-tight ${
+                    isLegendWrap ? "" : "text-nowrap"
+                  }`}
+                >
+                  {item.name}
+                </span>
               </div>
             ))}
           </div>

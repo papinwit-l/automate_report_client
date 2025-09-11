@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -16,13 +16,15 @@ import {
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import ImageFallback from "./utils/ImageFallback";
 
-function FacebookAwarenessSlide() {
+function FacebookAwarenessSlide02PicTable() {
   const {
     loading,
     error,
     refetch,
     GGDemographicData,
+    FBDemographicData,
     FacebookAudienceData,
     FacebookAudienceTotals,
     FacebookAudienceMetrics,
@@ -33,12 +35,11 @@ function FacebookAwarenessSlide() {
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
-  const [clicksByGender, setClicksByGender] = useState({});
-  const [clicksByDevice, setClicksByDevice] = useState({});
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([5, 5]);
+  const [maxTableRows, setMaxTableRows] = useState([5]);
   const [adsPicture, setAdsPicture] = useState(null);
   const [topAds, setTopAds] = useState(null);
+  const [tablePicture, setTablePicture] = useState([]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -90,6 +91,9 @@ function FacebookAwarenessSlide() {
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     prepareAdsPicture(topCreative.key);
+    // prepareTablePicture();
+    setTopAds(topCreative.key);
+    prepareTablePictureObject();
     setSummaryText(summaryTextTemp);
   };
 
@@ -97,76 +101,177 @@ function FacebookAwarenessSlide() {
     const adsPicture = FacebookAdsPicture.filter((item) => {
       return item["Ad name"] == adsName;
     });
-    console.log("Ads Picture", adsPicture[0]["Ads"]);
+    if (adsPicture.length === 0) return;
+    // console.log("Ads Picture", adsPicture);
     setAdsPicture(adsPicture[0]["Ads"]);
-    setTopAds(adsName);
   };
+  const prepareTablePictureObject = () => {
+    const pictureTableData = {};
 
-  const prepareChartData = () => {
-    if (!GGDemographicData || GGDemographicData.length === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
+    // Iterate through each ad in FacebookCreativeData
+    Object.entries(FacebookCreativeData).forEach(([adName, adData]) => {
+      const adsPicture = findPicture(adName);
 
-    const GDNDemographicData = GGDemographicData.filter((item) => {
-      return item.Channel.trim() === "Discovery";
+      // Keep original ad name as key, add picture as separate property
+      pictureTableData[adName] = {
+        "Ad name": adName, // Keep original name for display/sorting
+        "Ad Picture": adsPicture, // Add picture URL as separate property
+        ...adData, // Spread all the original metrics
+      };
     });
 
-    if (GDNDemographicData.length === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
-
-    const sumClicksByGender = GDNDemographicData.reduce((acc, item) => {
-      if (item.Gender) {
-        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-
-    const totalClicks = Object.values(sumClicksByGender).reduce(
-      (a, b) => a + b,
-      0
-    );
-
-    if (totalClicks === 0) {
-      setClicksByGender({});
-      setClicksByDevice({});
-      return;
-    }
-
-    const genderPercentages = Object.entries(sumClicksByGender).reduce(
-      (acc, [gender, clicks]) => {
-        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByGender(genderPercentages);
-
-    const sumClicksByDevice = GDNDemographicData.reduce((acc, item) => {
-      if (item.Device) {
-        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
-      }
-      return acc;
-    }, {});
-
-    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
-      (acc, [device, clicks]) => {
-        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-    setClicksByDevice(devicePercentages);
+    setTablePicture(pictureTableData);
+    // console.log("Table Picture", pictureTableData);
   };
+
+  // const prepareTablePicture = () => {
+  //   // Convert object to array
+  //   const FacebookCreativeDataArray = Object.entries(FacebookCreativeData).map(
+  //     ([key, value]) => ({
+  //       "Ad name": key,
+  //       ...value,
+  //     })
+  //   );
+
+  //   const pictureTableData = FacebookCreativeDataArray.reduce((acc, item) => {
+  //     const adsPicture = findPicture(item["Ad name"]);
+
+  //     // Replace "Ad name" with picture URL (your original logic)
+  //     const tempObj = {
+  //       ...item,
+  //       "Ad name": adsPicture || item["Ad name"], // Use picture URL, fallback to original name if no picture
+  //     };
+  //     acc.push(tempObj);
+  //     return acc;
+  //   }, []);
+
+  //   setTablePicture(pictureTableData);
+  //   console.log("Table Picture", pictureTableData);
+  // };
+
+  const findPicture = (adsName) => {
+    const adsPicture = FacebookAdsPicture.filter((item) => {
+      return item["Ad name"].toLowerCase() === adsName.toLowerCase();
+    });
+
+    if (adsPicture.length > 0 && adsPicture[0]["Ads"]) {
+      return adsPicture[0]["Ads"];
+    }
+
+    console.warn(`No picture found for ad: ${adsName}`);
+    return null;
+  };
+
+  //Demographic for chart
+  const { impressionsByGender, impressionsByAge } = useMemo(() => {
+    try {
+      if (!FBDemographicData || FBDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Filter for FB Reach data
+      const filteredDemographicData = [...FBDemographicData];
+
+      if (filteredDemographicData.length === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Helper function for consistent parsing
+      const parseImpressions = (value) => {
+        if (value === null || value === undefined || value === "") return 0;
+        const parsed = parseInt(value);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      // Gender impressions
+      const sumImpressionsByGender = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Gender && item?.Impressions !== undefined) {
+            acc[item.Gender] =
+              (acc[item.Gender] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalGenderImpressions = Object.values(
+        sumImpressionsByGender
+      ).reduce((a, b) => a + b, 0);
+
+      // Age impressions
+      const sumImpressionsByAge = filteredDemographicData.reduce(
+        (acc, item) => {
+          if (item?.Age && item?.Impressions !== undefined) {
+            acc[item.Age] =
+              (acc[item.Age] || 0) + parseImpressions(item.Impressions);
+          }
+          return acc;
+        },
+        {}
+      );
+
+      const totalAgeImpressions = Object.values(sumImpressionsByAge).reduce(
+        (a, b) => a + b,
+        0
+      );
+
+      // Early return if no impressions
+      if (totalGenderImpressions === 0 && totalAgeImpressions === 0) {
+        return {
+          impressionsByGender: {},
+          impressionsByAge: {},
+        };
+      }
+
+      // Calculate percentages with correct totals
+      const genderPercentages =
+        totalGenderImpressions > 0
+          ? Object.entries(sumImpressionsByGender).reduce(
+              (acc, [gender, impressions]) => {
+                acc[gender] =
+                  ((impressions / totalGenderImpressions) * 100).toFixed(2) +
+                  "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      const agePercentages =
+        totalAgeImpressions > 0
+          ? Object.entries(sumImpressionsByAge).reduce(
+              (acc, [age, impressions]) => {
+                acc[age] =
+                  ((impressions / totalAgeImpressions) * 100).toFixed(2) + "%";
+                return acc;
+              },
+              {}
+            )
+          : {};
+
+      return {
+        impressionsByGender: genderPercentages,
+        impressionsByAge: agePercentages,
+      };
+    } catch (error) {
+      console.error("Error processing demographic data:", error);
+      return {
+        impressionsByGender: {},
+        impressionsByAge: {},
+      };
+    }
+  }, [FBDemographicData]);
 
   useEffect(() => {
     summarizeData();
-    prepareChartData();
-  }, [FacebookAudienceTotals, FacebookAudienceData, GGDemographicData]);
+  }, [FacebookAudienceTotals, FacebookAudienceData]);
 
   // Show loading state
   if (loading) {
@@ -262,13 +367,38 @@ function FacebookAwarenessSlide() {
     FacebookAudienceComparison?.reach,
     "compact"
   );
+  const frequencyData = formatDisplayData(
+    FacebookAudienceTotals?.frequency,
+    FacebookAudienceComparison?.frequency,
+    "compact"
+  );
+  const cprData = formatDisplayData(
+    FacebookAudienceTotals?.cpr,
+    FacebookAudienceComparison?.cpr,
+    "compact"
+  );
+  const engagementData = formatDisplayData(
+    FacebookAudienceTotals?.engagements,
+    FacebookAudienceComparison?.engagements,
+    "compact"
+  );
+  const engagementRateData = formatDisplayData(
+    FacebookAudienceTotals?.engagementRate,
+    FacebookAudienceComparison?.engagementRate,
+    "percentage"
+  );
+  const cpeData = formatDisplayData(
+    FacebookAudienceTotals?.cpe,
+    FacebookAudienceComparison?.cpe,
+    "compact"
+  );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
   // console.log("facebookMEtrics", FacebookAudienceMetrics);
   return (
     <div
-      id="facebook-awareness-component"
+      id="facebook-awareness-02-picture-table-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -281,14 +411,15 @@ function FacebookAwarenessSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Facebook Awareness"} />
+      <SlideHeader title={"Facebook Awareness (2/2) **"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
-          <div className="col-span-8 flex flex-col gap-2">
-            <div className="grid grid-cols-4 gap-2">
-              <h4 className="col-span-4 text-lg font-semibold">
+          <div className="col-span-13 flex flex-col gap-2">
+            <div className="grid grid-cols-8 gap-2">
+              <h4 className="col-span-6 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
+              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -296,7 +427,6 @@ function FacebookAwarenessSlide() {
                 compareValue={impressionData.compareValue}
                 isNegative={impressionData.isNegative}
               />
-
               <NumberDisplayBox
                 title={"CPM"}
                 value={cpmData.displayValue}
@@ -304,23 +434,48 @@ function FacebookAwarenessSlide() {
                 isNegative={cpmData.isNegative}
                 invertCompareColor={true}
               />
-
               <NumberDisplayBox
                 title={"Reach"}
                 value={reachData.displayValue}
                 compareValue={reachData.compareValue}
                 isNegative={reachData.isNegative}
               />
-
+              <NumberDisplayBox
+                title={"Post Engagements"}
+                value={engagementData.displayValue}
+                compareValue={engagementData.compareValue}
+                isNegative={engagementData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"% Engagement Rate"}
+                value={engagementRateData.displayValue}
+                compareValue={engagementRateData.compareValue}
+                isNegative={engagementRateData.isNegative}
+              />
+              <NumberDisplayBox
+                title={"CPE"}
+                value={cpeData.displayValue}
+                compareValue={cpeData.compareValue}
+                isNegative={cpeData.isNegative}
+                invertCompareColor={true}
+              />
+              <NumberDisplayBox
+                title={"Conversions"}
+                value={conversionsData.displayValue}
+                isConversion={true}
+                compareValue={conversionsData.compareValue}
+                isNegative={conversionsData.isNegative}
+              />
               <NumberDisplayBox
                 title={"Spent"}
                 value={spentData.displayValue}
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
-            <div>
+            {/* <div>
               <h4 className="text-lg font-semibold">Performance by Audience</h4>
 
               <AdvancedDataTable
@@ -329,10 +484,17 @@ function FacebookAwarenessSlide() {
                 totalData={FacebookAudienceTotals}
                 metrics={[
                   "Ad set name",
-                  "impressions", // lowercase
+                  "impressions",
                   "cpm",
-                  "reach", // lowercase
-                  "spent", // lowercase
+                  "reach",
+                  "clicks",
+                  "ctr",
+                  "cpc",
+                  "engagements",
+                  "engagementRate",
+                  "cpe",
+                  "conversions",
+                  "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
@@ -340,32 +502,42 @@ function FacebookAwarenessSlide() {
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
               />
-            </div>
+            </div> */}
             <div>
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
               <AdvancedDataTable
                 firstMetric="Ad name"
-                channelData={FacebookCreativeData}
+                channelData={tablePicture}
                 totalData={FacebookCreativeTotals}
                 metrics={[
                   "Ad name",
-                  "impressions", // lowercase
+                  "impressions",
                   "cpm",
-                  "reach", // lowercase
-                  "spent", // lowercase
+                  "reach",
+                  "clicks",
+                  "ctr",
+                  "cpc",
+                  "engagements",
+                  "engagementRate",
+                  "cpe",
+                  "conversions",
+                  "spent",
                 ]}
                 formatValue={formatTableValue}
-                maxRows={maxTableRows[1]}
+                maxRows={maxTableRows[0]}
                 defaultSortBy="impressions"
                 defaultSortOrder="desc"
                 enableSorting={true} // Can disable sorting if needed
+                isPictureTable={true} // Enable picture display
+                pictureSize="w-8 h-8" // Customizable image size
+                pictureKey="Ad Picture" // Which property contains the picture URL
               />
             </div>
             <div className="grid grid-cols-2">
               <div className="col-span-1">
                 {/* Summary */}
-                {/* <div className="px-4">
+                <div className="px-4">
                   <h4 className="text-lg font-semibold">Summary</h4>
                   <ul className="list-disc pl-6">
                     <div
@@ -375,32 +547,36 @@ function FacebookAwarenessSlide() {
                       }}
                     />
                   </ul>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-span-8 flex flex-col ml-2 mt-8 justify-between items-center">
+          <div className="col-span-3 flex flex-col ml-2 mt-8 justify-between items-center">
             {/* Ads Preview */}
-            <div className="p-6 flex flex-col gap-2">
-              <img
-                src={adsPicture}
-                alt="ads preview"
-                className="max-h-[250px]"
+            <ImageFallback src={adsPicture} alt="ads preview" />
+            <p className="mx-auto">{topAds}</p>
+            {/* Chart */}
+            {/* <div className="col-span-3">
+              <DonutChart
+                data={impressionsByGender}
+                title="Impression By Gender"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
               />
-              <p className="mx-auto">{topAds}</p>
-            </div>
-            {/* Summary */}
-            <div className="px-4">
-              <h4 className="text-lg font-semibold">Summary</h4>
-              <ul className="list-disc pl-6">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: renderFormattedText(summaryText),
-                  }}
-                />
-              </ul>
-            </div>
+              <DonutChart
+                data={impressionsByAge}
+                title="Impression By Age"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+                isLegendWrap={false}
+              />
+            </div> */}
           </div>
         </div>
       </div>
@@ -419,4 +595,4 @@ function FacebookAwarenessSlide() {
   );
 }
 
-export default FacebookAwarenessSlide;
+export default FacebookAwarenessSlide02PicTable;

@@ -5,7 +5,6 @@
  * Handles edge cases and "No Data" strings
  */
 export const convertToBMK = (value, decimals = 1) => {
-  // ✅ FIXED: Changed default to 1 decimals
   // Handle "No Data" case
   if (value === "No Data") return "No Data";
 
@@ -25,7 +24,11 @@ export const convertToBMK = (value, decimals = 1) => {
     suffixIndex++;
   }
 
-  const formatted = convertedValue.toFixed(decimals);
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  const formatted = convertedValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
   const sign = numValue < 0 ? "-" : "";
 
   return `${sign}${formatted}${suffixes[suffixIndex]}`;
@@ -41,7 +44,11 @@ export const formatPercentage = (value, decimals = 2) => {
   const numValue = Number(value);
   if (isNaN(numValue)) return "0.00%";
 
-  return `${numValue.toFixed(decimals)}%`;
+  // ✅ FIXED: Use toLocaleString for consistent formatting
+  return `${numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}%`;
 };
 
 /**
@@ -54,17 +61,25 @@ export const formatDecimal = (value, decimals = 2) => {
   const numValue = Number(value);
   if (isNaN(numValue)) return "0.00";
 
-  return numValue.toFixed(decimals);
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  return numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 };
+
 export const formatCurrency = (value, decimals = 0, currency = "$") => {
-  // ✅ FIXED: Changed default to 0 decimals
   if (value === "No Data") return "No Data";
   if (!value && value !== 0) return `${currency}0`;
 
   const numValue = Number(value);
   if (isNaN(numValue)) return `${currency}0`;
 
-  return `${currency}${numValue.toFixed(decimals)}`;
+  // ✅ FIXED: Use toLocaleString for proper comma formatting
+  return `${currency}${numValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
 };
 
 /**
@@ -95,16 +110,22 @@ export const formatDisplayData = (
       displayValue = formatPercentage(value, 2);
       break;
     case "currency":
-      displayValue = formatCurrency(value, 0); // 0 decimal places for currency
+      displayValue = formatCurrency(value, 0, ""); // 0 decimal places for currency
       break;
     case "decimal":
-      displayValue = formatDecimal(value, 2); // ✅ NEW: Decimal format with 2 decimal places
+      displayValue = formatDecimal(value, 2); // Decimal format with 2 decimal places
       break;
     case "number":
-      displayValue = value?.toLocaleString() || "0";
+      // ✅ FIXED: Ensure proper number formatting with commas
+      const numValue = Number(value);
+      displayValue = isNaN(numValue) ? "0" : numValue.toLocaleString();
       break;
     default:
-      displayValue = value?.toLocaleString() || "0";
+      // ✅ FIXED: Ensure default case has proper comma formatting
+      const defaultNumValue = Number(value);
+      displayValue = isNaN(defaultNumValue)
+        ? "0"
+        : defaultNumValue.toLocaleString();
   }
 
   // Format comparison value
@@ -169,22 +190,39 @@ export const formatMetricsData = (
  * Define how each metric should be formatted
  */
 export const METRIC_CONFIGS = {
-  Impressions: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
-  Clicks: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  Impressions: { valueType: "number" },
+  Clicks: { valueType: "number" },
   Conversions: { valueType: "number" },
   Spent: { valueType: "currency" }, // Currency - no decimal places
   Cost: { valueType: "currency" }, // Currency - no decimal places
   ctr: { valueType: "percentage" },
   conRate: { valueType: "percentage" },
-  cpc: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpl: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpm: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpe: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  cpr: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
-  Reach: { valueType: "number" }, // ✅ FIXED: Changed from compact to number
+  cpc: { valueType: "decimal" },
+  cpl: { valueType: "decimal" },
+  cpm: { valueType: "decimal" },
+  cpe: { valueType: "decimal" },
+  cpr: { valueType: "decimal" },
+  cpa: { valueType: "decimal" },
+  cpv: { valueType: "decimal" },
+  viewRate: { valueType: "percentage" }, // ✅ YouTube specific
+  // ✅ YouTube specific metrics
+  "Video views": { valueType: "number" },
+  "Watch 25% views": { valueType: "number" },
+  "Watch 50% views": { valueType: "number" },
+  "Watch 75% views": { valueType: "number" },
+  "Watch 100% views": { valueType: "number" },
+  VideoViews: { valueType: "number" }, // Alternative naming
+  Watch25: { valueType: "number" }, // Alternative naming
+  Watch50: { valueType: "number" }, // Alternative naming
+  Watch75: { valueType: "number" }, // Alternative naming
+  Watch100: { valueType: "number" }, // Alternative naming
+  Engagements: { valueType: "number" },
+  Reach: { valueType: "number" },
   engagementRate: { valueType: "percentage" },
-  frequency: { valueType: "decimal" }, // ✅ CHANGED: From compact to decimal
+  frequency: { valueType: "decimal" },
   engagements: { valueType: "number" },
+  "Conversion value": { valueType: "decimal" },
+  follows: { valueType: "number" },
 };
 
 /**
@@ -196,36 +234,55 @@ export const formatTableValue = (value, metric) => {
 
   const metricLower = metric.toLowerCase();
 
-  // Percentage cases
+  // ✅ YouTube-enhanced percentage cases
   if (
     metricLower === "ctr" ||
     metricLower === "conrate" ||
     metricLower === "engagementrate" ||
-    metricLower === "cvr"
+    metricLower === "cvr" ||
+    metricLower === "viewrate" // ✅ Added viewRate
   ) {
-    return `${Number(value).toFixed(2)}%`;
+    const numValue = Number(value);
+    return `${numValue.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}%`;
   }
 
   // Currency cases - no decimal places (only Spent and Cost)
   if (metricLower === "spent" || metricLower === "cost") {
-    return `${Math.round(value).toLocaleString()}`; // ✅ FIXED: Only Spent and Cost as currency
+    const numValue = Number(value);
+    return Math.round(numValue).toLocaleString();
   }
 
   // Metrics starting with "cp" and frequency - decimal format
   if (metricLower.startsWith("cp") || metricLower === "frequency") {
-    return formatDecimal(value, 2); // ✅ CHANGED: All "cp" metrics now use decimal format
+    return formatDecimal(value, 2);
   }
 
-  // Number format for impressions, clicks, reach, etc.
+  // ✅ YouTube-enhanced number format for impressions, clicks, reach, etc.
   if (
     metricLower === "impressions" ||
     metricLower === "clicks" ||
     metricLower === "reach" ||
     metricLower === "conversions" ||
-    metricLower === "engagements"
+    metricLower === "engagements" ||
+    metricLower === "videoviews" ||
+    metricLower === "video views" || // ✅ YouTube field name
+    metricLower === "watch25" ||
+    metricLower === "watch50" ||
+    metricLower === "watch75" ||
+    metricLower === "watch100" ||
+    metricLower === "watch 25% views" || // ✅ YouTube field names
+    metricLower === "watch 50% views" ||
+    metricLower === "watch 75% views" ||
+    metricLower === "watch 100% views"
   ) {
-    return value?.toLocaleString(); // ✅ FIXED: Removed frequency from number format
+    const numValue = Number(value);
+    return isNaN(numValue) ? "0" : numValue.toLocaleString();
   }
 
-  return value?.toLocaleString();
+  // ✅ FIXED: Default case with proper comma formatting
+  const numValue = Number(value);
+  return isNaN(numValue) ? "0" : numValue.toLocaleString();
 };

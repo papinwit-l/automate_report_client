@@ -1,9 +1,14 @@
 // contexts/DataContext.js
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { fetchDataSheet } from "../services/dataServices";
+import {
+  fetchDataSheet,
+  fetchDataSheetEnhanced,
+} from "../services/dataServices";
 import { createStateSettersMap } from "../utils/dataUtils";
 import { DEFAULT_METRICS } from "../configs/dataConfigs";
-import axios from "axios";
+import axiosInstance from "../configs/axiosConfigs"; // ✅ Updated: Use centralized axios
+import { FACEBOOK_CHANNELS_MAP } from "@/configs/facebookDataConfigs";
+import { TIKTOK_CHANNELS_MAP } from "@/configs/tiktokDataConfigs";
 
 const DataContext = createContext();
 
@@ -22,8 +27,19 @@ export const DataProvider = ({ children }) => {
     from: undefined,
     to: undefined,
   });
+  const [enableProjectFilter, setEnableProjectFilter] = useState(false);
+  const [projectList, setProjectList] = useState([]);
+  const [projectFilter, setProjectFilter] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [notFoundSheetList, setNotFoundSheetList] = useState([]);
+
+  //Overall Data
+  const [overallData, setOverallData] = useState({});
+  const [overallTotals, setOverallTotals] = useState({});
+  const [overallMetrics, setOverallMetrics] = useState(DEFAULT_METRICS.overall);
+  const [overallComparison, setOverallComparison] = useState({});
 
   // SEM Data
   const [SEMData, setSEMData] = useState({});
@@ -50,6 +66,28 @@ export const DataProvider = ({ children }) => {
   const [DiscMetrics, setDiscMetrics] = useState(DEFAULT_METRICS.Disc);
   const [DiscComparison, setDiscComparison] = useState({});
 
+  // Youtube Data
+  const [YoutubeData, setYoutubeData] = useState({});
+  const [YoutubeTotals, setYoutubeTotals] = useState({});
+  const [YoutubeMetrics, setYoutubeMetrics] = useState(DEFAULT_METRICS.Youtube);
+  const [YoutubeComparison, setYoutubeComparison] = useState({});
+
+  // Shopping Ads Data
+  const [ShoppingAdsData, setShoppingAdsData] = useState({});
+  const [ShoppingAdsTotals, setShoppingAdsTotals] = useState({});
+  const [ShoppingAdsMetrics, setShoppingAdsMetrics] = useState(
+    DEFAULT_METRICS.ShoppingAds
+  );
+  const [ShoppingAdsComparison, setShoppingAdsComparison] = useState({});
+
+  // Performance Max Data
+  const [PerformanceMaxData, setPerformanceMaxData] = useState({});
+  const [PerformanceMaxTotals, setPerformanceMaxTotals] = useState({});
+  const [PerformanceMaxMetrics, setPerformanceMaxMetrics] = useState(
+    DEFAULT_METRICS.PerformanceMax
+  );
+  const [PerformanceMaxComparison, setPerformanceMaxComparison] = useState({});
+
   // Facebook Data
   const [FacebookAudienceData, setFacebookAudienceData] = useState({});
   const [FacebookAudienceTotals, setFacebookAudienceTotals] = useState({});
@@ -61,6 +99,30 @@ export const DataProvider = ({ children }) => {
   const [FacebookAudienceComparison, setFacebookAudienceComparison] = useState(
     {}
   );
+
+  const [FBDemographicData, setFBDemographicData] = useState({});
+  const [FBDemographicTotals, setFBDemographicTotals] = useState({});
+  const [FBDemographicMetrics, setFBDemographicMetrics] = useState(
+    DEFAULT_METRICS.FBDemographic
+  );
+
+  // Facebook Awareness Data
+  const [FacebookAwarenessAudienceData, setFacebookAwarenessAudienceData] =
+    useState({});
+  const [FacebookAwarenessAudienceTotals, setFacebookAwarenessAudienceTotals] =
+    useState({});
+  const [FacebookAwarenessCreativeData, setFacebookAwarenessCreativeData] =
+    useState({});
+  const [FacebookAwarenessCreativeTotals, setFacebookAwarenessCreativeTotals] =
+    useState({});
+  const [
+    FacebookAwarenessAudienceMetrics,
+    setFacebookAwarenessAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookAwareness);
+  const [
+    FacebookAwarenessAudienceComparison,
+    setFacebookAwarenessAudienceComparison,
+  ] = useState({});
 
   // Facebook Reach Data (separate state for filtered data)
   const [FacebookReachAudienceData, setFacebookReachAudienceData] = useState(
@@ -74,12 +136,131 @@ export const DataProvider = ({ children }) => {
   const [FacebookReachCreativeTotals, setFacebookReachCreativeTotals] =
     useState({});
   const [FacebookReachAudienceMetrics, setFacebookReachAudienceMetrics] =
-    useState(
-      DEFAULT_METRICS.FacebookAudience // ✅ FIXED: Use FacebookAudience instead of FacebookReach
-    );
+    useState(DEFAULT_METRICS.FacebookAudience);
   const [FacebookReachAudienceComparison, setFacebookReachAudienceComparison] =
     useState({});
 
+  //Facebook Engagement Data
+  const [FacebookEngagementAudienceData, setFacebookEngagementAudienceData] =
+    useState({});
+  const [
+    FacebookEngagementAudienceTotals,
+    setFacebookEngagementAudienceTotals,
+  ] = useState({});
+  const [FacebookEngagementCreativeData, setFacebookEngagementCreativeData] =
+    useState({});
+  const [
+    FacebookEngagementCreativeTotals,
+    setFacebookEngagementCreativeTotals,
+  ] = useState({});
+  const [
+    FacebookEngagementAudienceMetrics,
+    setFacebookEngagementAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookAudience);
+  const [
+    FacebookEngagementAudienceComparison,
+    setFacebookEngagementAudienceComparison,
+  ] = useState({});
+
+  // Facebook Message Data
+  const [FacebookMessageAudienceData, setFacebookMessageAudienceData] =
+    useState({});
+  const [FacebookMessageAudienceTotals, setFacebookMessageAudienceTotals] =
+    useState({});
+  const [FacebookMessageCreativeData, setFacebookMessageCreativeData] =
+    useState({});
+  const [FacebookMessageCreativeTotals, setFacebookMessageCreativeTotals] =
+    useState({});
+  const [FacebookMessageAudienceMetrics, setFacebookMessageAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookMessage);
+  const [
+    FacebookMessageAudienceComparison,
+    setFacebookMessageAudienceComparison,
+  ] = useState({});
+
+  // Facebook Lead Data
+  const [FacebookLeadAudienceData, setFacebookLeadAudienceData] = useState({});
+  const [FacebookLeadAudienceTotals, setFacebookLeadAudienceTotals] = useState(
+    {}
+  );
+  const [FacebookLeadCreativeData, setFacebookLeadCreativeData] = useState({});
+  const [FacebookLeadCreativeTotals, setFacebookLeadCreativeTotals] = useState(
+    {}
+  );
+  const [FacebookLeadAudienceMetrics, setFacebookLeadAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookLead);
+  const [FacebookLeadAudienceComparison, setFacebookLeadAudienceComparison] =
+    useState({});
+
+  // Facebook Conversion Data
+  const [FacebookConversionAudienceData, setFacebookConversionAudienceData] =
+    useState({});
+  const [
+    FacebookConversionAudienceTotals,
+    setFacebookConversionAudienceTotals,
+  ] = useState({});
+  const [FacebookConversionCreativeData, setFacebookConversionCreativeData] =
+    useState({});
+  const [
+    FacebookConversionCreativeTotals,
+    setFacebookConversionCreativeTotals,
+  ] = useState({});
+  const [
+    FacebookConversionAudienceMetrics,
+    setFacebookConversionAudienceMetrics,
+  ] = useState(DEFAULT_METRICS.FacebookConversion);
+  const [
+    FacebookConversionAudienceComparison,
+    setFacebookConversionAudienceComparison,
+  ] = useState({});
+
+  // Facebook Traffic Data
+  const [FacebookTrafficAudienceData, setFacebookTrafficAudienceData] =
+    useState({});
+  const [FacebookTrafficAudienceTotals, setFacebookTrafficAudienceTotals] =
+    useState({});
+  const [FacebookTrafficCreativeData, setFacebookTrafficCreativeData] =
+    useState({});
+  const [FacebookTrafficCreativeTotals, setFacebookTrafficCreativeTotals] =
+    useState({});
+  const [FacebookTrafficAudienceMetrics, setFacebookTrafficAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookTraffic);
+  const [
+    FacebookTrafficAudienceComparison,
+    setFacebookTrafficAudienceComparison,
+  ] = useState({});
+
+  // Facebook Video
+  const [FacebookVideoAudienceData, setFacebookVideoAudienceData] = useState(
+    {}
+  );
+  const [FacebookVideoAudienceTotals, setFacebookVideoAudienceTotals] =
+    useState({});
+  const [FacebookVideoAudienceMetrics, setFacebookVideoAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookVideo);
+  const [FacebookVideoComparison, setFacebookVideoComparison] = useState({});
+  const [FacebookVideoCreativeData, setFacebookVideoCreativeData] = useState(
+    {}
+  );
+  const [FacebookVideoCreativeTotals, setFacebookVideoCreativeTotals] =
+    useState({});
+
+  const [FacebookCatalogAudienceData, setFacebookCatalogAudienceData] =
+    useState({});
+  const [FacebookCatalogAudienceTotals, setFacebookCatalogAudienceTotals] =
+    useState({});
+  const [FacebookCatalogCreativeData, setFacebookCatalogCreativeData] =
+    useState({});
+  const [FacebookCatalogCreativeTotals, setFacebookCatalogCreativeTotals] =
+    useState({});
+  const [FacebookCatalogAudienceMetrics, setFacebookCatalogAudienceMetrics] =
+    useState(DEFAULT_METRICS.FacebookCatalog);
+  const [
+    FacebookCatalogAudienceComparison,
+    setFacebookCatalogAudienceComparison,
+  ] = useState({});
+
+  // Facebook Ads
   const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
 
   // TikTok Data
@@ -92,31 +273,168 @@ export const DataProvider = ({ children }) => {
   );
   const [TikTokAudienceComparison, setTikTokAudienceComparison] = useState({});
 
-  // Instagram Data
-  const [InstagramAudienceData, setInstagramAudienceData] = useState({});
-  const [InstagramAudienceTotals, setInstagramAudienceTotals] = useState({});
-  const [InstagramCreativeData, setInstagramCreativeData] = useState({});
-  const [InstagramCreativeTotals, setInstagramCreativeTotals] = useState({});
-  const [InstagramAudienceMetrics, setInstagramAudienceMetrics] = useState(
-    DEFAULT_METRICS.InstagramAudience
+  // TikTok Lead Data
+  const [TikTokLeadAudienceData, setTikTokLeadAudienceData] = useState({});
+  const [TikTokLeadAudienceTotals, setTikTokLeadAudienceTotals] = useState({});
+  const [TikTokLeadCreativeData, setTikTokLeadCreativeData] = useState({});
+  const [TikTokLeadCreativeTotals, setTikTokLeadCreativeTotals] = useState({});
+  const [TikTokLeadAudienceMetrics, setTikTokLeadAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokLead
   );
-  const [InstagramAudienceComparison, setInstagramAudienceComparison] =
+  const [TikTokLeadAudienceComparison, setTikTokLeadAudienceComparison] =
     useState({});
+
+  // TikTok Reach Data
+  const [TikTokReachAudienceData, setTikTokReachAudienceData] = useState({});
+  const [TikTokReachAudienceTotals, setTikTokReachAudienceTotals] = useState(
+    {}
+  );
+  const [TikTokReachCreativeData, setTikTokReachCreativeData] = useState({});
+  const [TikTokReachCreativeTotals, setTikTokReachCreativeTotals] = useState(
+    {}
+  );
+  const [TikTokReachAudienceMetrics, setTikTokReachAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokReach
+  );
+  const [TikTokReachAudienceComparison, setTikTokReachAudienceComparison] =
+    useState({});
+
+  // TikTok Traffic Data
+  const [TikTokTrafficAudienceData, setTikTokTrafficAudienceData] = useState(
+    {}
+  );
+  const [TikTokTrafficAudienceTotals, setTikTokTrafficAudienceTotals] =
+    useState({});
+  const [TikTokTrafficCreativeData, setTikTokTrafficCreativeData] = useState(
+    {}
+  );
+  const [TikTokTrafficCreativeTotals, setTikTokTrafficCreativeTotals] =
+    useState({});
+  const [TikTokTrafficAudienceMetrics, setTikTokTrafficAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokTraffic);
+  const [TikTokTrafficAudienceComparison, setTikTokTrafficAudienceComparison] =
+    useState({});
+
+  // TikTok Conversion Data
+  const [TikTokConversionAudienceData, setTikTokConversionAudienceData] =
+    useState({});
+  const [TikTokConversionAudienceTotals, setTikTokConversionAudienceTotals] =
+    useState({});
+  const [TikTokConversionCreativeData, setTikTokConversionCreativeData] =
+    useState({});
+  const [TikTokConversionCreativeTotals, setTikTokConversionCreativeTotals] =
+    useState({});
+  const [TikTokConversionAudienceMetrics, setTikTokConversionAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokConversion);
+  const [
+    TikTokConversionAudienceComparison,
+    setTikTokConversionAudienceComparison,
+  ] = useState({});
+
+  // TikTok Video Data
+  const [TikTokVideoAudienceData, setTikTokVideoAudienceData] = useState({});
+  const [TikTokVideoAudienceTotals, setTikTokVideoAudienceTotals] = useState(
+    {}
+  );
+  const [TikTokVideoCreativeData, setTikTokVideoCreativeData] = useState({});
+  const [TikTokVideoCreativeTotals, setTikTokVideoCreativeTotals] = useState(
+    {}
+  );
+  const [TikTokVideoAudienceMetrics, setTikTokVideoAudienceMetrics] = useState(
+    DEFAULT_METRICS.TikTokVideo
+  );
+  const [TikTokVideoAudienceComparison, setTikTokVideoAudienceComparison] =
+    useState({});
+
+  // TikTok Follower Data
+  const [TikTokFollowerAudienceData, setTikTokFollowerAudienceData] = useState(
+    {}
+  );
+  const [TikTokFollowerAudienceTotals, setTikTokFollowerAudienceTotals] =
+    useState({});
+  const [TikTokFollowerCreativeData, setTikTokFollowerCreativeData] = useState(
+    {}
+  );
+  const [TikTokFollowerCreativeTotals, setTikTokFollowerCreativeTotals] =
+    useState({});
+  const [TikTokFollowerAudienceMetrics, setTikTokFollowerAudienceMetrics] =
+    useState(DEFAULT_METRICS.TikTokFollower);
+  const [
+    TikTokFollowerAudienceComparison,
+    setTikTokFollowerAudienceComparison,
+  ] = useState({});
+
+  // Line Reach
+  const [LineReachAudienceData, setLineReachAudienceData] = useState({});
+  const [LineReachAudienceTotals, setLineReachAudienceTotals] = useState({});
+  const [LineReachCreativeData, setLineReachCreativeData] = useState({});
+  const [LineReachCreativeTotals, setLineReachCreativeTotals] = useState({});
+  const [LineReachAudienceMetrics, setLineReachAudienceMetrics] = useState(
+    DEFAULT_METRICS.LineReach
+  );
+  const [LineReachAudienceComparison, setLineReachAudienceComparison] =
+    useState({});
+
+  //Line Gain Friends
+  const [LineGainFriendsAudienceData, setLineGainFriendsAudienceData] =
+    useState({});
+  const [LineGainFriendsAudienceTotals, setLineGainFriendsAudienceTotals] =
+    useState({});
+  const [LineGainFriendsCreativeData, setLineGainFriendsCreativeData] =
+    useState({});
+  const [LineGainFriendsCreativeTotals, setLineGainFriendsCreativeTotals] =
+    useState({});
+  const [LineGainFriendsAudienceMetrics, setLineGainFriendsAudienceMetrics] =
+    useState(DEFAULT_METRICS.LineGainFriends);
+  const [
+    LineGainFriendsAudienceComparison,
+    setLineGainFriendsAudienceComparison,
+  ] = useState({});
+
+  // Taboola
+  const [TaboolaData, setTaboolaData] = useState({});
+  const [TaboolaTotals, setTaboolaTotals] = useState({});
+  const [TaboolaMetrics, setTaboolaMetrics] = useState(DEFAULT_METRICS.Taboola);
+  const [TaboolaComparison, setTaboolaComparison] = useState({});
 
   // Create metrics map
   const metricsMap = {
+    overall: overallMetrics,
     SEM: SEMMetrics,
     GGDemographic: GGDemographicMetrics,
     GDN: GDNMetrics,
     Disc: DiscMetrics,
+    Youtube: YoutubeMetrics,
+    ShoppingAds: ShoppingAdsMetrics,
+    PerformanceMax: PerformanceMaxMetrics,
     FacebookAudience: FacebookAudienceMetrics,
+    FacebookAwareness: FacebookAwarenessAudienceMetrics,
     FacebookReach: FacebookReachAudienceMetrics, // ✅ ADDED: Missing FacebookReach entry
+    FacebookEngagement: FacebookEngagementAudienceMetrics,
+    FacebookMessage: FacebookMessageAudienceMetrics,
+    FacebookLead: FacebookLeadAudienceMetrics,
+    FacebookConversion: FacebookConversionAudienceMetrics,
+    FacebookTraffic: FacebookTrafficAudienceMetrics,
+    FacebookVideo: FacebookVideoAudienceMetrics,
+    FacebookCatalog: FacebookCatalogAudienceMetrics,
     TikTokAudience: TikTokAudienceMetrics,
-    InstagramAudience: InstagramAudienceMetrics,
+    TikTokLead: TikTokLeadAudienceMetrics,
+    TikTokReach: TikTokReachAudienceMetrics,
+    TikTokTraffic: TikTokTrafficAudienceMetrics,
+    TikTokConversion: TikTokConversionAudienceMetrics,
+    TikTokVideo: TikTokVideoAudienceMetrics,
+    TikTokFollower: TikTokFollowerAudienceMetrics,
+    LineReach: LineReachAudienceMetrics,
+    LineGainFriends: LineGainFriendsAudienceMetrics,
+    Taboola: TaboolaMetrics,
   };
 
   // Create setters map
   const settersMap = createStateSettersMap({
+    setOverallData,
+    setOverallTotals,
+    setOverallMetrics,
+    setOverallComparison,
     setSEMData,
     setSEMTotals,
     setSEMMetrics,
@@ -132,30 +450,139 @@ export const DataProvider = ({ children }) => {
     setDiscTotals,
     setDiscMetrics,
     setDiscComparison,
+    setYoutubeData,
+    setYoutubeTotals,
+    setYoutubeMetrics,
+    setYoutubeComparison,
+    setShoppingAdsData,
+    setShoppingAdsTotals,
+    setShoppingAdsMetrics,
+    setShoppingAdsComparison,
+    setPerformanceMaxData,
+    setPerformanceMaxTotals,
+    setPerformanceMaxMetrics,
+    setPerformanceMaxComparison,
     setFacebookAudienceData,
     setFacebookAudienceTotals,
     setFacebookCreativeData,
     setFacebookCreativeTotals,
     setFacebookAudienceMetrics,
     setFacebookAudienceComparison,
+    setFacebookAwarenessAudienceData,
+    setFacebookAwarenessAudienceTotals,
+    setFacebookAwarenessCreativeData,
+    setFacebookAwarenessCreativeTotals,
+    setFacebookAwarenessAudienceMetrics,
+    setFacebookAwarenessAudienceComparison,
+    setFBDemographicData,
+    setFBDemographicMetrics,
+    setFBDemographicTotals,
     setFacebookReachAudienceData,
     setFacebookReachAudienceTotals,
     setFacebookReachCreativeData,
     setFacebookReachCreativeTotals,
     setFacebookReachAudienceMetrics,
     setFacebookReachAudienceComparison,
+    setFacebookEngagementAudienceData,
+    setFacebookEngagementAudienceTotals,
+    setFacebookEngagementCreativeData,
+    setFacebookEngagementCreativeTotals,
+    setFacebookEngagementAudienceMetrics,
+    setFacebookEngagementAudienceComparison,
+    setFacebookMessageAudienceData,
+    setFacebookMessageAudienceTotals,
+    setFacebookMessageCreativeData,
+    setFacebookMessageCreativeTotals,
+    setFacebookMessageAudienceMetrics,
+    setFacebookMessageAudienceComparison,
+    setFacebookLeadAudienceData,
+    setFacebookLeadAudienceTotals,
+    setFacebookLeadCreativeData,
+    setFacebookLeadCreativeTotals,
+    setFacebookLeadAudienceMetrics,
+    setFacebookLeadAudienceComparison,
+    setFacebookConversionAudienceData,
+    setFacebookConversionAudienceTotals,
+    setFacebookConversionCreativeData,
+    setFacebookConversionCreativeTotals,
+    setFacebookConversionAudienceMetrics,
+    setFacebookConversionAudienceComparison,
+    setFacebookTrafficAudienceData,
+    setFacebookTrafficAudienceTotals,
+    setFacebookTrafficCreativeData,
+    setFacebookTrafficCreativeTotals,
+    setFacebookTrafficAudienceMetrics,
+    setFacebookTrafficAudienceComparison,
+    setFacebookVideoAudienceData,
+    setFacebookVideoAudienceTotals,
+    setFacebookVideoCreativeData,
+    setFacebookVideoCreativeTotals,
+    setFacebookVideoAudienceMetrics,
+    setFacebookVideoComparison,
+    setFacebookCatalogAudienceData,
+    setFacebookCatalogAudienceTotals,
+    setFacebookCatalogCreativeData,
+    setFacebookCatalogCreativeTotals,
+    setFacebookCatalogAudienceMetrics,
+    setFacebookCatalogAudienceComparison,
     setTikTokAudienceData,
     setTikTokAudienceTotals,
     setTikTokCreativeData,
     setTikTokCreativeTotals,
     setTikTokAudienceMetrics,
     setTikTokAudienceComparison,
-    setInstagramAudienceData,
-    setInstagramAudienceTotals,
-    setInstagramCreativeData,
-    setInstagramCreativeTotals,
-    setInstagramAudienceMetrics,
-    setInstagramAudienceComparison,
+    setTikTokLeadAudienceData,
+    setTikTokLeadAudienceTotals,
+    setTikTokLeadCreativeData,
+    setTikTokLeadCreativeTotals,
+    setTikTokLeadAudienceMetrics,
+    setTikTokLeadAudienceComparison,
+    setTikTokReachAudienceData,
+    setTikTokReachAudienceTotals,
+    setTikTokReachCreativeData,
+    setTikTokReachCreativeTotals,
+    setTikTokReachAudienceMetrics,
+    setTikTokReachAudienceComparison,
+    setTikTokTrafficAudienceData,
+    setTikTokTrafficAudienceTotals,
+    setTikTokTrafficCreativeData,
+    setTikTokTrafficCreativeTotals,
+    setTikTokTrafficAudienceMetrics,
+    setTikTokTrafficAudienceComparison,
+    setTikTokConversionAudienceData,
+    setTikTokConversionAudienceTotals,
+    setTikTokConversionCreativeData,
+    setTikTokConversionCreativeTotals,
+    setTikTokConversionAudienceMetrics,
+    setTikTokConversionAudienceComparison,
+    setTikTokVideoAudienceData,
+    setTikTokVideoAudienceTotals,
+    setTikTokVideoCreativeData,
+    setTikTokVideoCreativeTotals,
+    setTikTokVideoAudienceMetrics,
+    setTikTokVideoAudienceComparison,
+    setTikTokFollowerAudienceData,
+    setTikTokFollowerAudienceTotals,
+    setTikTokFollowerCreativeData,
+    setTikTokFollowerCreativeTotals,
+    setTikTokFollowerAudienceMetrics,
+    setTikTokFollowerAudienceComparison,
+    setLineReachAudienceData,
+    setLineReachAudienceTotals,
+    setLineReachCreativeData,
+    setLineReachCreativeTotals,
+    setLineReachAudienceMetrics,
+    setLineReachAudienceComparison,
+    setLineGainFriendsAudienceData,
+    setLineGainFriendsAudienceTotals,
+    setLineGainFriendsCreativeData,
+    setLineGainFriendsCreativeTotals,
+    setLineGainFriendsAudienceMetrics,
+    setLineGainFriendsAudienceComparison,
+    setTaboolaData,
+    setTaboolaTotals,
+    setTaboolaMetrics,
+    setTaboolaComparison,
   });
 
   // Helper function to build fetch options
@@ -169,11 +596,25 @@ export const DataProvider = ({ children }) => {
   });
 
   // Individual data fetching functions
+  const getOverallData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "overall",
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
+    );
+    // console.log("Overall Data", result);
+    return result;
+  };
+
   const getSEMData = async (id, filterBy = null, filterValue = null) => {
     return await fetchDataSheet(
       "SEM",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -181,7 +622,9 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "GGDemographic",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -189,7 +632,9 @@ export const DataProvider = ({ children }) => {
     return await fetchDataSheet(
       "GDN",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
   };
 
@@ -197,55 +642,154 @@ export const DataProvider = ({ children }) => {
     const result = await fetchDataSheet(
       "Disc",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
-    console.log("🎯 getDiscData result:", result);
+    // console.log("🎯 getDiscData result:", result);
     return result;
   };
 
-  const getFacebookData = async (id, filterBy = null, filterValue = null) => {
-    return await fetchDataSheet(
-      "FacebookAudience",
+  const getYoutubeData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "Youtube",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
+    // console.log("🎯 getYoutubeData result:", result);
+    return result;
   };
 
-  const getFacebookReachData = async (
+  const getShoppingAdsData = async (
     id,
     filterBy = null,
     filterValue = null
   ) => {
-    console.log("🎯 getFacebookReachData called with:", {
-      id,
-      filterBy,
-      filterValue,
-    });
-
     const result = await fetchDataSheet(
-      "FacebookReach",
+      "ShoppingAds",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
-
-    console.log("📊 getFacebookReachData result:", result);
+    // console.log("🎯 getShoppingAdsData result:", result);
     return result;
   };
 
-  const getTikTokData = async (id, filterBy = null, filterValue = null) => {
-    return await fetchDataSheet(
-      "TikTokAudience",
+  const getPerformanceMaxData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "PerformanceMax",
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
     );
+    // console.log("🎯 getPerformanceMaxData result:", result);
+    return result;
   };
 
-  const getInstagramData = async (id, filterBy = null, filterValue = null) => {
-    return await fetchDataSheet(
-      "InstagramAudience",
+  const getFacebookData = async (
+    parameters,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const { id, endpoint } = parameters;
+    const result = await fetchDataSheetEnhanced(
+      FACEBOOK_CHANNELS_MAP,
       id,
-      buildFetchOptions(filterBy, filterValue)
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList,
+      endpoint
     );
+
+    // The result now contains all Facebook data types
+    // You might want to log or handle the results appropriately
+    // console.log("Enhanced Facebook Data Results:", result);
+
+    return result;
+  };
+
+  const getTikTokData = async (
+    parameters,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const { id, endpoint } = parameters;
+    const result = await fetchDataSheetEnhanced(
+      TIKTOK_CHANNELS_MAP,
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList,
+      endpoint
+    );
+
+    // debug log
+    // console.log("📊 getTikTokData result:", result);
+    return result;
+  };
+
+  const getLineReachData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "LineReach",
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
+    );
+    // console.log("🎯 getLineReachData result:", result);
+    return result;
+  };
+
+  const getLineGainFriendsData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "LineGainFriends",
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
+    );
+    // console.log("🎯 getLineGainFriendsData result:", result);
+    return result;
+  };
+
+  const getTaboolaData = async (id, filterBy = null, filterValue = null) => {
+    const result = await fetchDataSheet(
+      "Taboola",
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
+    );
+    // console.log("🎯 getTaboolaData result:", result);
+    return result;
+  };
+
+  const getFBDemographicData = async (
+    id,
+    filterBy = null,
+    filterValue = null
+  ) => {
+    const result = await fetchDataSheet(
+      "FBDemographic",
+      id,
+      buildFetchOptions(filterBy, filterValue),
+      projectFilter,
+      setNotFoundSheetList
+    );
+    // console.log("FB Demo", result);
+    return result;
   };
 
   // Main fetch function
@@ -254,18 +798,25 @@ export const DataProvider = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
+        setNotFoundSheetList([]);
 
         // Fetch all data types in parallel for better performance
         const promises = [
-          getSEMData(id),
           getGGDemographic(id),
+          getFBDemographicData(id),
+          getOverallData(id),
+          getSEMData(id),
           getGDNData(id),
           getDiscData(id),
-          getFacebookData(id),
-          getFacebookReachData(id, "Channel", "FB Reach"),
+          getYoutubeData(id),
+          getShoppingAdsData(id),
+          getPerformanceMaxData(id),
+          getFacebookData({ id, endpoint: "facebook-data" }),
+          getTikTokData({ id, endpoint: "tiktok-data" }),
+          getLineReachData(id, "Channel", "Line Reach"),
+          getLineGainFriendsData(id, "Channel", "Line Gain Friends"),
+          getTaboolaData(id),
           fetchFacebookPicture(id),
-          // getTikTokData(id),
-          // getInstagramData(id),
         ];
 
         await Promise.all(promises);
@@ -283,46 +834,10 @@ export const DataProvider = ({ children }) => {
     [enableDateRange, dateRange, metricsMap]
   );
 
-  // ✅ FIXED: Updated fetchDataType to support filtering
-  const fetchDataType = useCallback(
-    async (dataType, id, filterBy = null, filterValue = null) => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const fetchFunction = {
-          SEM: getSEMData,
-          GGDemographic: getGGDemographic,
-          GDN: getGDNData,
-          Disc: getDiscData,
-          FacebookAudience: getFacebookData,
-          FacebookReach: getFacebookReachData, // ✅ ADDED: Missing FacebookReach mapping
-          TikTokAudience: getTikTokData,
-          InstagramAudience: getInstagramData,
-        }[dataType];
-
-        if (!fetchFunction) {
-          throw new Error(`Unknown data type: ${dataType}`);
-        }
-
-        return await fetchFunction(id, filterBy, filterValue); // ✅ FIXED: Pass filter parameters
-      } catch (err) {
-        console.error(`Error fetching ${dataType} data:`, err);
-        const errorMessage =
-          err?.response?.data?.message ||
-          `Failed to fetch ${dataType} data. Please try again.`;
-        setError(errorMessage);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [enableDateRange, dateRange, metricsMap]
-  );
-
+  // ✅ Updated: Use centralized axios instance with relative URL
   const fetchFacebookPicture = async (id) => {
-    const response = await axios.get(
-      `http://localhost:8000/data-sheets/facebook-picture/${id}`
+    const response = await axiosInstance.get(
+      `/data-sheets/facebook-picture/${id}`
     );
     const rawData = response.data.data;
     const headers = rawData[0];
@@ -335,9 +850,21 @@ export const DataProvider = ({ children }) => {
     // console.log("dataObjects", dataObjects);
     const dateFilteredData = filterDataByDate(dataObjects, dateRange);
     // console.log("data:", dateFilteredData);
-    const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+    // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+    const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
     // console.log("resultData:", resultData);
     setFacebookAdsPicture(resultData);
+  };
+
+  const filterDataByColumn = (data, column, columnValue, options = {}) => {
+    if (!Array.isArray(data)) return [];
+
+    return data.filter((item) => {
+      const value = item?.[column];
+      return options.strictEquality
+        ? value === columnValue
+        : value == columnValue;
+    });
   };
 
   function filterDataByDate(data, dateRange) {
@@ -359,22 +886,20 @@ export const DataProvider = ({ children }) => {
     const toDateStr = toDateUTC7.toISOString().split("T")[0];
 
     return data.filter((item) => {
-      const itemDate = item["Updated Date"];
+      const itemDate = item["Updated Date"] || item["Date"];
       return itemDate >= fromDateStr && itemDate <= toDateStr;
     });
   }
 
-  const removeDuplicateByColumnMap = (data, column) => {
-    const map = new Map();
+  const removeDuplicateByColumn = (data, column) => {
+    const map = {};
 
     for (const item of data) {
       const key = item[column];
-      if (!map.has(key)) {
-        map.set(key, item);
-      }
+      map[key] = map[key] ? Object.assign(map[key], item) : item;
     }
 
-    return Array.from(map.values());
+    return Object.values(map);
   };
 
   const value = {
@@ -385,10 +910,25 @@ export const DataProvider = ({ children }) => {
     setEnableDateRange,
     dateRange,
     setDateRange,
+    enableProjectFilter,
+    setEnableProjectFilter,
+    projectList,
+    setProjectList,
+    projectFilter,
+    setProjectFilter,
+
+    // sheet not found list
+    notFoundSheetList,
+    setNotFoundSheetList,
 
     // Fetch functions
     fetchData,
-    fetchDataType,
+
+    // Overall
+    overallData,
+    overallTotals,
+    overallMetrics,
+    overallComparison,
 
     // SEM
     SEMData,
@@ -413,6 +953,24 @@ export const DataProvider = ({ children }) => {
     DiscMetrics,
     DiscComparison,
 
+    // Youtube
+    YoutubeData,
+    YoutubeTotals,
+    YoutubeMetrics,
+    YoutubeComparison,
+
+    // Shopping Ads
+    ShoppingAdsData,
+    ShoppingAdsTotals,
+    ShoppingAdsMetrics,
+    ShoppingAdsComparison,
+
+    // PerformanceMax
+    PerformanceMaxData,
+    PerformanceMaxTotals,
+    PerformanceMaxMetrics,
+    PerformanceMaxComparison,
+
     // Facebook
     FacebookAudienceData,
     FacebookAudienceTotals,
@@ -421,6 +979,15 @@ export const DataProvider = ({ children }) => {
     FacebookAudienceMetrics,
     FacebookAudienceComparison,
     FacebookAdsPicture,
+    FBDemographicData,
+
+    // Facebook Awareness
+    FacebookAwarenessAudienceData,
+    FacebookAwarenessAudienceTotals,
+    FacebookAwarenessCreativeData,
+    FacebookAwarenessCreativeTotals,
+    FacebookAwarenessAudienceMetrics,
+    FacebookAwarenessAudienceComparison,
 
     // Facebook Reach (filtered data)
     FacebookReachAudienceData,
@@ -430,6 +997,62 @@ export const DataProvider = ({ children }) => {
     FacebookReachAudienceMetrics,
     FacebookReachAudienceComparison,
 
+    // Facebook Engagement
+    FacebookEngagementAudienceData,
+    FacebookEngagementAudienceTotals,
+    FacebookEngagementCreativeData,
+    FacebookEngagementCreativeTotals,
+    FacebookEngagementAudienceMetrics,
+    FacebookEngagementAudienceComparison,
+
+    // Facebook Message
+    FacebookMessageAudienceData,
+    FacebookMessageAudienceTotals,
+    FacebookMessageCreativeData,
+    FacebookMessageCreativeTotals,
+    FacebookMessageAudienceMetrics,
+    FacebookMessageAudienceComparison,
+
+    // Facebook Lead
+    FacebookLeadAudienceData,
+    FacebookLeadAudienceTotals,
+    FacebookLeadCreativeData,
+    FacebookLeadCreativeTotals,
+    FacebookLeadAudienceMetrics,
+    FacebookLeadAudienceComparison,
+
+    // Facebook Conversion
+    FacebookConversionAudienceData,
+    FacebookConversionAudienceTotals,
+    FacebookConversionCreativeData,
+    FacebookConversionCreativeTotals,
+    FacebookConversionAudienceMetrics,
+    FacebookConversionAudienceComparison,
+
+    // Facebook Traffic
+    FacebookTrafficAudienceData,
+    FacebookTrafficAudienceTotals,
+    FacebookTrafficCreativeData,
+    FacebookTrafficCreativeTotals,
+    FacebookTrafficAudienceMetrics,
+    FacebookTrafficAudienceComparison,
+
+    // Facebook Video
+    FacebookVideoAudienceData,
+    FacebookVideoAudienceTotals,
+    FacebookVideoCreativeData,
+    FacebookVideoCreativeTotals,
+    FacebookVideoAudienceMetrics,
+    FacebookVideoComparison,
+
+    // Facebook Catalog
+    FacebookCatalogAudienceData,
+    FacebookCatalogAudienceTotals,
+    FacebookCatalogCreativeData,
+    FacebookCatalogCreativeTotals,
+    FacebookCatalogAudienceMetrics,
+    FacebookCatalogAudienceComparison,
+
     // TikTok
     TikTokAudienceData,
     TikTokAudienceTotals,
@@ -438,13 +1061,75 @@ export const DataProvider = ({ children }) => {
     TikTokAudienceMetrics,
     TikTokAudienceComparison,
 
-    // Instagram
-    InstagramAudienceData,
-    InstagramAudienceTotals,
-    InstagramCreativeData,
-    InstagramCreativeTotals,
-    InstagramAudienceMetrics,
-    InstagramAudienceComparison,
+    // TikTok Lead
+    TikTokLeadAudienceData,
+    TikTokLeadAudienceTotals,
+    TikTokLeadCreativeData,
+    TikTokLeadCreativeTotals,
+    TikTokLeadAudienceMetrics,
+    TikTokLeadAudienceComparison,
+
+    // TikTok Reach
+    TikTokReachAudienceData,
+    TikTokReachAudienceTotals,
+    TikTokReachCreativeData,
+    TikTokReachCreativeTotals,
+    TikTokReachAudienceMetrics,
+    TikTokReachAudienceComparison,
+
+    // TikTok Traffic
+    TikTokTrafficAudienceData,
+    TikTokTrafficAudienceTotals,
+    TikTokTrafficCreativeData,
+    TikTokTrafficCreativeTotals,
+    TikTokTrafficAudienceMetrics,
+    TikTokTrafficAudienceComparison,
+
+    // TikTok Conversion
+    TikTokConversionAudienceData,
+    TikTokConversionAudienceTotals,
+    TikTokConversionCreativeData,
+    TikTokConversionCreativeTotals,
+    TikTokConversionAudienceMetrics,
+    TikTokConversionAudienceComparison,
+
+    // TikTok Video
+    TikTokVideoAudienceData,
+    TikTokVideoAudienceTotals,
+    TikTokVideoCreativeData,
+    TikTokVideoCreativeTotals,
+    TikTokVideoAudienceMetrics,
+    TikTokVideoAudienceComparison,
+
+    // TikTok Follower
+    TikTokFollowerAudienceData,
+    TikTokFollowerAudienceTotals,
+    TikTokFollowerCreativeData,
+    TikTokFollowerCreativeTotals,
+    TikTokFollowerAudienceMetrics,
+    TikTokFollowerAudienceComparison,
+
+    // Line Reach
+    LineReachAudienceData,
+    LineReachAudienceTotals,
+    LineReachCreativeData,
+    LineReachCreativeTotals,
+    LineReachAudienceMetrics,
+    LineReachAudienceComparison,
+
+    // Line Gain Friends
+    LineGainFriendsAudienceData,
+    LineGainFriendsAudienceTotals,
+    LineGainFriendsCreativeData,
+    LineGainFriendsCreativeTotals,
+    LineGainFriendsAudienceMetrics,
+    LineGainFriendsAudienceComparison,
+
+    // Taboola
+    TaboolaData,
+    TaboolaTotals,
+    TaboolaMetrics,
+    TaboolaComparison,
 
     //function
     fetchFacebookPicture,

@@ -35,17 +35,19 @@ function NumberDisplayBox({
 
   return (
     <div
-      className={`flex flex-col py-3 px-4 rounded-lg ${
+      className={`flex flex-col py-3 px-3 justify-between rounded-lg ${
         isConversion ? "bg-red-300" : "bg-gray-300"
       }`}
     >
-      <p className="text-sm">{title}</p>
-      <h2 className="text-2xl">{value}</h2>
-      <p className={`text-xs flex items-center ${getCompareColor()}`}>
-        {getCompareIcon()}
-        {compareValue !== "No data" && getCompareIcon() && " "}
-        {compareValue}
-      </p>
+      <p className="text-xs">{title}</p>
+      <div>
+        <h2 className="text-2xl">{value}</h2>
+        <p className={`text-xs flex items-center ${getCompareColor()}`}>
+          {getCompareIcon()}
+          {compareValue !== "No data" && getCompareIcon() && " "}
+          {compareValue}
+        </p>
+      </div>
     </div>
   );
 }

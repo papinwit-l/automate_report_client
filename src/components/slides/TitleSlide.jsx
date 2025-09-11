@@ -13,9 +13,11 @@ function TitleSlide({ projectName, reportType }) {
   //   console.log(dateRange);
   return (
     <div
-      id="facebook-awareness-component"
-      className="flex flex-col border w-7xl h-[720px] gap-2 relative group bg-main-secondary overflow-hidden"
+      id="title-component"
+      className="flex flex-col border w-7xl h-[720px] gap-2 relative group overflow-hidden"
+      // style={{ backgroundColor: "#405a5a" }}
     >
+      <div className="absolute bg-main-secondary h-full w-full"></div>
       <img
         className="absolute h-26 top-6 left-8"
         src={TYN_LOGO}
@@ -23,7 +25,7 @@ function TitleSlide({ projectName, reportType }) {
       />
       {/* CIRCLE BACKGROUND */}
       <div className="absolute left-28 top-[250px] border-[#4c6363] border-[1px] rounded-full w-[1400px] h-[1400px]" />
-      <div className="absolute top-5 right-14 text-xs text-main-tertiary leading-[100%] text-left">
+      <div className="absolute top-5 right-14 text-xs text-main-tertiary leading-[125%] text-left font-main-detail">
         <p>PRESENTED BY</p>
         <p>TYN MOON MAKERS CO.,LTD.</p>
       </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -17,7 +17,7 @@ import {
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
-function FacebookEngagementSlide() {
+function FacebookReachSlide() {
   const {
     loading,
     error,
@@ -29,59 +29,61 @@ function FacebookEngagementSlide() {
     FacebookAudienceComparison,
     FacebookCreativeData,
     FacebookCreativeTotals,
+    FacebookReachAudienceData,
+    FacebookReachAudienceTotals,
+    FacebookReachAudienceMetrics,
+    FacebookReachAudienceComparison,
+    FacebookReachCreativeData,
+    FacebookReachCreativeTotals,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([5, 4]);
+  const [maxTableRows, setMaxTableRows] = useState([5, 5]);
 
   const summarizeData = () => {
     // Handle "No Data" case
     if (
-      FacebookAudienceTotals?.clicks === "No Data" ||
-      !FacebookAudienceTotals ||
-      Object.keys(FacebookAudienceTotals).length === 0
+      FacebookReachAudienceTotals?.clicks === "No Data" ||
+      !FacebookReachAudienceTotals ||
+      Object.keys(FacebookReachAudienceTotals).length === 0
     ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
 
     let summaryTextTemp = "";
-    const overallText = `Overall Engagements: ** ${parseFloat(
-      FacebookAudienceTotals?.engagements?.toFixed(2) || 0
-    )?.toLocaleString()} post engagements**`;
+    const overallText = `Overall Reach: ** ${parseFloat(
+      FacebookReachAudienceTotals?.reach?.toFixed(2) || 0
+    )?.toLocaleString()} reaches**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
-    summaryTextTemp += `<li>Average CPE: **${FacebookAudienceTotals.cpe?.toLocaleString(
+    summaryTextTemp += `<li>Average CPR: **${FacebookReachAudienceTotals.cpr?.toLocaleString(
       undefined,
       { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
+    )} THB (per 1000 reaches)**</li>`;
 
-    // Find top audience by engagements (simpler approach)
-    const topAudience = Object.entries(FacebookAudienceData).reduce(
+    // Find top audience by reach (simpler approach)
+    const topAudience = Object.entries(FacebookReachAudienceData).reduce(
       (max, [key, value]) =>
-        (value.engagements || 0) > (max.value.engagements || 0)
-          ? { key, value }
-          : max,
-      { key: "", value: { engagements: 0 } }
+        (value.reach || 0) > (max.value.reach || 0) ? { key, value } : max,
+      { key: "", value: { reach: 0 } }
     );
 
     const topAudienceText = `Top Audience: **${
       topAudience.key
-    } (with ${topAudience.value.engagements?.toLocaleString()} post engagements)**`;
+    } (with ${topAudience.value.reach?.toLocaleString()} reaches)**`;
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
-    const topCreative = Object.entries(FacebookCreativeData).reduce(
+    const topCreative = Object.entries(FacebookReachCreativeData).reduce(
       (max, [key, value]) =>
-        (value.engagements || 0) > (max.value.engagements || 0)
-          ? { key, value }
-          : max,
-      { key: "", value: { engagements: 0 } }
+        (value.reach || 0) > (max.value.reach || 0) ? { key, value } : max,
+      { key: "", value: { reach: 0 } }
     );
     const topCreativeText = `Top Creative: **${
       topCreative.key
-    } (with ${topCreative.value.engagements?.toLocaleString()} post engagements**`;
+    } (with ${topCreative.value.reach?.toLocaleString()} reaches**`;
     summaryTextTemp += `<li>${topCreativeText}</li>`;
 
     setSummaryText(summaryTextTemp);
@@ -89,7 +91,11 @@ function FacebookEngagementSlide() {
 
   useEffect(() => {
     summarizeData();
-  }, [FacebookAudienceTotals, FacebookAudienceData, GGDemographicData]);
+  }, [
+    FacebookReachAudienceTotals,
+    FacebookReachAudienceData,
+    GGDemographicData,
+  ]);
 
   // Show loading state
   if (loading) {
@@ -115,6 +121,8 @@ function FacebookEngagementSlide() {
     );
   }
 
+  console.log("FacebookReachAudienceData", FacebookReachAudienceData);
+
   const renderFormattedText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
@@ -136,88 +144,72 @@ function FacebookEngagementSlide() {
   // Format display data with safe fallbacks
   // Using optional chaining to handle undefined/null values from useState
   const impressionData = formatDisplayData(
-    FacebookAudienceTotals?.impressions,
-    FacebookAudienceComparison?.impressions,
+    FacebookReachAudienceTotals?.impressions,
+    FacebookReachAudienceComparison?.impressions,
     "compact"
   );
   const clicksData = formatDisplayData(
-    FacebookAudienceTotals?.clicks,
-    FacebookAudienceComparison?.clicks,
+    FacebookReachAudienceTotals?.clicks,
+    FacebookReachAudienceComparison?.clicks,
     "compact"
   );
   const ctrData = formatDisplayData(
-    FacebookAudienceTotals?.ctr,
-    FacebookAudienceComparison?.ctr,
+    FacebookReachAudienceTotals?.ctr,
+    FacebookReachAudienceComparison?.ctr,
     "percentage"
   );
   const cpcData = formatDisplayData(
-    FacebookAudienceTotals?.cpc,
-    FacebookAudienceComparison?.cpc,
+    FacebookReachAudienceTotals?.cpc,
+    FacebookReachAudienceComparison?.cpc,
     "compact"
   );
   const conversionsData = formatDisplayData(
-    FacebookAudienceTotals?.conversions,
-    FacebookAudienceComparison?.conversions,
+    FacebookReachAudienceTotals?.conversions,
+    FacebookReachAudienceComparison?.conversions,
     "number"
   );
   const cplData = formatDisplayData(
-    FacebookAudienceTotals?.cpl,
-    FacebookAudienceComparison?.cpl,
+    FacebookReachAudienceTotals?.cpl,
+    FacebookReachAudienceComparison?.cpl,
     "compact"
   );
   const spentData = formatDisplayData(
-    FacebookAudienceTotals?.spent,
-    FacebookAudienceComparison?.spent,
+    FacebookReachAudienceTotals?.spent,
+    FacebookReachAudienceComparison?.spent,
     "compact"
   );
   const conRate = formatDisplayData(
-    FacebookAudienceTotals?.cvr, // Changed from conRate to cvr
-    FacebookAudienceComparison?.cvr,
+    FacebookReachAudienceTotals?.cvr, // Changed from conRate to cvr
+    FacebookReachAudienceComparison?.cvr,
     "percentage"
   );
   const cpmData = formatDisplayData(
-    FacebookAudienceTotals?.cpm,
-    FacebookAudienceComparison?.cpm,
+    FacebookReachAudienceTotals?.cpm,
+    FacebookReachAudienceComparison?.cpm,
     "compact"
   );
   const reachData = formatDisplayData(
-    FacebookAudienceTotals?.reach,
-    FacebookAudienceComparison?.reach,
+    FacebookReachAudienceTotals?.reach,
+    FacebookReachAudienceComparison?.reach,
     "compact"
   );
   const frequencyData = formatDisplayData(
-    FacebookAudienceTotals?.frequency,
-    FacebookAudienceComparison?.frequency,
+    FacebookReachAudienceTotals?.frequency,
+    FacebookReachAudienceComparison?.frequency,
     "compact"
   );
   const cprData = formatDisplayData(
-    FacebookAudienceTotals?.cpr,
-    FacebookAudienceComparison?.cpr,
-    "compact"
-  );
-  const engagementData = formatDisplayData(
-    FacebookAudienceTotals?.engagements,
-    FacebookAudienceComparison?.engagements,
-    "compact"
-  );
-  const engagementRateData = formatDisplayData(
-    FacebookAudienceTotals?.engagementRate,
-    FacebookAudienceComparison?.engagementRate,
-    "percentage"
-  );
-  const cpeData = formatDisplayData(
-    FacebookAudienceTotals?.cpe,
-    FacebookAudienceComparison?.cpe,
+    FacebookReachAudienceTotals?.cpr,
+    FacebookReachAudienceComparison?.cpr,
     "compact"
   );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
   // console.log("facebookMEtrics", FacebookAudienceMetrics);
-  // console.log("data", FacebookAudienceData);
   return (
     <div
-      id="facebook-engagement-component"
+      id="facebook-reach-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -230,12 +222,12 @@ function FacebookEngagementSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Facebook Engagement"} />
+      <SlideHeader title={"Facebook Reach"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
           <div className="col-span-13 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-7 text-lg font-semibold">
+            <div className="grid grid-cols-6 gap-2">
+              <h4 className="col-span-6 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
 
@@ -253,24 +245,17 @@ function FacebookEngagementSlide() {
               />
 
               <NumberDisplayBox
-                title={"Post Engagement"}
-                value={engagementData.displayValue}
-                compareValue={engagementData.compareValue}
-                isNegative={engagementData.isNegative}
+                title={"Frequency"}
+                value={frequencyData.displayValue}
+                compareValue={frequencyData.compareValue}
+                isNegative={frequencyData.isNegative}
               />
 
               <NumberDisplayBox
-                title={"% Engagement Rate"}
-                value={engagementRateData.displayValue}
-                compareValue={engagementRateData.compareValue}
-                isNegative={engagementRateData.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"CPE"}
-                value={cpeData.displayValue}
-                compareValue={cpeData.compareValue}
-                isNegative={cpeData.isNegative}
+                title={"CPR"}
+                value={cprData.displayValue}
+                compareValue={cprData.compareValue}
+                isNegative={cprData.isNegative}
                 invertCompareColor={true}
               />
 
@@ -295,15 +280,14 @@ function FacebookEngagementSlide() {
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookAudienceData}
-                totalData={FacebookAudienceTotals}
+                channelData={FacebookReachAudienceData}
+                totalData={FacebookReachAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
                   "reach",
-                  "engagements",
-                  "engagementRate",
-                  "cpe",
+                  "frequency",
+                  "cpr",
                   "conversions",
                   "spent",
                 ]}
@@ -322,15 +306,14 @@ function FacebookEngagementSlide() {
 
             <AdvancedDataTable
               firstMetric="Ad name"
-              channelData={FacebookCreativeData}
-              totalData={FacebookCreativeTotals}
+              channelData={FacebookReachCreativeData}
+              totalData={FacebookReachCreativeTotals}
               metrics={[
                 "Ad set name",
                 "impressions",
                 "reach",
-                "engagements",
-                "engagementRate",
-                "cpe",
+                "frequency",
+                "cpr",
                 "conversions",
                 "spent",
               ]}
@@ -372,4 +355,4 @@ function FacebookEngagementSlide() {
   );
 }
 
-export default FacebookEngagementSlide;
+export default FacebookReachSlide;

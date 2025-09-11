@@ -2,8 +2,8 @@ import React, { useEffect, useCallback } from "react";
 import SlideHeader from "./SlideHeader";
 import PerformanceDataTable from "../charts-tables/PerformanceDataTable";
 import axios from "axios";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 
 function Overall({ isOverallEditModalOpen, setIsOverallEditModalOpen }) {
   const [totalData, setTotalData] = React.useState({});

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -104,17 +104,14 @@ function GDNSlide() {
     }
 
     let summaryTextTemp = "";
+    const averageCPC = GDNTotals?.cpc?.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     const overallText = `Overall clicks: ** ${parseFloat(
       GDNTotals?.Clicks?.toFixed(2) || 0
-    )?.toLocaleString()} clicks**`;
+    )?.toLocaleString()} clicks with average CPC ${averageCPC} THB**`;
     summaryTextTemp = `<li>${overallText}</li>`;
-
-    const averageCPC = GDNTotals?.cpc;
-
-    summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
 
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
@@ -143,11 +140,20 @@ function GDNSlide() {
       summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential Ad: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // if (topConversionChannel[0] != topConversionRateChannel[0]) {
+    highestConversionRateChannelText = `Potential Ad: **${
+      topConversionRateChannel[0]
+    } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
+    summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // }
+
+    //Total conversions
+    const totalConversions = GDNTotals?.Conversions;
+    if (totalConversions > 0) {
+      summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
+        undefined,
+        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+      )} conversions**</li>`;
     }
     setSummaryText(summaryTextTemp);
   };
@@ -235,6 +241,11 @@ function GDNSlide() {
     GDNComparison?.Spent,
     "compact"
   );
+  const conRateData = formatDisplayData(
+    GDNTotals?.conRate,
+    GDNComparison?.conRate,
+    "percentage"
+  );
 
   // Alternative: Batch formatting approach (safer for useState data)
   // const formattedMetrics = formatMetricsData(GDNTotals, GDNComparison, METRIC_CONFIGS);
@@ -254,15 +265,15 @@ function GDNSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"GDN"} />
+      <SlideHeader title={"Google Display Network"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -290,7 +301,6 @@ function GDNSlide() {
                 value={cpcData.displayValue}
                 compareValue={cpcData.compareValue}
                 isNegative={cpcData.isNegative}
-                isConversion={true}
                 invertCompareColor={true}
               />
 
@@ -303,11 +313,11 @@ function GDNSlide() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
+                title={"%Con Rate"}
+                value={conRateData.displayValue}
                 isConversion={true}
-                compareValue={cplData.compareValue}
-                isNegative={cplData.isNegative}
+                compareValue={conRateData.compareValue}
+                isNegative={conRateData.isNegative}
                 invertCompareColor={true}
               />
 
@@ -317,6 +327,7 @@ function GDNSlide() {
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>
@@ -327,19 +338,21 @@ function GDNSlide() {
                 firstMetric={"Ad group name"}
                 channelData={GDNData}
                 totalData={GDNTotals}
-                metrics={GDNMetrics}
+                metrics={[
+                  "Ad group name",
+                  "Impressions",
+                  "Clicks",
+                  "ctr",
+                  "cpc",
+                  "Conversions",
+                  "conRate",
+                  "Spent",
+                ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
                 defaultSortBy="Clicks"
               />
             </div>
-          </div>
-          <div className="col-span-4 flex flex-col">
-            {/* AD Preview Picture */}
-          </div>
-        </div>
-        <div className="grid grid-cols-3">
-          <div className="col-span-1 flex flex-col">
             {/* Summary */}
             <div className="px-4">
               <h4 className="text-lg font-semibold">Summary</h4>
@@ -353,7 +366,8 @@ function GDNSlide() {
               </ul>
             </div>
           </div>
-          <div className="col-span-2 flex">
+          <div className="col-span-4 flex flex-col">
+            {/* AD Preview Picture */}
             {clicksByGender && Object.keys(clicksByGender).length > 0 && (
               <DonutChart
                 data={clicksByGender}
@@ -377,6 +391,33 @@ function GDNSlide() {
               />
             )}
           </div>
+        </div>
+        <div className="grid grid-cols-3">
+          <div className="col-span-1 flex flex-col"></div>
+          {/* <div className="col-span-2 flex">
+            {clicksByGender && Object.keys(clicksByGender).length > 0 && (
+              <DonutChart
+                data={clicksByGender}
+                title="Clicks by Gender"
+                width={220}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+            {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
+              <DonutChart
+                data={clicksByDevice}
+                title="Clicks by Device"
+                width={220}
+                height={140}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+          </div> */}
         </div>
       </div>
       <TextEditorModal

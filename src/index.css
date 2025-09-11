@@ -10,6 +10,7 @@
   --color-main-secondary-hover: #8e7b60;
   --color-text-primary: #06262d;
   --font-header: "Baskervville", serif;
+  --font-main-detail: "prompt", sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));

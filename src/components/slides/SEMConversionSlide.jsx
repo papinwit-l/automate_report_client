@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -17,7 +17,7 @@ import {
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
 
-function SEMSlide() {
+function SEMConversionSlide() {
   const {
     loading,
     error,
@@ -49,7 +49,7 @@ function SEMSlide() {
 
     const sumClicksByGender = SEMDemographicData.reduce((acc, item) => {
       if (item.Gender) {
-        acc[item.Gender] = (acc[item.Gender] || 0) + item.Clicks;
+        acc[item.Gender] = (acc[item.Gender] || 0) + item.Conversions;
       }
       return acc;
     }, {});
@@ -73,7 +73,7 @@ function SEMSlide() {
 
     const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
       if (item.Device) {
-        acc[item.Device] = (acc[item.Device] || 0) + item.Clicks;
+        acc[item.Device] = (acc[item.Device] || 0) + item.Conversions;
       }
       return acc;
     }, {});
@@ -248,7 +248,7 @@ function SEMSlide() {
 
   return (
     <div
-      id="sem-component"
+      id="sem-conversion-component"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -261,11 +261,11 @@ function SEMSlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"SEM"} />
+      <SlideHeader title={"SEM - Conversion"} />
       <div className="grid grid-cols-16">
         <div className="col-span-12 flex flex-col gap-2">
-          <div className="grid grid-cols-8 gap-2">
-            <h4 className="col-span-4 text-lg font-semibold">
+          <div className="grid grid-cols-7 gap-2">
+            <h4 className="col-span-3 text-lg font-semibold">
               Awareness & Considerations
             </h4>
             <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
@@ -291,13 +291,13 @@ function SEMSlide() {
               isNegative={ctrData.isNegative}
             />
 
-            <NumberDisplayBox
+            {/* <NumberDisplayBox
               title={"CPC"}
               value={cpcData.displayValue}
               compareValue={cpcData.compareValue}
               isNegative={cpcData.isNegative}
               invertCompareColor={true}
-            />
+            /> */}
 
             <NumberDisplayBox
               title={"Conversions"}
@@ -330,6 +330,7 @@ function SEMSlide() {
               isConversion={true}
               compareValue={spentData.compareValue}
               isNegative={spentData.isNegative}
+              invertCompareColor={true}
             />
           </div>
           <div>
@@ -338,7 +339,17 @@ function SEMSlide() {
               firstMetric={"Keyword"}
               channelData={SEMData}
               totalData={SEMTotals}
-              metrics={SEMMetrics}
+              metrics={[
+                "Keyword",
+                "Impressions",
+                "Clicks",
+                "ctr",
+                "cpc",
+                "Conversions",
+                "conRate",
+                "cpl",
+                "Spent",
+              ]}
               formatValue={formatTableValue}
               maxRows={maxTableRows[0]}
               defaultSortBy="Conversions"
@@ -351,7 +362,7 @@ function SEMSlide() {
           {clicksByGender && Object.keys(clicksByGender).length > 0 && (
             <DonutChart
               data={clicksByGender}
-              title="Clicks by Gender"
+              title="Conversions by Gender"
               width={200}
               height={160}
               innerRadius={30}
@@ -362,7 +373,7 @@ function SEMSlide() {
           {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
             <DonutChart
               data={clicksByDevice}
-              title="Clicks by Device"
+              title="Conversions by Device"
               width={200}
               height={140}
               innerRadius={30}
@@ -400,4 +411,4 @@ function SEMSlide() {
   );
 }
 
-export default SEMSlide;
+export default SEMConversionSlide;

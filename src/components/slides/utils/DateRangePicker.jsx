@@ -14,11 +14,12 @@ import { useData } from "@/contexts/DataContext";
 
 function DateRangePicker() {
   const { dateRange, setDateRange } = useData();
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const formatDateRange = (range) => {
-    if (range.from && range.to) {
+    if (range?.from && range?.to) {
       return `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`;
-    } else if (range.from) {
+    } else if (range?.from) {
       return `${range.from.toLocaleDateString()} - Select end date`;
     }
     return "Select date range";
@@ -29,7 +30,7 @@ function DateRangePicker() {
   };
 
   const calculateDuration = () => {
-    if (dateRange.from && dateRange.to) {
+    if (dateRange?.from && dateRange?.to) {
       const diffTime = Math.abs(dateRange.to - dateRange.from);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return diffDays + 1;
@@ -37,15 +38,37 @@ function DateRangePicker() {
     return 0;
   };
 
+  // Safe handler for date range selection
+  const handleDateRangeSelect = (range) => {
+    // Ensure we always have a valid object
+    if (!range) {
+      setDateRange({ from: undefined, to: undefined });
+      return;
+    }
+
+    // Handle the case where range might be just a date instead of an object
+    if (range instanceof Date) {
+      setDateRange({ from: range, to: undefined });
+      return;
+    }
+
+    // Normal case - range is an object with from/to properties
+    setDateRange({
+      from: range.from || undefined,
+      to: range.to || undefined,
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal",
-              !dateRange.from && "text-muted-foreground"
+              "w-full justify-start text-left font-normal transition-all",
+              !dateRange?.from && "text-muted-foreground",
+              isPopoverOpen && "ring-2 ring-offset-2 ring-green-600"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -53,18 +76,23 @@ function DateRangePicker() {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={dateRange?.from}
-            selected={dateRange}
-            onSelect={setDateRange}
-            numberOfMonths={2}
-          />
+          <div className="h-[340px] overflow-hidden">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={dateRange?.from}
+              selected={dateRange}
+              onSelect={handleDateRangeSelect}
+              numberOfMonths={2}
+              fixedWeeks={true}
+              showOutsideDays={true}
+              className="h-full"
+            />
+          </div>
         </PopoverContent>
       </Popover>
 
-      {dateRange.from && dateRange.to && (
+      {dateRange?.from && dateRange?.to && (
         <div className="bg-muted/50 p-3 rounded-lg border">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-medium text-sm">Selected Range</h4>

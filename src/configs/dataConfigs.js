@@ -1,3 +1,22 @@
+import {
+  FACEBOOK_CALCULATED_FIELDS,
+  FACEBOOK_FIELDS,
+  FACEBOOK_METRICS,
+  FACEBOOK_PROCESSED_FIELDS,
+} from "./facebookDataConfigs";
+import {
+  LINE_CALCULATED_FIELDS,
+  LINE_FIELDS,
+  LINE_METRICS,
+  LINE_PROCESSED_FIELDS,
+} from "./lineDataConfigs";
+import {
+  TIKTOK_CALCULATED_FIELDS,
+  TIKTOK_FIELDS,
+  TIKTOK_METRICS,
+  TIKTOK_PROCESSED_FIELDS,
+} from "./tiktokDataConfigs";
+
 // configs/dataConfigs.js
 export const NON_NUMERIC_COLUMNS = [
   "Ad group name",
@@ -5,13 +24,13 @@ export const NON_NUMERIC_COLUMNS = [
   "Date",
   "Project",
   "Channel",
+  "Age",
   "Gender",
   "Year & month",
   "Year & week (Mon-Sun)",
   "Date",
   "Updated Month",
   "Updated Week",
-  "Updated Date",
   "Campaign name",
   "Keyword",
   "Device",
@@ -20,6 +39,7 @@ export const NON_NUMERIC_COLUMNS = [
   "Campaign objective",
   "Campaign Type",
   "Ad Format",
+  "Product Title",
 ];
 
 // Social Media Platform Configurations
@@ -27,111 +47,160 @@ export const SOCIAL_MEDIA_CONFIGS = {
   FacebookAudience: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookAwareness: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
   FacebookReach: {
     audienceGroupBy: "Ad set name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Website conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Post engagements" },
-      { key: "videoWatchesAt25", sourceField: "Video watches at 25%" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "cpr", type: "cpr" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpl", type: "cpl" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpv", type: "cpv" },
-      { key: "cpe", type: "cpe" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
   },
 
+  FacebookEngagement: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookMessage: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookLead: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookConversion: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookTraffic: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookVideo: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  FacebookCatalog: {
+    audienceGroupBy: "Ad set name",
+    creativeGroupBy: "Ad name",
+    fields: FACEBOOK_FIELDS,
+    calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+  },
+
+  // TikTok Campaign Types
   TikTokAudience: {
     audienceGroupBy: "Ad group name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Clicks" },
-      { key: "conversions", sourceField: "Conversions" },
-      { key: "cost", sourceField: "Cost" },
-      { key: "engagements", sourceField: "Engagements" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
   },
 
-  InstagramAudience: {
-    audienceGroupBy: "Ad set name",
+  TikTokLead: {
+    audienceGroupBy: "Ad group name",
     creativeGroupBy: "Ad name",
-    fields: [
-      { key: "impressions", sourceField: "Impressions" },
-      { key: "reach", sourceField: "Reach" },
-      { key: "clicks", sourceField: "Link clicks" },
-      { key: "conversions", sourceField: "Conversions" },
-      { key: "cost", sourceField: "Amount spent" },
-      { key: "engagements", sourceField: "Engagements" },
-    ],
-    calculatedFields: [
-      { key: "frequency", type: "frequency" },
-      { key: "ctr", type: "ctr" },
-      { key: "cpc", type: "cpc" },
-      { key: "cvr", type: "cvr" },
-      { key: "cpa", type: "cpa" },
-      { key: "cpm", type: "cpm" },
-      { key: "cpe", type: "cpe" },
-      { key: "cpr", type: "cpr" },
-      { key: "engagementRate", type: "engagementRate" },
-      { key: "spent", type: "custom", calculate: (data) => data.cost },
-    ],
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokReach: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokTraffic: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokConversion: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokVideo: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  TikTokFollower: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: TIKTOK_FIELDS,
+    calculatedFields: TIKTOK_CALCULATED_FIELDS,
+  },
+
+  //Line
+  LineReach: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: LINE_FIELDS,
+    calculatedFields: LINE_CALCULATED_FIELDS,
+  },
+
+  LineGainFriends: {
+    audienceGroupBy: "Ad group name",
+    creativeGroupBy: "Ad name",
+    fields: LINE_FIELDS,
+    calculatedFields: LINE_CALCULATED_FIELDS,
   },
 };
 
 // Main Data Configurations
 export const DATA_CONFIGS = {
   // Search/Advertising platforms
+  overall: {
+    endpoint: "overall-data",
+    processFields: [
+      "Channel",
+      "Impressions",
+      "Reach",
+      "Clicks",
+      "ctr",
+      "Conversions",
+      "conRate",
+      "cpl",
+      "Spent",
+    ],
+    groupBy: "Channel",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
   SEM: {
     endpoint: "sem-data",
     processFields: [
@@ -204,19 +273,69 @@ export const DATA_CONFIGS = {
     processorType: "advertising",
   },
 
+  Youtube: {
+    endpoint: "youtube-data",
+    processFields: [
+      "Ad group name",
+      "Impressions",
+      "Clicks",
+      "Video views",
+      "viewRate",
+      "cpv",
+      "Conversions",
+      "Spent",
+      "Watch 25% views",
+      "Watch 50% views",
+      "Watch 75% views",
+      "Watch 100% views",
+      "Engagements",
+    ],
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
+  ShoppingAds: {
+    endpoint: "shopping-ads-data",
+    processFields: [
+      "Product Title",
+      "Campaign name",
+      "Conversions",
+      "Conversion value",
+      "Clicks",
+      "Impressions",
+      "Spent",
+      "Ad group name",
+    ],
+    groupBy: "Product Title",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
+  PerformanceMax: {
+    endpoint: "performance-max-data",
+    processFields: [
+      "Channel",
+      "Impressions",
+      "Clicks",
+      "Engagements",
+      "Conversions",
+      "Video views",
+      "All conversions",
+      "Spent",
+    ],
+    groupBy: "Updated Date",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
+  },
+
   // Social media platforms
   FacebookAudience: {
     endpoint: "facebook-data",
-    processFields: [
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
-    ],
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -224,19 +343,43 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAudience,
   },
 
-  FacebookReach: {
-    endpoint: "facebook-data", // ✅ Same endpoint as FacebookAudience
+  FacebookAwareness: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookAwareness,
+  },
+
+  FBDemographic: {
+    endpoint: "fb-demographic",
     processFields: [
-      "Channel", // ✅ FIXED: Added Channel field for filtering
-      "Ad set name",
+      "Project",
+      "Channel",
+      "Conversion",
+      "Spent",
+      "Updated Date",
+      "Campaign name",
+      "Campaign objective",
+      "Age",
+      "Gender",
       "Impressions",
       "Reach",
       "Link clicks",
       "Website conversions",
-      "Cost",
-      "Video watches at 25%",
-      "Post engagements",
+      "New messaging conversations within 7 days",
     ],
+    groupBy: "Channel",
+    hasComparison: false,
+    processData: false,
+    processorType: "none",
+  },
+
+  FacebookReach: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
     groupBy: "Ad set name",
     hasComparison: true,
     processData: true,
@@ -244,16 +387,79 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookReach,
   },
 
+  FacebookEngagement: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookEngagement,
+  },
+
+  FacebookMessage: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookMessage,
+  },
+
+  FacebookLead: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookLead,
+  },
+
+  FacebookConversion: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookConversion,
+  },
+
+  FacebookTraffic: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookTraffic,
+  },
+
+  FacebookVideo: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookVideo,
+  },
+
+  FacebookCatalog: {
+    endpoint: "facebook-data",
+    processFields: FACEBOOK_PROCESSED_FIELDS,
+    groupBy: "Ad set name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.FacebookCatalog,
+  },
+
   TikTokAudience: {
     endpoint: "tiktok-data",
-    processFields: [
-      "Ad group name",
-      "Impressions",
-      "Reach",
-      "Clicks",
-      "Conversions",
-      "Cost",
-    ],
+    processFields: TIKTOK_PROCESSED_FIELDS,
     groupBy: "Ad group name",
     hasComparison: true,
     processData: true,
@@ -261,26 +467,113 @@ export const DATA_CONFIGS = {
     socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokAudience,
   },
 
-  InstagramAudience: {
-    endpoint: "instagram-data",
-    processFields: [
-      "Ad set name",
-      "Impressions",
-      "Reach",
-      "Link clicks",
-      "Conversions",
-      "Amount spent",
-    ],
-    groupBy: "Ad set name",
+  TikTokLead: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
     hasComparison: true,
     processData: true,
     processorType: "social",
-    socialConfig: SOCIAL_MEDIA_CONFIGS.InstagramAudience,
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokLead,
+  },
+
+  TikTokReach: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokReach,
+  },
+
+  TikTokTraffic: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokTraffic,
+  },
+
+  TikTokConversion: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokConversion,
+  },
+
+  TikTokVideo: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokVideo,
+  },
+
+  TikTokFollower: {
+    endpoint: "tiktok-data",
+    processFields: TIKTOK_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.TikTokFollower,
+  },
+
+  LineReach: {
+    endpoint: "line-data",
+    processFields: LINE_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.LineReach,
+  },
+
+  LineGainFriends: {
+    endpoint: "line-data",
+    processFields: LINE_PROCESSED_FIELDS,
+    groupBy: "Ad group name",
+    hasComparison: true,
+    processData: true,
+    processorType: "social",
+    socialConfig: SOCIAL_MEDIA_CONFIGS.LineGainFriends,
+  },
+
+  Taboola: {
+    endpoint: "taboola-data",
+    processFields: [
+      "Channel", // For filtering
+      "Updated Date",
+      "Impressions",
+      "Clicks",
+      "Conversions",
+      "Spent",
+    ],
+    groupBy: "Updated Date",
+    hasComparison: true,
+    processData: true,
+    processorType: "advertising",
   },
 };
 
 // Default metrics for each data type
 export const DEFAULT_METRICS = {
+  overall: [
+    "Channel",
+    "Impressions",
+    "Reach",
+    "Clicks",
+    "Conversions",
+    "Spent",
+  ],
   SEM: ["Keyword", "Impressions", "Clicks", "Conversions", "Spent"],
   GGDemographic: [
     "Channel",
@@ -293,47 +586,65 @@ export const DEFAULT_METRICS = {
   ],
   GDN: ["Ad group name", "Impressions", "Clicks", "Conversions", "Spent"],
   Disc: ["Ad group name", "Impressions", "Clicks", "Conversions", "Spent"],
-  FacebookAudience: [
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-  ],
-  FacebookReach: [
-    "Channel", // ✅ FIXED: Added Channel field
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Website conversions",
-    "Cost",
-    "Video watches at 25%",
-    "Post engagements",
-  ],
-  TikTokAudience: [
+  Youtube: [
     "Ad group name",
-    "Ad name",
     "Impressions",
-    "Reach",
+    "Clicks",
+    "Video views",
+    "Conversions",
+    "Spent",
+    "Watch 25% views",
+    "Watch 50% views",
+    "Watch 75% views",
+    "Watch 100% views",
+    "Engagements",
+  ],
+  ShoppingAds: [
+    "Product Title",
+    "Campaign name",
+    "Conversions",
+    "Conversion value",
+    "Clicks",
+    "Impressions",
+    "Spent",
+    "Ad group name",
+  ],
+  PerformanceMax: [
+    "Channel",
+    "Impressions",
+    "Clicks",
+    "Engagements",
+    "Conversions",
+    "Video views",
+    "All conversions",
+    "Spent",
+  ],
+  FacebookAudience: FACEBOOK_METRICS,
+  FacebookAwareness: FACEBOOK_METRICS,
+  FBDemographic: FACEBOOK_METRICS,
+  FacebookReach: FACEBOOK_METRICS,
+  FacebookEngagement: FACEBOOK_METRICS,
+  FacebookMessage: FACEBOOK_METRICS,
+  FacebookLead: FACEBOOK_METRICS,
+  FacebookConversion: FACEBOOK_METRICS,
+  FacebookTraffic: FACEBOOK_METRICS,
+  FacebookVideo: FACEBOOK_METRICS,
+  FacebookCatalog: FACEBOOK_METRICS,
+  TikTokAudience: TIKTOK_METRICS,
+  TikTokLead: TIKTOK_METRICS,
+  TikTokReach: TIKTOK_METRICS,
+  TikTokTraffic: TIKTOK_METRICS,
+  TikTokConversion: TIKTOK_METRICS,
+  TikTokVideo: TIKTOK_METRICS,
+  TikTokFollower: TIKTOK_METRICS,
+  LineReach: LINE_METRICS,
+  LineGainFriends: LINE_METRICS,
+  Taboola: [
+    "Channel", // For filtering
+    "Updated Date",
+    "Impressions",
     "Clicks",
     "Conversions",
-    "Cost",
-    "Engagements",
-  ],
-  InstagramAudience: [
-    "Ad set name",
-    "Ad name",
-    "Impressions",
-    "Reach",
-    "Link clicks",
-    "Conversions",
-    "Amount spent",
-    "Engagements",
+    "Spent",
   ],
 };

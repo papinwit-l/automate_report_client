@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./NumberDisplayBox";
-import TextEditorModal from "./TextEditorModal";
+import NumberDisplayBox from "./utils/NumberDisplayBox";
+import TextEditorModal from "./utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import DonutChart from "../charts-tables/DonutChart";
 import { Edit } from "lucide-react";
@@ -47,17 +47,14 @@ function DiscoverySlide() {
     }
 
     let summaryTextTemp = "";
+    const averageCPC = DiscTotals?.cpc?.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     const overallText = `Overall clicks: ** ${parseFloat(
       DiscTotals?.Clicks?.toFixed(2) || 0
-    )?.toLocaleString()} clicks**`;
+    )?.toLocaleString()} clicks with average CPC ${averageCPC} THB**`;
     summaryTextTemp = `<li>${overallText}</li>`;
-
-    const averageCPC = DiscTotals?.cpc;
-
-    summaryTextTemp += `<li>Average CPC: **${averageCPC?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
 
     let highestConversionChannelText = ``;
     let highestConversionRateChannelText = ``;
@@ -86,11 +83,19 @@ function DiscoverySlide() {
       summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
     }
 
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential Ad: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // if (topConversionChannel[0] != topConversionRateChannel[0]) {
+    highestConversionRateChannelText = `Potential Ad: **${
+      topConversionRateChannel[0]
+    } with ${topConversionRateChannel[1].ctr.toFixed(2)} %CTR**`;
+    summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
+    // }
+
+    const totalConversions = DiscTotals?.Conversions;
+    if (totalConversions > 0) {
+      summaryTextTemp += `<li>Total conversion: **${totalConversions?.toLocaleString(
+        undefined,
+        { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+      )} conversions**</li>`;
     }
     setSummaryText(summaryTextTemp);
   };
@@ -271,15 +276,15 @@ function DiscoverySlide() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Discovery"} />
+      <SlideHeader title={"Google Demand Generation (Discovery)"} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+              <h4 className="col-span-4 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -303,6 +308,14 @@ function DiscoverySlide() {
               />
 
               <NumberDisplayBox
+                title={"CPC"}
+                value={cpcData.displayValue}
+                compareValue={cpcData.compareValue}
+                isNegative={cpcData.isNegative}
+                invertCompareColor={true}
+              />
+
+              <NumberDisplayBox
                 title={"Conversions"}
                 value={conversionsData.displayValue}
                 isConversion={true}
@@ -311,20 +324,11 @@ function DiscoverySlide() {
               />
 
               <NumberDisplayBox
-                title={"%Conv Rate"}
+                title={"%Con Rate"}
                 value={conRate.displayValue}
                 compareValue={conRate.compareValue}
                 isNegative={conRate.isNegative}
                 isConversion={true}
-              />
-
-              <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
-                isConversion={true}
-                compareValue={cplData.compareValue}
-                isNegative={cplData.isNegative}
-                invertCompareColor={true}
               />
 
               <NumberDisplayBox
@@ -333,6 +337,7 @@ function DiscoverySlide() {
                 isConversion={true}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>
@@ -343,7 +348,16 @@ function DiscoverySlide() {
                 firstMetric={"Ad group name"}
                 channelData={DiscData}
                 totalData={DiscTotals}
-                metrics={DiscMetrics}
+                metrics={[
+                  "Ad group name",
+                  "Impressions",
+                  "Clicks",
+                  "ctr",
+                  "cpc",
+                  "Conversions",
+                  "conRate",
+                  "Spent",
+                ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
                 defaultSortBy="Clicks"
@@ -351,21 +365,17 @@ function DiscoverySlide() {
                 enableSorting={true}
               />
             </div>
-            <div className="grid grid-cols-2">
-              <div className="col-span-1">
-                {/* Summary */}
-                <div className="px-4">
-                  <h4 className="text-lg font-semibold">Summary</h4>
-                  <ul className="list-disc pl-6">
-                    <div
-                      className="text-sm"
-                      dangerouslySetInnerHTML={{
-                        __html: renderFormattedText(summaryText),
-                      }}
-                    />
-                  </ul>
-                </div>
-              </div>
+            {/* Summary */}
+            <div className="px-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
             </div>
           </div>
           <div className="col-span-4 flex flex-col ml-2 mt-8">
