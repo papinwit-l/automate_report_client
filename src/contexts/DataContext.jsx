@@ -711,7 +711,7 @@ export const DataProvider = ({ children }) => {
 
     // The result now contains all Facebook data types
     // You might want to log or handle the results appropriately
-    console.log("Enhanced Facebook Data Results:", result);
+    // console.log("Enhanced Facebook Data Results:", result);
 
     return result;
   };
@@ -732,99 +732,7 @@ export const DataProvider = ({ children }) => {
     );
 
     // debug log
-    console.log("📊 getTikTokData result:", result);
-    return result;
-  };
-
-  const getTikTokLeadData = async (id, filterBy = null, filterValue = null) => {
-    const result = await fetchDataSheet(
-      "TikTokLead",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokLeadData result:", result);
-    return result;
-  };
-
-  const getTikTokReachData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "TikTokReach",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokReachData result:", result);
-    return result;
-  };
-
-  const getTikTokTrafficData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "TikTokTraffic",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokTrafficData result:", result);
-    return result;
-  };
-
-  const getTikTokConversionData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "TikTokConversion",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokConversionData result:", result);
-    return result;
-  };
-
-  const getTikTokVideoData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "TikTokVideo",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokVideoData result:", result);
-    return result;
-  };
-
-  const getTikTokFollowerData = async (
-    id,
-    filterBy = null,
-    filterValue = null
-  ) => {
-    const result = await fetchDataSheet(
-      "TikTokFollower",
-      id,
-      buildFetchOptions(filterBy, filterValue),
-      projectFilter,
-      setNotFoundSheetList
-    );
-    // console.log("🎯 getTikTokFollowerData result:", result);
+    // console.log("📊 getTikTokData result:", result);
     return result;
   };
 
