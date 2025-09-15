@@ -38,6 +38,14 @@ import {
 import DateRangePickerV2 from "./utils/DateRangePickerV2";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import SidebarProjectFilterSection from "./SidebarProjectFilterSection";
+import { useData } from "@/contexts/DataContext";
+import { Checkbox } from "../ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -61,6 +69,8 @@ const SlideGeneratorSidebar = ({
 }) => {
   const [savedUrls, setSavedUrls] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
+
+  const { enableSmartSlideDetection, setEnableSmartSlideDetection } = useData();
 
   // Storage key for localStorage
   const STORAGE_KEY = "slide_generator_saved_urls";
@@ -167,6 +177,10 @@ const SlideGeneratorSidebar = ({
     setSavedUrls([]);
     saveToStorage([]);
     setIsSaved(false);
+  };
+
+  const handleSmartSlideDetectionChange = (event) => {
+    setEnableSmartSlideDetection(event.target.checked);
   };
 
   return (
@@ -413,6 +427,36 @@ const SlideGeneratorSidebar = ({
                       )}
                     </CardContent>
                   </Card>
+                </div>
+
+                <div className="flex items-center space-x-2 cursor-help">
+                  <TooltipProvider>
+                    <Tooltip delayDuration={500}>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2 w-fit">
+                          <input
+                            type="checkbox"
+                            id="smart-slide-detection"
+                            checked={enableSmartSlideDetection}
+                            onChange={handleSmartSlideDetectionChange}
+                            className="rounded border-gray-300"
+                          />
+                          <Label
+                            htmlFor="smart-slide-detection"
+                            className="text-sm font-medium"
+                          >
+                            Enable Smart Slide Detection
+                          </Label>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Smart detection will only display slides that have
+                          corresponding data in your raw dashboard
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <Button
                   onClick={onGenerate}

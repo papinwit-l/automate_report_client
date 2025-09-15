@@ -359,6 +359,8 @@ function FacebookMessageSlide02() {
   return (
     <div
       id="facebook-message-02-component"
+      data-exportable={true}
+      data-export-title="Facebook Message (2/2)"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}

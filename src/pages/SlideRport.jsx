@@ -73,7 +73,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import FacebookTEST from "@/components/slides/FacebookTEST";
+import { getExportableSlides } from "@/utils/exportSlideUtils";
+import SlideRenderer from "@/components/slides/SlideRenderer";
+import {
+  FACEBOOK_SLIDES,
+  GOOGLE_SLIDES,
+  TIKTOK_SLIDES,
+} from "@/configs/slideConfig";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -95,6 +101,9 @@ function SlideReport() {
     setEnableDateRange,
     notFoundSheetList,
     setNotFoundSheetList,
+    slideDetectedList,
+    setSlideDetectedList,
+    enableSmartSlideDetection,
   } = useData();
   const [mediaPlanData, setMediaPlanData] = React.useState(null);
 
@@ -392,7 +401,8 @@ function SlideReport() {
       await ensureImagesLoaded();
 
       // STEP 3: Define slide components
-      const slideComponents = EXPORT_SLIDE_COMPONENT_LISTS;
+      // const slideComponents = EXPORT_SLIDE_COMPONENT_LISTS;
+      const slideComponents = getExportableSlides();
       const slideData = [];
 
       for (const slide of slideComponents) {
@@ -535,6 +545,25 @@ function SlideReport() {
     };
   }, [notFoundSheetList]);
 
+  const checkSlideDetected = useCallback(
+    (slide) => {
+      if (slideDetectedList.length === 0) {
+        return false;
+      }
+      const lowerCaseSlide = slide.toLowerCase().trim();
+      const result = slideDetectedList.some((item) => {
+        const lowerCaseItem = item.toLowerCase().trim();
+        return (
+          lowerCaseItem.includes(lowerCaseSlide) ||
+          lowerCaseSlide.includes(lowerCaseItem)
+        );
+      });
+      // console.log("🎯 checkSlideDetected", result);
+      return result;
+    },
+    [slideDetectedList]
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 relative">
       {/* Sidebar Component */}
@@ -617,68 +646,127 @@ function SlideReport() {
 
             {/* Preview Panel */}
             {slideGenerated ? (
-              <div className="w-full flex flex-col items-center gap-10">
-                <TitleSlide projectName={projectName} reportType={reportType} />
-                <MediaPlanBlank />
-                <Overall />
-                <SectionSlide
-                  title={"Facebook"}
-                  componentID={"facebook-section-component"}
-                />
-                <FacebookAwarenessSlide01 />
-                <FacebookAwarenessSlide02 />
-                {/* <FacebookTEST /> */}
-                <FacebookReachSlide01 />
-                <FacebookReachSlide02 />
-                <FacebookEngagementSlide01 />
-                <FacebookEngagementSlide02 />
-                <FacebookTrafficSlide01 />
-                <FacebookTrafficSlide02 />
-                <FacebookVideoSlide01 />
-                <FacebookVideoSlide02 />
-                <FacebookMessageSlide01 />
-                <FacebookMessageSlide02 />
-                <FacebookLeadSlide01 />
-                <FacebookLeadSlide02 />
-                <FacebookConversionSlide01 />
-                <FacebookConversionSlide02 />
-                <FacebookCatalogSlide01 />
-                <FacebookCatalogSlide02 />
-                <SectionSlide
-                  title={"Google"}
-                  componentID={"google-section-component"}
-                />
-                <SEMConversionSlide />
-                <SEMClickSlide />
-                <GDNSlide />
-                <DiscoverySlide />
-                <YoutubeSlide />
-                <ShoppingAdsSlide />
-                <PerformanceMaxSlide />
-                <SectionSlide
-                  title={"Tiktok"}
-                  componentID={"tiktok-section-component"}
-                />
-                <TiktokReachSlide01 />
-                <TiktokVideoSlide01 />
-                <TiktokTrafficSlide01 />
-                <TiktokFollowerSlide01 />
-                <TiktokLeadSlide01 />
-                <TiktokConversionSlide01 />
-                <TiktokConversionEcommerceSlide01 />
-                <SectionSlide
-                  title={"Line"}
-                  componentID={"line-section-component"}
-                />
-                <LineReachSlide01 />
-                <LineGainFriendsSlide01 />
-                <SectionSlide
-                  title={"Taboola"}
-                  componentID={"taboola-section-component"}
-                />
-                <TaboolaSlide />
-                <EndSlide />
-              </div>
+              enableSmartSlideDetection ? (
+                <div className="w-full flex flex-col items-center gap-10">
+                  <TitleSlide
+                    projectName={projectName}
+                    reportType={reportType}
+                  />
+                  <MediaPlanBlank />
+                  <Overall />
+                  <SlideRenderer
+                    sectionData={{
+                      title: "Facebook",
+                      id: "facebook-section-component",
+                    }}
+                    checkSlideDetected={checkSlideDetected}
+                    slideTypes={FACEBOOK_SLIDES}
+                  />
+                  <SlideRenderer
+                    sectionData={{
+                      title: "Google",
+                      id: "google-section-component",
+                    }}
+                    checkSlideDetected={checkSlideDetected}
+                    slideTypes={GOOGLE_SLIDES}
+                  />
+                  <SlideRenderer
+                    sectionData={{
+                      title: "TikTok",
+                      id: "tiktok-section-component",
+                    }}
+                    checkSlideDetected={checkSlideDetected}
+                    slideTypes={TIKTOK_SLIDES}
+                  />
+                  <SlideRenderer
+                    sectionData={{
+                      title: "Line",
+                      id: "line-section-component",
+                    }}
+                    checkSlideDetected={checkSlideDetected}
+                    slideTypes={{
+                      "Line Reach": [LineReachSlide01],
+                      "Line Gain Friends": [LineGainFriendsSlide01],
+                    }}
+                  />
+                  <SlideRenderer
+                    sectionData={{
+                      title: "Taboola",
+                      id: "taboola-section-component",
+                    }}
+                    checkSlideDetected={checkSlideDetected}
+                    slideTypes={{
+                      Taboola: [TaboolaSlide],
+                    }}
+                  />
+                  <EndSlide />
+                </div>
+              ) : (
+                <div className="w-full flex flex-col items-center gap-10">
+                  <TitleSlide
+                    projectName={projectName}
+                    reportType={reportType}
+                  />
+                  <MediaPlanBlank />
+                  <Overall />
+                  <SectionSlide
+                    title={"Facebook"}
+                    componentID={"facebook-section-component"}
+                  />
+                  <FacebookAwarenessSlide01 />
+                  <FacebookAwarenessSlide02 />
+                  <FacebookReachSlide01 />
+                  <FacebookReachSlide02 />
+                  <FacebookEngagementSlide01 />
+                  <FacebookEngagementSlide02 />
+                  <FacebookTrafficSlide01 />
+                  <FacebookTrafficSlide02 />
+                  <FacebookVideoSlide01 />
+                  <FacebookVideoSlide02 />
+                  <FacebookMessageSlide01 />
+                  <FacebookMessageSlide02 />
+                  <FacebookLeadSlide01 />
+                  <FacebookLeadSlide02 />
+                  <FacebookConversionSlide01 />
+                  <FacebookConversionSlide02 />
+                  <FacebookCatalogSlide01 />
+                  <FacebookCatalogSlide02 />
+                  <SectionSlide
+                    title={"Google"}
+                    componentID={"google-section-component"}
+                  />
+                  <SEMConversionSlide />
+                  <SEMClickSlide />
+                  <GDNSlide />
+                  <DiscoverySlide />
+                  <YoutubeSlide />
+                  <ShoppingAdsSlide />
+                  <PerformanceMaxSlide />
+                  <SectionSlide
+                    title={"Tiktok"}
+                    componentID={"tiktok-section-component"}
+                  />
+                  <TiktokReachSlide01 />
+                  <TiktokVideoSlide01 />
+                  <TiktokTrafficSlide01 />
+                  <TiktokFollowerSlide01 />
+                  <TiktokLeadSlide01 />
+                  <TiktokConversionSlide01 />
+                  <TiktokConversionEcommerceSlide01 />
+                  <SectionSlide
+                    title={"Line"}
+                    componentID={"line-section-component"}
+                  />
+                  <LineReachSlide01 />
+                  <LineGainFriendsSlide01 />
+                  <SectionSlide
+                    title={"Taboola"}
+                    componentID={"taboola-section-component"}
+                  />
+                  <TaboolaSlide />
+                  <EndSlide />
+                </div>
+              )
             ) : (
               <Card className="h-96 flex items-center justify-center">
                 <CardContent className="text-center space-y-4">
