@@ -34,6 +34,8 @@ import {
   MoreVertical,
   Clock,
   FilterIcon,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import DateRangePickerV2 from "./utils/DateRangePickerV2";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -179,8 +181,12 @@ const SlideGeneratorSidebar = ({
     setIsSaved(false);
   };
 
-  const handleSmartSlideDetectionChange = (event) => {
-    setEnableSmartSlideDetection(event.target.checked);
+  // const handleSmartSlideDetectionChange = (event) => {
+  //   setEnableSmartSlideDetection(event.target.checked);
+  // };
+
+  const handleSmartSlideDetectionChange = () => {
+    setEnableSmartSlideDetection(!enableSmartSlideDetection);
   };
 
   return (
@@ -429,35 +435,41 @@ const SlideGeneratorSidebar = ({
                   </Card>
                 </div>
 
-                <div className="flex items-center space-x-2 cursor-help">
-                  <TooltipProvider>
-                    <Tooltip delayDuration={500}>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center gap-2 w-fit">
-                          <input
-                            type="checkbox"
-                            id="smart-slide-detection"
-                            checked={enableSmartSlideDetection}
-                            onChange={handleSmartSlideDetectionChange}
-                            className="rounded border-gray-300"
-                          />
-                          <Label
-                            htmlFor="smart-slide-detection"
-                            className="text-sm font-medium"
-                          >
-                            Enable Smart Slide Detection
-                          </Label>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          Smart detection will only display slides that have
-                          corresponding data in your raw dashboard
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+                <TooltipProvider>
+                  <Tooltip delayDuration={500}>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center space-x-2 cursor-help">
+                        <button
+                          type="button"
+                          onClick={handleSmartSlideDetectionChange}
+                          className={`flex items-center justify-center w-6 h-6 rounded-md border transition-all duration-200 ${
+                            enableSmartSlideDetection
+                              ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                              : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                          }`}
+                        >
+                          {enableSmartSlideDetection ? (
+                            <EyeOff className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-400" />
+                          )}
+                        </button>
+                        <Label
+                          className="text-sm font-medium cursor-pointer"
+                          onClick={handleSmartSlideDetectionChange}
+                        >
+                          Auto-hide Empty Slides
+                        </Label>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        Automatically hides slides that don't have data in your
+                        raw dashboard
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <Button
                   onClick={onGenerate}
                   disabled={isGenerating || !ableToGenerate}
