@@ -37,7 +37,7 @@ export const DataProvider = ({ children }) => {
 
   // Smart Slide Detection
   const [enableSmartSlideDetection, setEnableSmartSlideDetection] =
-    useState(false);
+    useState(true);
   const [slideDetectedList, setSlideDetectedList] = useState([]);
 
   //Overall Data
