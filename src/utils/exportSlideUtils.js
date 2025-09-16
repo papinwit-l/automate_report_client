@@ -18,7 +18,7 @@ export const getExportableSlides = () => {
     elementsMap.get(id)
   );
 
-  console.log("🎯 getExportableSlides", result);
+  // console.log("🎯 getExportableSlides", result);
 
   return result;
 };
