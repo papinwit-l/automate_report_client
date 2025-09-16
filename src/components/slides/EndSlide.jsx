@@ -12,7 +12,11 @@ function EndSlide({ projectName, reportType }) {
   };
   //   console.log(dateRange);
   return (
-    <div id="end-slide-component">
+    <div
+      id="end-slide-component"
+      data-exportable={true}
+      data-export-title="End"
+    >
       <div className="border w-7xl h-[720px] gap-2 relative group bg-main-secondary overflow-hidden text-[#bfc9cc] items-center">
         <div className="absolute bottom-0 left-0 -translate-x-[65%] translate-y-[75%] border-[#4c6363] border-[1px] rounded-full w-[1400px] h-[1400px]"></div>
         <div className="absolute bottom-22 left-12">
