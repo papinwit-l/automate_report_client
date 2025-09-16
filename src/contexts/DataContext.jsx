@@ -35,6 +35,11 @@ export const DataProvider = ({ children }) => {
 
   const [notFoundSheetList, setNotFoundSheetList] = useState([]);
 
+  // Smart Slide Detection
+  const [enableSmartSlideDetection, setEnableSmartSlideDetection] =
+    useState(true);
+  const [slideDetectedList, setSlideDetectedList] = useState([]);
+
   //Overall Data
   const [overallData, setOverallData] = useState({});
   const [overallTotals, setOverallTotals] = useState({});
@@ -605,6 +610,11 @@ export const DataProvider = ({ children }) => {
       setNotFoundSheetList
     );
     // console.log("Overall Data", result);
+    const { enhancedFieldData } = result;
+    // console.log("🎯 getOverallData enhancedFieldData:", enhancedFieldData);
+    const foundSlide = Object.keys(enhancedFieldData);
+    // console.log("🎯 getOverallData foundSlide:", foundSlide);
+    setSlideDetectedList(foundSlide);
     return result;
   };
 
@@ -799,6 +809,7 @@ export const DataProvider = ({ children }) => {
         setLoading(true);
         setError(null);
         setNotFoundSheetList([]);
+        setSlideDetectedList([]);
 
         // Fetch all data types in parallel for better performance
         const promises = [
@@ -916,6 +927,12 @@ export const DataProvider = ({ children }) => {
     setProjectList,
     projectFilter,
     setProjectFilter,
+
+    // Smart Slide Detection
+    enableSmartSlideDetection,
+    setEnableSmartSlideDetection,
+    slideDetectedList,
+    setSlideDetectedList,
 
     // sheet not found list
     notFoundSheetList,

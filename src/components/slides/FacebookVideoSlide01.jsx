@@ -399,6 +399,8 @@ function FacebookVideoSlide01() {
   return (
     <div
       id="facebook-video-01-component"
+      data-exportable={true}
+      data-export-title="Facebook VDO View (1/2)"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
