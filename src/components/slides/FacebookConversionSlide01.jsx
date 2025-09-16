@@ -35,6 +35,8 @@ function FacebookConversionSlide01() {
   const [maxTableRows, setMaxTableRows] = useState([8]);
   const [isNoData, setIsNoData] = useState(false);
 
+  const [isCPA, setIsCPA] = useState(true);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     try {
@@ -455,13 +457,25 @@ function FacebookConversionSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPA"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={
-                  isNoData ? "No Data" : formattedMetrics.cpaData?.displayValue
+                  isNoData
+                    ? "No Data"
+                    : isCPA
+                    ? formattedMetrics.cpaData?.displayValue
+                    : formattedMetrics.cplData?.displayValue
                 }
                 isConversion={true}
-                compareValue={formattedMetrics.cpaData?.compareValue}
-                isNegative={formattedMetrics.cpaData?.isNegative}
+                compareValue={
+                  isCPA
+                    ? formattedMetrics.cpaData?.compareValue
+                    : formattedMetrics.cplData?.compareValue
+                }
+                isNegative={
+                  isCPA
+                    ? formattedMetrics.cpaData?.isNegative
+                    : formattedMetrics.cplData?.isNegative
+                }
                 invertCompareColor={true}
               />
 
@@ -493,7 +507,7 @@ function FacebookConversionSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpa",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -552,6 +566,7 @@ function FacebookConversionSlide01() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

@@ -35,6 +35,8 @@ function LineGainFriendsSlide01() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0, 0]);
 
+  const [isCPA, setIsCPA] = useState(true);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     const KEY = "clicks";
@@ -457,7 +459,7 @@ function LineGainFriendsSlide01() {
               /> */}
 
               <NumberDisplayBox
-                title={"CPL"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={formattedMetrics.cplData?.displayValue}
                 compareValue={formattedMetrics.cplData?.compareValue}
                 isNegative={formattedMetrics.cplData?.isNegative}
@@ -487,7 +489,7 @@ function LineGainFriendsSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpa",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -510,7 +512,7 @@ function LineGainFriendsSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpa",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -550,6 +552,7 @@ function LineGainFriendsSlide01() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

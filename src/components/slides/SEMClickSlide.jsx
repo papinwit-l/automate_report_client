@@ -33,6 +33,8 @@ function SEMClickSlide() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([14]);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Memoize the chart data calculations to prevent unnecessary re-renders
   const { clicksByGender, clicksByDevice } = useMemo(() => {
     if (!GGDemographicData || !Array.isArray(GGDemographicData)) {
@@ -347,7 +349,7 @@ function SEMClickSlide() {
                 "cpc",
                 "Conversions",
                 "conRate",
-                "cpl",
+                isCPA ? "cpa" : "cpl",
                 "Spent",
               ]}
               formatValue={formatTableValue}
@@ -406,6 +408,7 @@ function SEMClickSlide() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

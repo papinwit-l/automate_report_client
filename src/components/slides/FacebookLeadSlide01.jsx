@@ -35,6 +35,8 @@ function FacebookLeadSlide01() {
   const [maxTableRows, setMaxTableRows] = useState([8]);
   const [isNoData, setIsNoData] = useState(false);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     try {
@@ -447,7 +449,7 @@ function FacebookLeadSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={
                   isNoData ? "No Data" : formattedMetrics.cplData?.displayValue
                 }
@@ -480,14 +482,12 @@ function FacebookLeadSlide01() {
                   "Ad set name",
                   "impressions",
                   "reach",
-                  "frequency",
-                  "cpm",
                   "clicks",
                   "ctr",
                   "cpc",
                   "conversions",
                   "cvr",
-                  "cpl",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -547,6 +547,7 @@ function FacebookLeadSlide01() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

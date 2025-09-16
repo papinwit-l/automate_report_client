@@ -35,6 +35,8 @@ function TiktokConversionSlide01() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([4, 4]);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     const KEY = "conversions";
@@ -461,7 +463,7 @@ function TiktokConversionSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={formattedMetrics.cplData?.displayValue}
                 compareValue={formattedMetrics.cplData?.compareValue}
                 isNegative={formattedMetrics.cplData?.isNegative}
@@ -513,7 +515,7 @@ function TiktokConversionSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpl",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -552,6 +554,7 @@ function TiktokConversionSlide01() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

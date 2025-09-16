@@ -33,6 +33,8 @@ function SEMConversionSlide() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([14]);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Memoize the chart data calculations to prevent unnecessary re-renders
   const { clicksByGender, clicksByDevice } = useMemo(() => {
     if (!GGDemographicData || !Array.isArray(GGDemographicData)) {
@@ -318,7 +320,7 @@ function SEMConversionSlide() {
             />
 
             <NumberDisplayBox
-              title={"CPL"}
+              title={isCPA ? "CPA" : "CPL"}
               value={cplData.displayValue}
               isConversion={true}
               compareValue={cplData.compareValue}
@@ -349,7 +351,7 @@ function SEMConversionSlide() {
                 "cpc",
                 "Conversions",
                 "conRate",
-                "cpl",
+                isCPA ? "cpa" : "cpl",
                 "Spent",
               ]}
               formatValue={formatTableValue}
@@ -408,6 +410,7 @@ function SEMConversionSlide() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

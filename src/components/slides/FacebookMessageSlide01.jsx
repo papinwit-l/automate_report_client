@@ -36,6 +36,8 @@ function FacebookMessageSlide01() {
   const [maxTableRows, setMaxTableRows] = useState([0]);
   const [isNoData, setIsNoData] = useState(false);
 
+  const [isCPA, setIsCPA] = useState(true);
+
   const summarizeData = () => {
     // Handle "No Data" case
     if (
@@ -413,7 +415,7 @@ function FacebookMessageSlide01() {
               />
 
               <NumberDisplayBox
-                title={"CPA"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={isNoData ? "No Data" : cpaData.displayValue}
                 compareValue={cpaData.compareValue}
                 isConversion={true}
@@ -446,7 +448,7 @@ function FacebookMessageSlide01() {
                   "ctr",
                   "conversions",
                   "cvr",
-                  "cpa",
+                  isCPA ? "cpa" : "cpl",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
@@ -506,6 +508,7 @@ function FacebookMessageSlide01() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );
