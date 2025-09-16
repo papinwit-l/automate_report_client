@@ -3,7 +3,7 @@ import TYN_LOGO from "@/assets/images/TYN_LOGO-08.png";
 
 function SectionSlide({ title, componentID }) {
   return (
-    <div id={componentID}>
+    <div id={componentID} data-exportable={true} data-export-title={title}>
       <div className="border w-7xl h-[720px] relative group bg-[#c05334] overflow-hidden py-8">
         <div className="h-full relative">
           <div className="absolute -top-2 right-8 ">

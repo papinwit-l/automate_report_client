@@ -247,6 +247,8 @@ function SEMClickSlide() {
   return (
     <div
       id="sem-click-component"
+      data-exportable={true}
+      data-export-title="SEM - Click"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-4 relative group bg-white"
     >
       {/* EDIT BUTTON */}

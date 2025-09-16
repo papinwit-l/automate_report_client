@@ -411,6 +411,8 @@ function TiktokConversionEcommerceSlide01() {
   return (
     <div
       id="tiktok-conversion-ecommerce-01-component"
+      data-exportable={true}
+      data-export-title="TikTok Conversion - Ecommerce"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}

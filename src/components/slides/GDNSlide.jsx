@@ -253,6 +253,8 @@ function GDNSlide() {
   return (
     <div
       id="gdn-component"
+      data-exportable={true}
+      data-export-title="Google Display Network"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}

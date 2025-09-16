@@ -14,6 +14,8 @@ function TitleSlide({ projectName, reportType }) {
   return (
     <div
       id="title-component"
+      data-exportable={true}
+      data-export-title="Title"
       className="flex flex-col border w-7xl h-[720px] gap-2 relative group overflow-hidden"
       // style={{ backgroundColor: "#405a5a" }}
     >

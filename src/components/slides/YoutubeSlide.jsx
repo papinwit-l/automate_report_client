@@ -355,6 +355,8 @@ function YoutubeSlide() {
   return (
     <div
       id="youtube-component"
+      data-exportable={true}
+      data-export-title="Youtube"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}

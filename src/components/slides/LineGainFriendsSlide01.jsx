@@ -395,6 +395,8 @@ function LineGainFriendsSlide01() {
   return (
     <div
       id="line-gain-friends-01-component"
+      data-exportable={true}
+      data-export-title="Line Gain Friends"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
