@@ -858,14 +858,25 @@ export const DataProvider = ({ children }) => {
     const dataObjects = dataRows.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
-    // console.log("dataObjects", dataObjects);
+    console.log("dataObjects", dataObjects);
     const dateFilteredData = filterDataByDate(dataObjects, dateRange);
-    // console.log("data:", dateFilteredData);
+    console.log("data:", dateFilteredData);
     // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
     const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
-    // console.log("resultData:", resultData);
-    setFacebookAdsPicture(resultData);
+    console.log("resultData:", resultData);
+    const finalResult = resultData.map((item) => {
+      const allKeys = Object.keys(item);
+      const keyIndex = allKeys.findIndex((keyItem) => keyItem.includes("URL"));
+      const key = allKeys[keyIndex];
+      return { ...item, Ads: item?.Ads || item[key] };
+    });
+
+    console.log("finalResult:", finalResult);
+
+    setFacebookAdsPicture(finalResult);
   };
+
+  const getFBPicture = (data) => {};
 
   const filterDataByColumn = (data, column, columnValue, options = {}) => {
     if (!Array.isArray(data)) return [];
@@ -880,6 +891,7 @@ export const DataProvider = ({ children }) => {
 
   function filterDataByDate(data, dateRange) {
     const { from, to } = dateRange;
+    console.log("🎯 filterDataByDate", from, to);
     if (!from || !to) {
       return data;
     }
@@ -896,10 +908,16 @@ export const DataProvider = ({ children }) => {
     const fromDateStr = fromDateUTC7.toISOString().split("T")[0];
     const toDateStr = toDateUTC7.toISOString().split("T")[0];
 
-    return data.filter((item) => {
+    const result = data.filter((item) => {
       const itemDate = item["Updated Date"] || item["Date"];
       return itemDate >= fromDateStr && itemDate <= toDateStr;
     });
+
+    if (result.length === 0) {
+      return data;
+    }
+
+    return result;
   }
 
   const removeDuplicateByColumn = (data, column) => {
