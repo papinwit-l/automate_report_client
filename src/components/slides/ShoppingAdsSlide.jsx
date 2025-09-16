@@ -39,6 +39,8 @@ function ShoppingAdsSlide() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([5]);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     const KEY = "Conversions";
@@ -460,7 +462,7 @@ function ShoppingAdsSlide() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={formattedMetrics.cplData?.displayValue}
                 compareValue={formattedMetrics.cplData?.compareValue}
                 isNegative={formattedMetrics.cplData?.isNegative}
@@ -508,7 +510,7 @@ function ShoppingAdsSlide() {
                   "cpc",
                   "Conversions",
                   "conRate",
-                  "cpl",
+                  isCPA ? "cpa" : "cpl",
                   "Conversion value",
                   "Spent",
                   "roas",
@@ -568,6 +570,7 @@ function ShoppingAdsSlide() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

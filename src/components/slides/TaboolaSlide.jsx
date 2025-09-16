@@ -33,6 +33,8 @@ function TaboolaSlide() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([0]);
 
+  const [isCPA, setIsCPA] = useState(false);
+
   // Fix: Memoize summarizeData to prevent unnecessary re-renders
   const summarizeData = useCallback(() => {
     const KEY = "Conversions";
@@ -429,7 +431,7 @@ function TaboolaSlide() {
               />
 
               <NumberDisplayBox
-                title={"CPL"}
+                title={isCPA ? "CPA" : "CPL"}
                 value={formattedMetrics.cplData?.displayValue}
                 compareValue={formattedMetrics.cplData?.compareValue}
                 isNegative={formattedMetrics.cplData?.isNegative}
@@ -458,7 +460,7 @@ function TaboolaSlide() {
                   "ctr",
                   "Conversions",
                   "conRate",
-                  "cpl",
+                  isCPA ? "cpa" : "cpl",
                   "Spent",
                 ]}
                 formatValue={formatTableValue}
@@ -497,6 +499,7 @@ function TaboolaSlide() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

@@ -31,6 +31,16 @@ function Overall() {
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [maxTableRows, setMaxTableRows] = useState([10]);
+  const [isCPA, setIsCPA] = useState(false);
+  const [customizeTable, setCustomizeTable] = useState([
+    "Impressions",
+    "Clicks",
+    "ctr",
+    "Conversions",
+    "conRate",
+    "cpl",
+    "Spent",
+  ]);
 
   const summarizeData = () => {
     // Handle "No Data" case
@@ -247,46 +257,131 @@ function Overall() {
   };
 
   // Format display data with safe fallbacks
-  const impressionData = formatDisplayData(
-    overallTotals?.Impressions,
-    overallComparison?.Impressions,
-    "compact"
-  );
-  const clicksData = formatDisplayData(
-    overallTotals?.Clicks,
-    overallComparison?.Clicks,
-    "compact"
-  );
-  const ctrData = formatDisplayData(
-    overallTotals?.ctr,
-    overallComparison?.ctr,
-    "percentage"
-  );
-  const reachData = formatDisplayData(
-    overallTotals?.Reach,
-    overallComparison?.Reach,
-    "compact"
-  );
-  const conversionsData = formatDisplayData(
-    overallTotals?.Conversions,
-    overallComparison?.Conversions,
-    "number"
-  );
-  const conRateData = formatDisplayData(
-    overallTotals?.conRate,
-    overallComparison?.conRate,
-    "percentage"
-  );
-  const cplData = formatDisplayData(
-    overallTotals?.cpl,
-    overallComparison?.cpl,
-    "compact"
-  );
-  const spentData = formatDisplayData(
-    overallTotals?.Spent,
-    overallComparison?.Spent,
-    "compact"
-  );
+  const formattedMetrics = useMemo(() => {
+    if (!overallTotals || !overallComparison) {
+      return {};
+    }
+
+    console.log("🎯 overallTotals:", overallTotals);
+
+    return {
+      impressionData: formatDisplayData(
+        overallTotals?.impressions || overallTotals?.Impressions,
+        overallComparison?.impressions || overallComparison?.Impressions,
+        "compact"
+      ),
+      clicksData: formatDisplayData(
+        overallTotals?.clicks || overallTotals?.Clicks,
+        overallComparison?.clicks || overallComparison?.Clicks,
+        "compact"
+      ),
+      ctrData: formatDisplayData(
+        overallTotals?.ctr,
+        overallComparison?.ctr,
+        "percentage"
+      ),
+      cpcData: formatDisplayData(
+        overallTotals?.cpc,
+        overallComparison?.cpc,
+        "compact"
+      ),
+      conversionsData: formatDisplayData(
+        overallTotals?.conversions || overallTotals?.Conversions,
+        overallComparison?.conversions || overallComparison?.Conversions,
+        "number"
+      ),
+      cplData: formatDisplayData(
+        overallTotals?.cpl,
+        overallComparison?.cpl,
+        "compact"
+      ),
+      spentData: formatDisplayData(
+        overallTotals?.spent || overallTotals?.Spent,
+        overallComparison?.spent || overallComparison?.Spent,
+        "compact"
+      ),
+      cpmData: formatDisplayData(
+        overallTotals?.cpm,
+        overallComparison?.cpm,
+        "compact"
+      ),
+      reachData: formatDisplayData(
+        overallTotals?.reach || overallTotals?.Reach,
+        overallComparison?.reach || overallComparison?.Reach,
+        "compact"
+      ),
+      frequencyData: formatDisplayData(
+        overallTotals?.frequency || overallTotals?.Frequency,
+        overallComparison?.frequency || overallComparison?.Frequency,
+        "compact"
+      ),
+      cprData: formatDisplayData(
+        overallTotals?.cpr,
+        overallComparison?.cpr,
+        "compact"
+      ),
+      engagementData: formatDisplayData(
+        overallTotals?.engagements || overallTotals?.Engagements,
+        overallComparison?.engagements || overallComparison?.Engagements,
+        "compact"
+      ),
+      engagementRateData: formatDisplayData(
+        overallTotals?.engagementRate,
+        overallComparison?.engagementRate,
+        "percentage"
+      ),
+      cpeData: formatDisplayData(
+        overallTotals?.cpe,
+        overallComparison?.cpe,
+        "compact"
+      ),
+      viewRateData: formatDisplayData(
+        overallTotals?.viewRate,
+        overallComparison?.viewRate,
+        "percentage"
+      ),
+      VideoViewsData: formatDisplayData(
+        overallTotals["views"],
+        overallComparison["views"],
+        "number"
+      ),
+      cpvData: formatDisplayData(
+        overallTotals?.cpv,
+        overallComparison?.cpv,
+        "compact"
+      ),
+      conRateData: formatDisplayData(
+        overallTotals?.cvr || overallTotals?.conRate,
+        overallComparison?.cvr || overallComparison?.conRate,
+        "percentage"
+      ),
+      purchaseConValueData: formatDisplayData(
+        overallTotals?.purchaseConValue,
+        overallComparison?.purchaseConValue,
+        "compact"
+      ),
+      roasData: formatDisplayData(
+        overallTotals?.roas,
+        overallComparison?.roas,
+        "compact"
+      ),
+      purchaseData: formatDisplayData(
+        overallTotals?.purchase,
+        overallComparison?.purchase,
+        "number"
+      ),
+      addToCartData: formatDisplayData(
+        overallTotals?.addToCart,
+        overallComparison?.addToCart,
+        "number"
+      ),
+      view6secData: formatDisplayData(
+        overallTotals?.view6sec,
+        overallComparison?.view6sec,
+        "number"
+      ),
+    };
+  }, [overallTotals, overallComparison]);
 
   return (
     <div
@@ -317,58 +412,51 @@ function Overall() {
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={impressionData.displayValue}
-                compareValue={impressionData.compareValue}
-                isNegative={impressionData.isNegative}
+                value={formattedMetrics.impressionData?.displayValue}
+                compareValue={formattedMetrics.impressionData?.compareValue}
+                isNegative={formattedMetrics.impressionData?.isNegative}
               />
-
-              {/* <NumberDisplayBox
-                title={"Reach"}
-                value={reachData.displayValue}
-                compareValue={reachData.compareValue}
-                isNegative={reachData.isNegative}
-              /> */}
 
               <NumberDisplayBox
                 title={"Clicks"}
-                value={clicksData.displayValue}
-                compareValue={clicksData.compareValue}
-                isNegative={clicksData.isNegative}
+                value={formattedMetrics.clicksData?.displayValue}
+                compareValue={formattedMetrics.clicksData?.compareValue}
+                isNegative={formattedMetrics.clicksData?.isNegative}
               />
               <NumberDisplayBox
                 title={"%CTR"}
-                value={ctrData.displayValue}
-                compareValue={ctrData.compareValue}
-                isNegative={ctrData.isNegative}
+                value={formattedMetrics.ctrData?.displayValue}
+                compareValue={formattedMetrics.ctrData?.compareValue}
+                isNegative={formattedMetrics.ctrData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Conversions"}
-                value={conversionsData.displayValue}
+                value={formattedMetrics.conversionsData?.displayValue}
                 isConversion={true}
-                compareValue={conversionsData.compareValue}
-                isNegative={conversionsData.isNegative}
+                compareValue={formattedMetrics.conversionsData?.compareValue}
+                isNegative={formattedMetrics.conversionsData?.isNegative}
               />
               <NumberDisplayBox
                 title={"%Con Rate"}
-                value={conRateData.displayValue}
-                compareValue={conRateData.compareValue}
+                value={formattedMetrics.conRateData?.displayValue}
+                compareValue={formattedMetrics.conRateData?.compareValue}
                 isConversion={true}
-                isNegative={conRateData.isNegative}
+                isNegative={formattedMetrics.conRateData?.isNegative}
               />
               <NumberDisplayBox
-                title={"CPL"}
-                value={cplData.displayValue}
-                compareValue={cplData.compareValue}
+                title={isCPA ? "CPA" : "CPL"}
+                value={formattedMetrics.cplData?.displayValue}
+                compareValue={formattedMetrics.cplData?.compareValue}
                 isConversion={true}
-                isNegative={cplData.isNegative}
+                isNegative={formattedMetrics.cplData?.isNegative}
                 invertCompareColor={true}
               />
               <NumberDisplayBox
                 title={"Spent"}
-                value={spentData.displayValue}
-                compareValue={spentData.compareValue}
+                value={formattedMetrics.spentData?.displayValue}
+                compareValue={formattedMetrics.spentData?.compareValue}
                 isConversion={true}
-                isNegative={spentData.isNegative}
+                isNegative={formattedMetrics.spentData?.isNegative}
                 invertCompareColor={true}
               />
             </div>
@@ -380,14 +468,12 @@ function Overall() {
                 channelData={overallData}
                 totalData={overallTotals}
                 metrics={[
-                  "Channel",
                   "Impressions",
-                  // "Reach",
                   "Clicks",
                   "ctr",
                   "Conversions",
                   "conRate",
-                  "cpl",
+                  isCPA ? "cpa" : "cpl",
                   "Spent",
                 ]}
                 formatValue={formatTableValue}
@@ -450,6 +536,7 @@ function Overall() {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
+        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );
