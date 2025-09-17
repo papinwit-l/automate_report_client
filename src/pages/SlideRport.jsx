@@ -583,7 +583,7 @@ function SlideReport() {
               <Presentation className="h-4 w-4 text-white" />
             </div>
             <h1 className="text-xl font-bold text-slate-900">
-              Slide Report Generator
+              Automate Report
             </h1>
             {/* <button onClick={() => handleGetMediaPlan()}>TEST</button> */}
           </div>
