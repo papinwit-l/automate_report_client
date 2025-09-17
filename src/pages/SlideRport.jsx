@@ -56,7 +56,6 @@ import LineReachSlide01 from "@/components/slides/LineReachSlide01";
 import LineGainFriendsSlide01 from "@/components/slides/LineGainFriendsSlide01";
 import TaboolaSlide from "@/components/slides/TaboolaSlide";
 import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
-import axiosInstance from "@/configs/axiosConfigs";
 import MediaPlan from "@/components/slides/MediaPlan";
 import { tableProcessing } from "@/utils/mediaPlanProcessing";
 import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
@@ -80,6 +79,7 @@ import {
   GOOGLE_SLIDES,
   TIKTOK_SLIDES,
 } from "@/configs/slideConfig";
+import createAxiosInstance from "@/configs/axiosConfigs";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -392,6 +392,7 @@ function SlideReport() {
     setError(null);
 
     try {
+      const axiosInstance = await createAxiosInstance();
       console.log("Starting export with Google Sheets image handling...");
 
       // STEP 1: Convert all external images from Google Sheets to base64
@@ -519,22 +520,6 @@ function SlideReport() {
       setError(error.response?.data?.error || error.message);
     } finally {
       setIsExporting(false);
-    }
-  };
-
-  const handleGetMediaPlan = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `/data-sheets/media-plan/${sheetsID}`
-      );
-      const rawData = response.data.data;
-      // console.log("🎯 rawData | mediaplan:", rawData);
-
-      const { topTable, middleTable, bottomTable } = tableProcessing(rawData);
-
-      setMediaPlanData({ topTable, middleTable, bottomTable });
-    } catch (error) {
-      console.error("Error fetching media plan:", error);
     }
   };
 

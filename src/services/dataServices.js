@@ -1,6 +1,6 @@
 // services/dataServices.js - Updated to use centralized axios config
 
-import axiosInstance from "../configs/axiosConfigs";
+import createAxiosInstance from "../configs/axiosConfigs";
 import { DATA_CONFIGS } from "../configs/dataConfigs";
 import {
   processAdvertisingData,
@@ -40,6 +40,8 @@ export const fetchDataSheet = async (
   let setters;
 
   try {
+    const axiosInstance = await createAxiosInstance();
+
     config = DATA_CONFIGS[dataType];
     if (!config) throw new Error(`Configuration for ${dataType} not found`);
 
@@ -292,6 +294,7 @@ export const fetchDataSheetEnhanced = async (
   const emptyComparison = {};
 
   try {
+    const axiosInstance = await createAxiosInstance();
     // Validate dataTypeMap
     if (typeof dataTypeMap !== "object" || dataTypeMap === null) {
       throw new Error(`dataTypeMap must be an object`);
@@ -402,6 +405,7 @@ export const fetchDataSheetEnhanced = async (
 // Helper function - updated to use centralized axios config
 export const getFilterValues = async (dataType, id, filterField) => {
   try {
+    const axiosInstance = await createAxiosInstance();
     const config = DATA_CONFIGS[dataType];
     if (!config) {
       throw new Error(`Configuration for ${dataType} not found`);

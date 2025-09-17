@@ -4,10 +4,10 @@ import { FilterIcon, X } from "lucide-react";
 import React, { useEffect } from "react";
 import { Card, CardContent } from "../ui/card";
 import { useData } from "@/contexts/DataContext";
-import axiosInstance from "@/configs/axiosConfigs";
 import SearchCheckbox from "../custom-ui/SearchCheckbox";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import createAxiosInstance from "@/configs/axiosConfigs";
 
 function SidebarProjectFilterSection({ sheetsID }) {
   const {
@@ -28,6 +28,7 @@ function SidebarProjectFilterSection({ sheetsID }) {
   };
 
   const fetchProjectList = async () => {
+    const axiosInstance = await createAxiosInstance();
     setIsLoading(true);
     setProjectList([]);
     setProjectFilter([]);

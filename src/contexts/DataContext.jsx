@@ -6,9 +6,9 @@ import {
 } from "../services/dataServices";
 import { createStateSettersMap } from "../utils/dataUtils";
 import { DEFAULT_METRICS } from "../configs/dataConfigs";
-import axiosInstance from "../configs/axiosConfigs"; // ✅ Updated: Use centralized axios
 import { FACEBOOK_CHANNELS_MAP } from "@/configs/facebookDataConfigs";
 import { TIKTOK_CHANNELS_MAP } from "@/configs/tiktokDataConfigs";
+import createAxiosInstance from "../configs/axiosConfigs";
 
 const DataContext = createContext();
 
@@ -848,6 +848,7 @@ export const DataProvider = ({ children }) => {
 
   // ✅ Updated: Use centralized axios instance with relative URL
   const fetchFacebookPicture = async (id) => {
+    const axiosInstance = await createAxiosInstance();
     const response = await axiosInstance.get(
       `/data-sheets/facebook-picture/${id}`
     );
