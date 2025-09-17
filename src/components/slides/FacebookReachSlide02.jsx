@@ -45,6 +45,8 @@ function FacebookReachSlide02() {
     try {
       // Handle "No Data" case
       if (
+        !FacebookReachCreativeData ||
+        !FacebookReachAudienceTotals ||
         Object.keys(FacebookReachCreativeData).length === 0 ||
         Object.keys(FacebookReachAudienceTotals).length === 0
       ) {

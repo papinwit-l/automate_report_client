@@ -43,6 +43,8 @@ function FacebookEngagementSlide02() {
   const summarizeData = () => {
     // Handle "No Data" case
     if (
+      !FacebookEngagementCreativeData ||
+      !FacebookEngagementAudienceTotals ||
       Object.keys(FacebookEngagementCreativeData).length === 0 ||
       Object.keys(FacebookEngagementAudienceTotals).length === 0
     ) {

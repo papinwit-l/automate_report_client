@@ -133,12 +133,13 @@ export const AdvancedDataTable = ({
     );
   });
 
-  // Width detection effect
+  // FIXED: Width detection effect - always return cleanup function
   useEffect(() => {
     // If isLimitWidth is provided, use it directly and skip detection
     if (typeof isLimitWidth === "boolean") {
       setShouldLimitWidth(isLimitWidth);
-      return;
+      // Return empty cleanup function to maintain consistent hook behavior
+      return () => {};
     }
 
     const checkTableWidth = () => {
@@ -186,6 +187,7 @@ export const AdvancedDataTable = ({
     // Check on window resize
     window.addEventListener("resize", checkTableWidth);
 
+    // Always return cleanup function
     return () => {
       window.removeEventListener("resize", checkTableWidth);
       clearTimeout(timeoutId1);
