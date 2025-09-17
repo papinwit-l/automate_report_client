@@ -923,9 +923,36 @@ export const DataProvider = ({ children }) => {
   const removeDuplicateByColumn = (data, column) => {
     const map = {};
 
+    // debug log
+    console.log("🎯 removeDuplicateByColumn data:", data);
+
+    // check item in data that contain item.Date
+    const dateColumn = Object.keys(data[0]).find(
+      (key) =>
+        key.trim().toLowerCase() === "date" ||
+        key.trim().toLowerCase() === "updated date"
+    );
+    console.log("🎯 removeDuplicateByColumn dateColumn:", dateColumn);
+
+    // if contains Date, then sort by latest date
+    // Date format: YYYY-MM-DD
+    if (dateColumn) {
+      data.sort((a, b) => {
+        const dateA = new Date(a[dateColumn]);
+        const dateB = new Date(b[dateColumn]);
+        return dateB - dateA; // Latest first
+      });
+      console.log("🎯 removeDuplicateByColumn sorted data:", data);
+    }
+
+    // Remove duplicates - keep first occurrence (latest if sorted by date)
     for (const item of data) {
       const key = item[column];
-      map[key] = map[key] ? Object.assign(map[key], item) : item;
+      if (key !== undefined && key !== null) {
+        if (!map[key]) {
+          map[key] = item; // Keep only the first occurrence
+        }
+      }
     }
 
     return Object.values(map);
