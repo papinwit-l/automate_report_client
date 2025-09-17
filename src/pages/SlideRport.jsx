@@ -792,7 +792,11 @@ function SlideReport() {
       </div>
       <Dialog
         open={isSheetNotFound}
-        onOpenChange={() => setNotFoundSheetList([])}
+        onOpenChange={(open) => {
+          if (!open) {
+            setNotFoundSheetList([]);
+          }
+        }}
       >
         <DialogContent className="max-w-lg gap-2">
           <DialogHeader>

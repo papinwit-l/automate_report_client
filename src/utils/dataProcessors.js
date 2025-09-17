@@ -9,13 +9,16 @@ export const processAdvertisingData = (
   groupBy = "Keyword",
   platform = "default"
 ) => {
+  // Ensure finalMetrics is an array
+  const safeMetrics = Array.isArray(finalMetrics) ? finalMetrics : [];
+
   if (!cleanedData || cleanedData.length === 0) {
     return {
       enhancedFieldData: {},
       enhancedTotals: Object.fromEntries(
-        finalMetrics.map((m) => [m, "No Data"])
+        safeMetrics.map((m) => [m, "No Data"])
       ),
-      allMetrics: finalMetrics,
+      allMetrics: safeMetrics,
     };
   }
 

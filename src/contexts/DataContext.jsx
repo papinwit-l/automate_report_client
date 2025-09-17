@@ -811,11 +811,12 @@ export const DataProvider = ({ children }) => {
         setNotFoundSheetList([]);
         setSlideDetectedList([]);
 
+        await getOverallData(id);
+
         // Fetch all data types in parallel for better performance
         const promises = [
           getGGDemographic(id),
           getFBDemographicData(id),
-          getOverallData(id),
           getSEMData(id),
           getGDNData(id),
           getDiscData(id),
@@ -858,12 +859,12 @@ export const DataProvider = ({ children }) => {
     const dataObjects = dataRows.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
-    console.log("dataObjects", dataObjects);
+    // console.log("dataObjects", dataObjects);
     const dateFilteredData = filterDataByDate(dataObjects, dateRange);
-    console.log("data:", dateFilteredData);
+    // console.log("data:", dateFilteredData);
     // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
     const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
-    console.log("resultData:", resultData);
+    // console.log("resultData:", resultData);
     const finalResult = resultData.map((item) => {
       const allKeys = Object.keys(item);
       const keyIndex = allKeys.findIndex((keyItem) => keyItem.includes("URL"));
@@ -871,7 +872,7 @@ export const DataProvider = ({ children }) => {
       return { ...item, Ads: item?.Ads || item[key] };
     });
 
-    console.log("finalResult:", finalResult);
+    // console.log("finalResult:", finalResult);
 
     setFacebookAdsPicture(finalResult);
   };
@@ -891,7 +892,7 @@ export const DataProvider = ({ children }) => {
 
   function filterDataByDate(data, dateRange) {
     const { from, to } = dateRange;
-    console.log("🎯 filterDataByDate", from, to);
+    // console.log("🎯 filterDataByDate", from, to);
     if (!from || !to) {
       return data;
     }
@@ -924,7 +925,7 @@ export const DataProvider = ({ children }) => {
     const map = {};
 
     // debug log
-    console.log("🎯 removeDuplicateByColumn data:", data);
+    // console.log("🎯 removeDuplicateByColumn data:", data);
 
     // check item in data that contain item.Date
     const dateColumn = Object.keys(data[0]).find(
@@ -932,7 +933,7 @@ export const DataProvider = ({ children }) => {
         key.trim().toLowerCase() === "date" ||
         key.trim().toLowerCase() === "updated date"
     );
-    console.log("🎯 removeDuplicateByColumn dateColumn:", dateColumn);
+    // console.log("🎯 removeDuplicateByColumn dateColumn:", dateColumn);
 
     // if contains Date, then sort by latest date
     // Date format: YYYY-MM-DD
@@ -942,7 +943,7 @@ export const DataProvider = ({ children }) => {
         const dateB = new Date(b[dateColumn]);
         return dateB - dateA; // Latest first
       });
-      console.log("🎯 removeDuplicateByColumn sorted data:", data);
+      // console.log("🎯 removeDuplicateByColumn sorted data:", data);
     }
 
     // Remove duplicates - keep first occurrence (latest if sorted by date)
