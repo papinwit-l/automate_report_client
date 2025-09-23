@@ -33,6 +33,9 @@ export const DataProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  //template
+  const [template, setTemplate] = useState("default");
+
   const [notFoundSheetList, setNotFoundSheetList] = useState([]);
 
   // Smart Slide Detection
@@ -1197,6 +1200,10 @@ export const DataProvider = ({ children }) => {
 
     //function
     fetchFacebookPicture,
+
+    //template
+    template,
+    setTemplate,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

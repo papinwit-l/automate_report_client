@@ -16,8 +16,12 @@ export const FACEBOOK_FIELDS = [
   { key: "addToCart", sourceField: "Website adds to cart" },
   { key: "purchase", sourceField: "Website purchases" },
   {
-    key: "purchaseConValue",
+    key: "websiteConValue",
     sourceField: "Website purchases conversion value",
+  },
+  {
+    key: "purchaseConValue",
+    sourceField: "Purchase conversion value",
   },
 ];
 

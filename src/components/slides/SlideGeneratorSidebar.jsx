@@ -36,6 +36,7 @@ import {
   FilterIcon,
   Eye,
   EyeOff,
+  LayoutTemplate,
 } from "lucide-react";
 import DateRangePickerV2 from "./utils/DateRangePickerV2";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -48,6 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { TEMPLATE_SELECT_OPTIONS } from "@/configs/overallTemplateConfig";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -72,7 +74,12 @@ const SlideGeneratorSidebar = ({
   const [savedUrls, setSavedUrls] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
 
-  const { enableSmartSlideDetection, setEnableSmartSlideDetection } = useData();
+  const {
+    enableSmartSlideDetection,
+    setEnableSmartSlideDetection,
+    template,
+    setTemplate,
+  } = useData();
 
   // Storage key for localStorage
   const STORAGE_KEY = "slide_generator_saved_urls";
@@ -435,6 +442,7 @@ const SlideGeneratorSidebar = ({
                   </Card>
                 </div>
 
+                {/* Hide Slide Detection */}
                 <TooltipProvider>
                   <Tooltip delayDuration={500}>
                     <TooltipTrigger asChild>
@@ -470,6 +478,33 @@ const SlideGeneratorSidebar = ({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+
+                {/* Template Selection */}
+                <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <LayoutTemplate className="h-4 w-4 text-black" />
+                    <h3 className="font-medium text-sm">Template:</h3>
+                  </div>
+                  <Select onValueChange={setTemplate} value={template}>
+                    <SelectTrigger className="w-full bg-white shadow-sm hover:bg-gray-50 transition-colors">
+                      <SelectValue placeholder="Select a template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TEMPLATE_SELECT_OPTIONS.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value}
+                          className={`cursor-pointer hover:bg-blue-50 ${
+                            option.value === template ? "bg-blue-100" : ""
+                          }`}
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button
                   onClick={onGenerate}
                   disabled={isGenerating || !ableToGenerate}

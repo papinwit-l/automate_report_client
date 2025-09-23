@@ -59,9 +59,10 @@ function SearchCheckbox(props) {
 
   useEffect(() => {
     // Filter items based on input value
-    const filtered = items.filter((item) =>
-      item.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    const filtered = items.filter((item) => {
+      if (!item) return false;
+      return item.toLowerCase().includes(inputValue.toLowerCase());
+    });
     setFilteredItems(filtered);
   }, [inputValue]);
 

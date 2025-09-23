@@ -69,6 +69,7 @@ export const AdvancedDataTable = ({
         return "Messages";
       case "cpe":
         return "CPE";
+      case "purchase conversion value":
       case "purchaseconvalue":
       case "conversion value":
       case "conversionvalue":

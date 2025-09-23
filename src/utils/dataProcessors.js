@@ -22,13 +22,19 @@ export const processAdvertisingData = (
     };
   }
 
+  // console.log("cleanedData:", cleanedData);
+
   // Group by the specified field
   const summaryByField = cleanedData.reduce((acc, item) => {
     const fieldValue = item[groupBy] || "Unknown";
+    const itemKey = Object.keys(item);
 
     if (!acc[fieldValue]) {
       // Initialize all metrics
-      acc[fieldValue] = Object.fromEntries(metrics.map((m) => [m, 0]));
+      acc[fieldValue] = {
+        ...Object.fromEntries(metrics.map((m) => [m, 0])),
+        Engagements: 0,
+      };
 
       // Initialize non-numeric fields
       NON_NUMERIC_COLUMNS.forEach((field) => {
@@ -54,6 +60,17 @@ export const processAdvertisingData = (
           const numValue =
             Number(item["Conversions"]) || Number(item["Conversion"]) || 0;
           acc[fieldValue][key] += numValue;
+        } else if (key === "Post Engagement") {
+          itemKey.some((fKey) => {
+            if (
+              fKey.toLowerCase().includes(key.toLowerCase()) ||
+              key.toLowerCase().includes(fKey.toLowerCase())
+            ) {
+              const numValue = Number(item[fKey]) || 0;
+              acc[fieldValue]["Engagements"] += numValue;
+              return true;
+            }
+          });
         } else {
           const numValue = Number(item[key]) || 0;
           acc[fieldValue][key] += numValue;
@@ -144,12 +161,23 @@ export const processAdvertisingData = (
   });
 
   // Calculate totals
-  const totals = Object.fromEntries(metrics.map((m) => [m, 0]));
+  const totals = {
+    ...Object.fromEntries(metrics.map((m) => [m, 0])),
+    Engagements: 0,
+  };
+
+  // console.log("🎯 summaryByField:", summaryByField);
+
   Object.values(summaryByField).forEach((fieldValues) => {
+    // console.log("🎯Totals - fieldValues:", fieldValues);
     for (const key of metrics) {
-      totals[key] += fieldValues[key];
+      if (key === "Post Engagement") {
+        totals["Engagements"] += fieldValues["Engagements"];
+      } else totals[key] += fieldValues[key];
     }
   });
+
+  // console.log("🎯 totals:", totals);
 
   // Add calculated totals
   const totalCtr =
