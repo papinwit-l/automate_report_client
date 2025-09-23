@@ -80,6 +80,7 @@ import {
   TIKTOK_SLIDES,
 } from "@/configs/slideConfig";
 import createAxiosInstance from "@/configs/axiosConfigs";
+import { handleSlideTemplate } from "@/utils/slideTemplateRender";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -104,6 +105,8 @@ function SlideReport() {
     slideDetectedList,
     setSlideDetectedList,
     enableSmartSlideDetection,
+    template,
+    setTemplate,
   } = useData();
   const [mediaPlanData, setMediaPlanData] = React.useState(null);
 
@@ -645,7 +648,11 @@ function SlideReport() {
                       id: "facebook-section-component",
                     }}
                     checkSlideDetected={checkSlideDetected}
-                    slideTypes={FACEBOOK_SLIDES}
+                    slideTypes={handleSlideTemplate(
+                      FACEBOOK_SLIDES,
+                      template,
+                      "facebook"
+                    )}
                   />
                   <SlideRenderer
                     sectionData={{
@@ -698,24 +705,31 @@ function SlideReport() {
                     title={"Facebook"}
                     componentID={"facebook-section-component"}
                   />
-                  <FacebookAwarenessSlide01 />
-                  <FacebookAwarenessSlide02 />
-                  <FacebookReachSlide01 />
-                  <FacebookReachSlide02 />
-                  <FacebookEngagementSlide01 />
-                  <FacebookEngagementSlide02 />
-                  <FacebookTrafficSlide01 />
-                  <FacebookTrafficSlide02 />
-                  <FacebookVideoSlide01 />
-                  <FacebookVideoSlide02 />
-                  <FacebookMessageSlide01 />
-                  <FacebookMessageSlide02 />
-                  <FacebookLeadSlide01 />
-                  <FacebookLeadSlide02 />
-                  <FacebookConversionSlide01 />
-                  <FacebookConversionSlide02 />
-                  <FacebookCatalogSlide01 />
-                  <FacebookCatalogSlide02 />
+                  {template === "asia-hotel" ? (
+                    <FacebookAwarenessSlide01 />
+                  ) : (
+                    <>
+                      <FacebookAwarenessSlide01 />
+                      <FacebookAwarenessSlide02 />
+                      <FacebookReachSlide01 />
+                      <FacebookReachSlide02 />
+                      <FacebookEngagementSlide01 />
+                      <FacebookEngagementSlide02 />
+                      <FacebookTrafficSlide01 />
+                      <FacebookTrafficSlide02 />
+                      <FacebookVideoSlide01 />
+                      <FacebookVideoSlide02 />
+                      <FacebookMessageSlide01 />
+                      <FacebookMessageSlide02 />
+                      <FacebookLeadSlide01 />
+                      <FacebookLeadSlide02 />
+                      <FacebookConversionSlide01 />
+                      <FacebookConversionSlide02 />
+                      <FacebookCatalogSlide01 />
+                      <FacebookCatalogSlide02 />
+                    </>
+                  )}
+
                   <SectionSlide
                     title={"Google"}
                     componentID={"google-section-component"}

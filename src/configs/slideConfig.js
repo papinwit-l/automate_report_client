@@ -1,3 +1,5 @@
+import AsiaHotelFBCatalog01 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog01";
+import AsiaHotelFBCatalog02 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog02";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide01 from "@/components/slides/FacebookAwarenessSlide01";
 import FacebookAwarenessSlide02 from "@/components/slides/FacebookAwarenessSlide02";
@@ -38,6 +40,18 @@ export const GOOGLE_SLIDES = {
   YouTube: [YoutubeSlide],
   Shopping: [ShoppingAdsSlide],
   "Performance Max": [PerformanceMaxSlide],
+};
+
+export const ASIA_HOTEL_FACEBOOK_SLIDES = {
+  "FB Awareness": [FacebookAwarenessSlide01, FacebookAwarenessSlide02],
+  "FB Reach": [FacebookReachSlide01, FacebookReachSlide02],
+  "FB Engagement": [FacebookEngagementSlide01, FacebookEngagementSlide02],
+  "FB Traffic": [FacebookTrafficSlide01, FacebookTrafficSlide02],
+  "FB Video": [FacebookVideoSlide01, FacebookVideoSlide02],
+  "FB Message": [FacebookMessageSlide01, FacebookMessageSlide02],
+  "FB Lead": [FacebookLeadSlide01, FacebookLeadSlide02],
+  "FB Conversion": [FacebookConversionSlide01, FacebookConversionSlide02],
+  "FB Catalog": [AsiaHotelFBCatalog01, AsiaHotelFBCatalog02],
 };
 
 export const FACEBOOK_SLIDES = {
