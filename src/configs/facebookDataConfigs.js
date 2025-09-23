@@ -16,8 +16,12 @@ export const FACEBOOK_FIELDS = [
   { key: "addToCart", sourceField: "Website adds to cart" },
   { key: "purchase", sourceField: "Website purchases" },
   {
-    key: "websiteConValue",
+    key: "websitePurchasesConversionValue",
     sourceField: "Website purchases conversion value",
+  },
+  {
+    key: "websiteConversionValue",
+    sourceField: "Website conversion value",
   },
   {
     key: "purchaseConValue",
@@ -57,6 +61,8 @@ export const FACEBOOK_PROCESSED_FIELDS = [
   "Website adds to cart",
   "Website purchases",
   "Website purchases conversion value",
+  "Website conversion value",
+  "Purchase conversion value",
 ];
 
 export const FACEBOOK_METRICS = [
@@ -76,6 +82,8 @@ export const FACEBOOK_METRICS = [
   "Website adds to cart",
   "Website purchases",
   "Website purchases conversion value",
+  "Website conversion value",
+  "Purchase conversion value",
 ];
 
 export const FACEBOOK_CHANNELS_MAP = {

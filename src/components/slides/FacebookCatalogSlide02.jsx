@@ -333,6 +333,11 @@ function FacebookCatalogSlide02() {
         FacebookCatalogAudienceComparison?.conRate,
         "percentage"
       ),
+      conversionValueData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.conversionValue,
+        FacebookCatalogAudienceComparison?.conversionValue,
+        "compact"
+      ),
       purchaseConValueData: formatDisplayData(
         FacebookCatalogAudienceTotals?.purchaseConValue,
         FacebookCatalogAudienceComparison?.purchaseConValue,
@@ -497,13 +502,13 @@ function FacebookCatalogSlide02() {
                 value={
                   isNoData
                     ? "No Data"
-                    : formattedMetrics.purchaseConValueData?.displayValue
+                    : formattedMetrics.conversionValueData?.displayValue
                 }
                 isConversion={true}
                 compareValue={
-                  formattedMetrics.purchaseConValueData?.compareValue
+                  formattedMetrics.conversionValueData?.compareValue
                 }
-                isNegative={formattedMetrics.purchaseConValueData?.isNegative}
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -531,7 +536,7 @@ function FacebookCatalogSlide02() {
                   "ctr",
                   "addToCart",
                   "purchase",
-                  "conRate",
+                  "cvr",
                   "spent",
                   "purchaseConValue",
                   "roas",

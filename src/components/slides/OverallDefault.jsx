@@ -261,10 +261,6 @@ function OverallDefault() {
     );
   }
 
-  console.log("🎯 Overall data:", overallData);
-  console.log("🎯 Overall comparison:", overallComparison);
-  console.log("🎯 Overall totals:", overallTotals);
-
   return (
     <div
       id="overall-component"

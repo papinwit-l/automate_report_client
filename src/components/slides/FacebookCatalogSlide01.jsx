@@ -321,6 +321,11 @@ function FacebookCatalogSlide01() {
         FacebookCatalogAudienceComparison?.conRate,
         "percentage"
       ),
+      conversionValueData: formatDisplayData(
+        FacebookCatalogAudienceTotals?.conversionValue,
+        FacebookCatalogAudienceComparison?.conversionValue,
+        "compact"
+      ),
       purchaseConValueData: formatDisplayData(
         FacebookCatalogAudienceTotals?.purchaseConValue,
         FacebookCatalogAudienceComparison?.purchaseConValue,
@@ -386,6 +391,27 @@ function FacebookCatalogSlide01() {
       </div>
     );
   }
+
+  console.log(
+    "🎯 Facebook Catalog Sale (1/2) formattedMetrics:",
+    formattedMetrics
+  );
+  console.log(
+    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceData:",
+    FacebookCatalogAudienceData
+  );
+  console.log(
+    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceTotals:",
+    FacebookCatalogAudienceTotals
+  );
+  console.log(
+    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeData:",
+    FacebookCatalogCreativeData
+  );
+  console.log(
+    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeTotals:",
+    FacebookCatalogCreativeTotals
+  );
 
   return (
     <div
@@ -485,13 +511,13 @@ function FacebookCatalogSlide01() {
                 value={
                   isNoData
                     ? "No Data"
-                    : formattedMetrics.purchaseConValueData?.displayValue
+                    : formattedMetrics.conversionValueData?.displayValue
                 }
                 isConversion={true}
                 compareValue={
-                  formattedMetrics.purchaseConValueData?.compareValue
+                  formattedMetrics.conversionValueData?.compareValue
                 }
-                isNegative={formattedMetrics.purchaseConValueData?.isNegative}
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -519,7 +545,7 @@ function FacebookCatalogSlide01() {
                   "ctr",
                   "addToCart",
                   "purchase",
-                  "conRate",
+                  "cvr",
                   "spent",
                   "purchaseConValue",
                   "roas",
