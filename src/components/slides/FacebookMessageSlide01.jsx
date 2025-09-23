@@ -476,7 +476,7 @@ function FacebookMessageSlide01() {
             </div>
           </div>
           {/* Chart */}
-          <div className="col-span-3">
+          <div className="col-span-4">
             <DonutChart
               data={chartByGender}
               title="Messages By Gender"
