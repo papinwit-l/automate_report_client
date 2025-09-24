@@ -290,8 +290,8 @@ function TaboolaSlide() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        TaboolaTotals?.conRate,
-        TaboolaComparison?.conRate,
+        TaboolaTotals?.conRate || TaboolaTotals?.cvr,
+        TaboolaComparison?.conRate || TaboolaComparison?.cvr,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

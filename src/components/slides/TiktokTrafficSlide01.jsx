@@ -261,11 +261,6 @@ function TiktokTrafficSlide01() {
         TikTokTrafficAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        TikTokTrafficAudienceTotals?.cvr,
-        TikTokTrafficAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         TikTokTrafficAudienceTotals?.cpm,
         TikTokTrafficAudienceComparison?.cpm,
@@ -317,8 +312,10 @@ function TiktokTrafficSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        TikTokTrafficAudienceTotals?.conRate,
-        TikTokTrafficAudienceComparison?.conRate,
+        TikTokTrafficAudienceTotals?.conRate ||
+          TikTokTrafficAudienceTotals?.cvr,
+        TikTokTrafficAudienceComparison?.conRate ||
+          TikTokTrafficAudienceComparison?.cvr,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

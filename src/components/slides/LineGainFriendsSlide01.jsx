@@ -263,11 +263,6 @@ function LineGainFriendsSlide01() {
         LineGainFriendsAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        LineGainFriendsAudienceTotals?.cvr,
-        LineGainFriendsAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         LineGainFriendsAudienceTotals?.cpm,
         LineGainFriendsAudienceComparison?.cpm,
@@ -319,8 +314,10 @@ function LineGainFriendsSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        LineGainFriendsAudienceTotals?.cvr,
-        LineGainFriendsAudienceComparison?.cvr,
+        LineGainFriendsAudienceTotals?.cvr ||
+          LineGainFriendsAudienceTotals?.conRate,
+        LineGainFriendsAudienceComparison?.cvr ||
+          LineGainFriendsAudienceComparison?.conRate,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

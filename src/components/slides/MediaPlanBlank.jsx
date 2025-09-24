@@ -261,11 +261,6 @@ function MediaPlanBlank() {
         TikTokVideoAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        TikTokVideoAudienceTotals?.cvr,
-        TikTokVideoAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         TikTokVideoAudienceTotals?.cpm,
         TikTokVideoAudienceComparison?.cpm,
@@ -400,7 +395,7 @@ function MediaPlanBlank() {
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button
           onClick={() => {
             setIsEditModalOpen(true);
@@ -408,7 +403,7 @@ function MediaPlanBlank() {
         >
           <Edit />
         </Button>
-      </div>
+      </div> */}
       <SlideHeader title={"Media Plan"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-20 h-full">

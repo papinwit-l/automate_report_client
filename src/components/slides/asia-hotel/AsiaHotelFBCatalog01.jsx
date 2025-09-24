@@ -261,11 +261,6 @@ function AsiaHotelFBCatalog01() {
         FacebookCatalogAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookCatalogAudienceTotals?.cvr,
-        FacebookCatalogAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookCatalogAudienceTotals?.cpm,
         FacebookCatalogAudienceComparison?.cpm,
@@ -317,8 +312,10 @@ function AsiaHotelFBCatalog01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        FacebookCatalogAudienceTotals?.conRate,
-        FacebookCatalogAudienceComparison?.conRate,
+        FacebookCatalogAudienceTotals?.conRate ||
+          FacebookCatalogAudienceTotals?.cvr,
+        FacebookCatalogAudienceComparison?.conRate ||
+          FacebookCatalogAudienceComparison?.cvr,
         "percentage"
       ),
       conversionValueData: formatDisplayData(

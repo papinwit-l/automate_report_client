@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
-import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./utils/NumberDisplayBox";
-import TextEditorModal from "./utils/TextEditorModal";
+import React, { useEffect, useMemo, useState } from "react";
+import SlideHeader from "../SlideHeader";
+import NumberDisplayBox from "../utils/NumberDisplayBox";
+import TextEditorModal from "../utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
-import DonutChart from "../charts-tables/DonutChart";
+import DonutChart from "@/components/charts-tables/DonutChart";
 import { Edit } from "lucide-react";
-import { Button } from "../ui/button";
-import DataTable from "../charts-tables/DataTable";
+import { Button } from "@/components/ui/button";
 
 // Import utility functions
 import {
@@ -15,103 +14,85 @@ import {
   formatMetricsData,
   METRIC_CONFIGS,
 } from "@/utils/dataDisplayUtils";
-import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import { AdvancedDataTable } from "@/components/charts-tables/AdvancedDataTable";
 
-function FacebookTEST() {
+function AsiaHotelFBEngage01() {
   const {
     loading,
     error,
     refetch,
-    FacebookAwarenessAudienceData,
-    FacebookAwarenessAudienceTotals,
-    FacebookReachAudienceMetrics,
-    FacebookAwarenessAudienceComparison,
-    FacebookAwarenessCreativeData,
-    FacebookReachCreativeTotals,
     FBDemographicData,
+    FacebookEngagementAudienceData,
+    FacebookEngagementAudienceTotals,
+    FacebookEngagementCreativeData,
+    FacebookEngagementCreativeTotals,
+    FacebookEngagementAudienceMetrics,
+    FacebookEngagementAudienceComparison,
   } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([10]);
+  const [maxTableRows, setMaxTableRows] = useState([5, 4]);
   const [isNoData, setIsNoData] = useState(false);
 
-  // Fix: Memoize summarizeData to prevent unnecessary re-renders
-  const summarizeData = useCallback(() => {
-    try {
-      // Handle "No Data" case
-      if (
-        Object.keys(FacebookAwarenessAudienceData).length === 0 ||
-        Object.keys(FacebookAwarenessAudienceTotals).length === 0
-      ) {
-        setIsNoData(true);
-        setSummaryText("<li>No data available for the selected period</li>");
-        return;
-      }
-
-      let summaryTextTemp = "";
-      const overallText = `Overall reach: ** ${parseFloat(
-        FacebookAwarenessAudienceTotals?.reach?.toFixed(2) || 0
-      )?.toLocaleString()} reaches**`;
-      summaryTextTemp = `<li>${overallText}</li>`;
-
-      summaryTextTemp += `<li>Average CPR: **${FacebookAwarenessAudienceTotals.cpr?.toLocaleString(
-        undefined,
-        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-      )} THB (per 1000 reaches)**</li>`;
-
-      // Find top audience by reach (with error handling)
-      const topAudience = FacebookAwarenessAudienceData
-        ? Object.entries(FacebookAwarenessAudienceData).reduce(
-            (max, [key, value]) =>
-              (value?.reach || 0) > (max.value?.reach || 0)
-                ? { key, value }
-                : max,
-            { key: "", value: { reach: 0 } }
-          )
-        : { key: "", value: { reach: 0 } };
-
-      if (topAudience.key) {
-        const topAudienceText = `Top audience: **${
-          topAudience.key
-        } (with ${topAudience.value.reach?.toLocaleString()} reaches)**`;
-        summaryTextTemp += `<li>${topAudienceText}</li>`;
-      }
-
-      // Find top creative by reach (with error handling)
-      const topCreative = FacebookAwarenessCreativeData
-        ? Object.entries(FacebookAwarenessCreativeData).reduce(
-            (max, [key, value]) =>
-              (value?.reach || 0) > (max.value?.reach || 0)
-                ? { key, value }
-                : max,
-            { key: "", value: { reach: 0 } }
-          )
-        : { key: "", value: { reach: 0 } };
-
-      if (topCreative.key) {
-        // Fix: Added missing closing parenthesis
-        const topCreativeText = `Top creative: **${
-          topCreative.key
-        } (with ${topCreative.value.reach?.toLocaleString()} reaches)**`;
-        // summaryTextTemp += `<li>${topCreativeText}</li>`;
-      }
-
-      setSummaryText(summaryTextTemp);
-    } catch (error) {
-      console.error("Error in summarizeData:", error);
-      setSummaryText("<li>Error generating summary</li>");
+  const summarizeData = () => {
+    // Handle "No Data" case
+    if (
+      !FacebookEngagementAudienceData ||
+      !FacebookEngagementAudienceTotals ||
+      Object.keys(FacebookEngagementAudienceData).length === 0 ||
+      Object.keys(FacebookEngagementAudienceTotals).length === 0
+    ) {
+      setIsNoData(true);
+      setSummaryText("<li>No data available for the selected period</li>");
+      return;
     }
-  }, [
-    FacebookAwarenessAudienceTotals,
-    FacebookAwarenessAudienceData,
-    FacebookAwarenessCreativeData,
-  ]);
+
+    let summaryTextTemp = "";
+    const overallText = `Overall engagements: ** ${parseFloat(
+      FacebookEngagementAudienceTotals?.engagements?.toFixed(2) || 0
+    )?.toLocaleString()} post engagements**`;
+    summaryTextTemp = `<li>${overallText}</li>`;
+
+    summaryTextTemp += `<li>Average CPE: **${FacebookEngagementAudienceTotals.cpe?.toLocaleString(
+      undefined,
+      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    )} THB**</li>`;
+
+    // Find top audience by engagements (simpler approach)
+    const topAudience = Object.entries(FacebookEngagementAudienceData).reduce(
+      (max, [key, value]) =>
+        (value.engagements || 0) > (max.value.engagements || 0)
+          ? { key, value }
+          : max,
+      { key: "", value: { engagements: 0 } }
+    );
+
+    const topAudienceText = `Top audience: **${
+      topAudience.key
+    } (with ${topAudience.value.engagements?.toLocaleString()} post engagements)**`;
+    summaryTextTemp += `<li>${topAudienceText}</li>`;
+
+    // Find top creative by impressions (simpler approach)
+    const topCreative = Object.entries(FacebookEngagementCreativeData).reduce(
+      (max, [key, value]) =>
+        (value.engagements || 0) > (max.value.engagements || 0)
+          ? { key, value }
+          : max,
+      { key: "", value: { engagements: 0 } }
+    );
+    const topCreativeText = `Top creative: **${
+      topCreative.key
+    } (with ${topCreative.value.engagements?.toLocaleString()} post engagements)**`;
+    // summaryTextTemp += `<li>${topCreativeText}</li>`;
+
+    setSummaryText(summaryTextTemp);
+  };
 
   //Demographic for chart
   const { chartByGender, chartByAge, chartByDevice } = useMemo(() => {
-    const GRAPH_KEY = "Reach";
-    const CHANNEL = "FB Reach";
+    const GRAPH_KEY = "Engagements";
+    const CHANNEL = "FB Engagement";
 
     try {
       if (!FBDemographicData || FBDemographicData.length === 0) {
@@ -236,101 +217,11 @@ function FacebookTEST() {
     }
   }, [FBDemographicData]);
 
-  // Fix: Add summarizeData to dependency array
   useEffect(() => {
     summarizeData();
-  }, [summarizeData]);
+  }, [FacebookEngagementAudienceTotals, FacebookEngagementAudienceData]);
 
-  // Fix: Memoize formatted metrics to prevent unnecessary recalculations
-  const formattedMetrics = useMemo(() => {
-    if (
-      !FacebookAwarenessAudienceTotals ||
-      !FacebookAwarenessAudienceComparison
-    ) {
-      return {};
-    }
-
-    return {
-      impressionData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.impressions,
-        FacebookAwarenessAudienceComparison?.impressions,
-        "compact"
-      ),
-      clicksData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.clicks,
-        FacebookAwarenessAudienceComparison?.clicks,
-        "compact"
-      ),
-      ctrData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.ctr,
-        FacebookAwarenessAudienceComparison?.ctr,
-        "percentage"
-      ),
-      cpcData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cpc,
-        FacebookAwarenessAudienceComparison?.cpc,
-        "compact"
-      ),
-      conversionsData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.conversions,
-        FacebookAwarenessAudienceComparison?.conversions,
-        "number"
-      ),
-      cplData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cpl,
-        FacebookAwarenessAudienceComparison?.cpl,
-        "compact"
-      ),
-      spentData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.spent,
-        FacebookAwarenessAudienceComparison?.spent,
-        "compact"
-      ),
-      conRate: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cvr,
-        FacebookAwarenessAudienceComparison?.cvr,
-        "percentage"
-      ),
-      cpmData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cpm,
-        FacebookAwarenessAudienceComparison?.cpm,
-        "compact"
-      ),
-      reachData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.reach,
-        FacebookAwarenessAudienceComparison?.reach,
-        "compact"
-      ),
-      frequencyData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.frequency,
-        FacebookAwarenessAudienceComparison?.frequency,
-        "compact"
-      ),
-      cprData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cpr,
-        FacebookAwarenessAudienceComparison?.cpr,
-        "compact"
-      ),
-      engagementData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.engagements,
-        FacebookAwarenessAudienceComparison?.engagements,
-        "compact"
-      ),
-      engagementRateData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.engagementRate,
-        FacebookAwarenessAudienceComparison?.engagementRate,
-        "percentage"
-      ),
-      cpeData: formatDisplayData(
-        FacebookAwarenessAudienceTotals?.cpe,
-        FacebookAwarenessAudienceComparison?.cpe,
-        "compact"
-      ),
-    };
-  }, [FacebookAwarenessAudienceTotals, FacebookAwarenessAudienceComparison]);
-
-  // Memoize text formatter
-  const renderFormattedText = useCallback((text) => {
+  const renderFormattedText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
@@ -346,7 +237,137 @@ function FacebookTEST() {
         /\(\((.*?)\)\)/g,
         '<span class="text-xs text-gray-600">$1</span>'
       );
-  }, []);
+  };
+
+  // Fix: Memoize formatted metrics to prevent unnecessary recalculations
+  const formattedMetrics = useMemo(() => {
+    if (
+      !FacebookEngagementAudienceTotals ||
+      !FacebookEngagementAudienceComparison
+    ) {
+      return {};
+    }
+
+    return {
+      impressionData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.impressions,
+        FacebookEngagementAudienceComparison?.impressions,
+        "compact"
+      ),
+      clicksData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.clicks,
+        FacebookEngagementAudienceComparison?.clicks,
+        "compact"
+      ),
+      ctrData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.ctr,
+        FacebookEngagementAudienceComparison?.ctr,
+        "percentage"
+      ),
+      cpcData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpc,
+        FacebookEngagementAudienceComparison?.cpc,
+        "compact"
+      ),
+      conversionsData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.conversions,
+        FacebookEngagementAudienceComparison?.conversions,
+        "number"
+      ),
+      cplData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpl,
+        FacebookEngagementAudienceComparison?.cpl,
+        "compact"
+      ),
+      spentData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.spent,
+        FacebookEngagementAudienceComparison?.spent,
+        "compact"
+      ),
+      cpmData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpm,
+        FacebookEngagementAudienceComparison?.cpm,
+        "compact"
+      ),
+      reachData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.reach,
+        FacebookEngagementAudienceComparison?.reach,
+        "compact"
+      ),
+      frequencyData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.frequency,
+        FacebookEngagementAudienceComparison?.frequency,
+        "compact"
+      ),
+      cprData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpr,
+        FacebookEngagementAudienceComparison?.cpr,
+        "compact"
+      ),
+      engagementData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.engagements,
+        FacebookEngagementAudienceComparison?.engagements,
+        "compact"
+      ),
+      engagementRateData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.engagementRate,
+        FacebookEngagementAudienceComparison?.engagementRate,
+        "percentage"
+      ),
+      cpeData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpe,
+        FacebookEngagementAudienceComparison?.cpe,
+        "compact"
+      ),
+      viewRateData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.viewRate,
+        FacebookEngagementAudienceComparison?.viewRate,
+        "percentage"
+      ),
+      VideoViewsData: formatDisplayData(
+        FacebookEngagementAudienceTotals["views"],
+        FacebookEngagementAudienceComparison["views"],
+        "number"
+      ),
+      cpvData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.cpv,
+        FacebookEngagementAudienceComparison?.cpv,
+        "compact"
+      ),
+      conRateData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.conRate ||
+          FacebookEngagementAudienceTotals?.cvr,
+        FacebookEngagementAudienceComparison?.conRate ||
+          FacebookEngagementAudienceComparison?.cvr,
+        "percentage"
+      ),
+      conversionValueData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.conversionValue,
+        FacebookEngagementAudienceComparison?.conversionValue,
+        "compact"
+      ),
+      purchaseConValueData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.purchaseConValue,
+        FacebookEngagementAudienceComparison?.purchaseConValue,
+        "compact"
+      ),
+      roasData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.roas,
+        FacebookEngagementAudienceComparison?.roas,
+        "compact"
+      ),
+      purchaseData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.purchase,
+        FacebookEngagementAudienceComparison?.purchase,
+        "number"
+      ),
+      addToCartData: formatDisplayData(
+        FacebookEngagementAudienceTotals?.addToCart,
+        FacebookEngagementAudienceComparison?.addToCart,
+        "number"
+      ),
+    };
+  }, [FacebookEngagementAudienceTotals, FacebookEngagementAudienceComparison]);
 
   // Show loading state
   if (loading) {
@@ -374,7 +395,9 @@ function FacebookTEST() {
 
   return (
     <div
-      id="facebook-reach-01-component"
+      id="facebook-engagement-01-component"
+      data-exportable={true}
+      data-export-title="Facebook Engagement (1/2)"
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -387,15 +410,15 @@ function FacebookTEST() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Facebook Reach (1/2)"} />
+      <SlideHeader title={"Facebook Engagement (1/2)"} />
       <div className="flex flex-col h-full gap-2">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-8 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -419,33 +442,35 @@ function FacebookTEST() {
               />
 
               <NumberDisplayBox
-                title={"CPR"}
-                value={
-                  isNoData ? "No Data" : formattedMetrics.cprData?.displayValue
-                }
-                compareValue={formattedMetrics.cprData?.compareValue}
-                isNegative={formattedMetrics.cprData?.isNegative}
-                invertCompareColor={true}
-              />
-
-              <NumberDisplayBox
-                title={"Clicks"}
+                title={"Engagement"}
                 value={
                   isNoData
                     ? "No Data"
-                    : formattedMetrics.clicksData?.displayValue
+                    : formattedMetrics.engagementData?.displayValue
                 }
-                compareValue={formattedMetrics.clicksData?.compareValue}
-                isNegative={formattedMetrics.clicksData?.isNegative}
+                compareValue={formattedMetrics.engagementData?.compareValue}
+                isNegative={formattedMetrics.engagementData?.isNegative}
               />
 
               <NumberDisplayBox
-                title={"%CTR"}
+                title={"%Engage Rate"}
                 value={
-                  isNoData ? "No Data" : formattedMetrics.ctrData?.displayValue
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.engagementRateData?.displayValue
                 }
-                compareValue={formattedMetrics.ctrData?.compareValue}
-                isNegative={formattedMetrics.ctrData?.isNegative}
+                compareValue={formattedMetrics.engagementRateData?.compareValue}
+                isNegative={formattedMetrics.engagementRateData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"CPE"}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.cpeData?.displayValue
+                }
+                compareValue={formattedMetrics.cpeData?.compareValue}
+                isNegative={formattedMetrics.cpeData?.isNegative}
+                invertCompareColor={true}
               />
 
               <NumberDisplayBox
@@ -458,6 +483,20 @@ function FacebookTEST() {
                 isConversion={true}
                 compareValue={formattedMetrics.conversionsData?.compareValue}
                 isNegative={formattedMetrics.conversionsData?.isNegative}
+              />
+
+              <NumberDisplayBox
+                title={"Con value"}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionValueData?.displayValue
+                }
+                isConversion={true}
+                compareValue={
+                  formattedMetrics.conversionValueData?.compareValue
+                }
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
               />
 
               <NumberDisplayBox
@@ -478,28 +517,24 @@ function FacebookTEST() {
 
               <AdvancedDataTable
                 firstMetric="Ad set name"
-                channelData={FacebookAwarenessAudienceData}
-                totalData={FacebookAwarenessAudienceTotals}
+                channelData={FacebookEngagementAudienceData}
+                totalData={FacebookEngagementAudienceTotals}
                 metrics={[
                   "Ad set name",
                   "impressions",
                   "reach",
-                  "cpr",
-                  "frequency",
-                  "clicks",
-                  "ctr",
-                  "cpc",
-                  // "engagements",
-                  // "engagementRate",
-                  // "cpe",
+                  "engagements",
+                  "engagementRate",
+                  "cpe",
                   "conversions",
+                  "conversionValue",
                   "spent",
                 ]}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
-                defaultSortBy="reach"
+                defaultSortBy="impressions"
                 defaultSortOrder="desc"
-                enableSorting={true}
+                enableSorting={true} // Can disable sorting if needed
               />
             </div>
             {/* Summary */}
@@ -516,7 +551,7 @@ function FacebookTEST() {
             </div>
           </div>
           {/* Chart */}
-          <div className="col-span-4 flex flex-col">
+          <div className="col-span-3">
             <DonutChart
               data={chartByGender}
               title="Impression By Gender"
@@ -534,10 +569,9 @@ function FacebookTEST() {
               innerRadius={30}
               outerRadius={60}
               isPercentage={true}
+              isLegendWrap={false}
             />
           </div>
-        </div>
-        <div className="grid grid-cols-16">
           <div className="col-span-16"></div>
         </div>
       </div>
@@ -556,4 +590,4 @@ function FacebookTEST() {
   );
 }
 
-export default FacebookTEST;
+export default AsiaHotelFBEngage01;

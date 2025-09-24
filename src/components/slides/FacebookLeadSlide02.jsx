@@ -278,11 +278,6 @@ function FacebookLeadSlide02() {
         FacebookLeadAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookLeadAudienceTotals?.cvr,
-        FacebookLeadAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookLeadAudienceTotals?.cpm,
         FacebookLeadAudienceComparison?.cpm,
@@ -317,6 +312,12 @@ function FacebookLeadSlide02() {
         FacebookLeadAudienceTotals?.cpe,
         FacebookLeadAudienceComparison?.cpe,
         "compact"
+      ),
+      conRateData: formatDisplayData(
+        FacebookLeadAudienceTotals?.conRate || FacebookLeadAudienceTotals?.cvr,
+        FacebookLeadAudienceComparison?.conRate ||
+          FacebookLeadAudienceComparison?.cvr,
+        "percentage"
       ),
     };
   }, [FacebookLeadAudienceTotals, FacebookLeadAudienceComparison]);
@@ -436,10 +437,12 @@ function FacebookLeadSlide02() {
               <NumberDisplayBox
                 title={"%Con Rate"}
                 value={
-                  isNoData ? "No Data" : formattedMetrics.conRate?.displayValue
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conRateData?.displayValue
                 }
-                compareValue={formattedMetrics.conRate?.compareValue}
-                isNegative={formattedMetrics.conRate?.isNegative}
+                compareValue={formattedMetrics.conRateData?.compareValue}
+                isNegative={formattedMetrics.conRateData?.isNegative}
                 isConversion={true}
               />
 
@@ -464,6 +467,7 @@ function FacebookLeadSlide02() {
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>

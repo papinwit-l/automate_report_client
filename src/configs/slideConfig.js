@@ -2,6 +2,20 @@ import AsiaHotelFBAwareness01 from "@/components/slides/asia-hotel/AsiaHotelFBAw
 import AsiaHotelFBAwareness02 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness02";
 import AsiaHotelFBCatalog01 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog01";
 import AsiaHotelFBCatalog02 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog02";
+import AsiaHotelFBConv01 from "@/components/slides/asia-hotel/AsiaHotelFBConv01";
+import AsiaHotelFBConv02 from "@/components/slides/asia-hotel/AsiaHotelFBConv02";
+import AsiaHotelFBEngage01 from "@/components/slides/asia-hotel/AsiaHotelFBEngage01";
+import AsiaHotelFBEngage02 from "@/components/slides/asia-hotel/AsiaHotelFBEngage02";
+import AsiaHotelFBLead01 from "@/components/slides/asia-hotel/AsiaHotelFBLead01";
+import AsiaHotelFBLead02 from "@/components/slides/asia-hotel/AsiaHotelFBLead02";
+import AsiaHotelFBMessage01 from "@/components/slides/asia-hotel/AsiaHotelFBMessage01";
+import AsiaHotelFBMessage02 from "@/components/slides/asia-hotel/AsiaHotelFBMessage02";
+import AsiaHotelFBReach01 from "@/components/slides/asia-hotel/AsiaHotelFBReach01";
+import AsiaHotelFBReach02 from "@/components/slides/asia-hotel/AsiaHotelFBReach02";
+import AsiaHotelFBTraffic01 from "@/components/slides/asia-hotel/AsiaHotelFBTraffic01";
+import AsiaHotelFBTraffic02 from "@/components/slides/asia-hotel/AsiaHotelFBTraffic02";
+import AsiaHotelFBVideo01 from "@/components/slides/asia-hotel/AsiaHotelFBVideo01";
+import AsiaHotelFBVideo02 from "@/components/slides/asia-hotel/AsiaHotelFBVideo02";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
 import FacebookAwarenessSlide01 from "@/components/slides/FacebookAwarenessSlide01";
 import FacebookAwarenessSlide02 from "@/components/slides/FacebookAwarenessSlide02";
@@ -46,13 +60,13 @@ export const GOOGLE_SLIDES = {
 
 export const ASIA_HOTEL_FACEBOOK_SLIDES = {
   "FB Awareness": [AsiaHotelFBAwareness01, AsiaHotelFBAwareness02],
-  "FB Reach": [FacebookReachSlide01, FacebookReachSlide02],
-  "FB Engagement": [FacebookEngagementSlide01, FacebookEngagementSlide02],
-  "FB Traffic": [FacebookTrafficSlide01, FacebookTrafficSlide02],
-  "FB Video": [FacebookVideoSlide01, FacebookVideoSlide02],
-  "FB Message": [FacebookMessageSlide01, FacebookMessageSlide02],
-  "FB Lead": [FacebookLeadSlide01, FacebookLeadSlide02],
-  "FB Conversion": [FacebookConversionSlide01, FacebookConversionSlide02],
+  "FB Reach": [AsiaHotelFBReach01, AsiaHotelFBReach02],
+  "FB Engagement": [AsiaHotelFBEngage01, AsiaHotelFBEngage02],
+  "FB Traffic": [AsiaHotelFBTraffic01, AsiaHotelFBTraffic02],
+  "FB Video": [AsiaHotelFBVideo01, AsiaHotelFBVideo02],
+  "FB Message": [AsiaHotelFBMessage01, AsiaHotelFBMessage02],
+  "FB Lead": [AsiaHotelFBLead01, AsiaHotelFBLead02],
+  "FB Conversion": [AsiaHotelFBConv01, AsiaHotelFBConv02],
   "FB Catalog": [AsiaHotelFBCatalog01, AsiaHotelFBCatalog02],
 };
 

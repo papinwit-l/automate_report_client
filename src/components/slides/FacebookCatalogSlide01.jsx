@@ -317,8 +317,10 @@ function FacebookCatalogSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        FacebookCatalogAudienceTotals?.conRate,
-        FacebookCatalogAudienceComparison?.conRate,
+        FacebookCatalogAudienceTotals?.conRate ||
+          FacebookCatalogAudienceTotals?.cvr,
+        FacebookCatalogAudienceComparison?.conRate ||
+          FacebookCatalogAudienceComparison?.cvr,
         "percentage"
       ),
       conversionValueData: formatDisplayData(
@@ -391,27 +393,6 @@ function FacebookCatalogSlide01() {
       </div>
     );
   }
-
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) formattedMetrics:",
-    formattedMetrics
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceData:",
-    FacebookCatalogAudienceData
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceTotals:",
-    FacebookCatalogAudienceTotals
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeData:",
-    FacebookCatalogCreativeData
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeTotals:",
-    FacebookCatalogCreativeTotals
-  );
 
   return (
     <div

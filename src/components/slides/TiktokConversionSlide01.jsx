@@ -266,11 +266,6 @@ function TiktokConversionSlide01() {
         TikTokConversionAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        TikTokConversionAudienceTotals?.cvr,
-        TikTokConversionAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         TikTokConversionAudienceTotals?.cpm,
         TikTokConversionAudienceComparison?.cpm,
@@ -322,8 +317,10 @@ function TiktokConversionSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        TikTokConversionAudienceTotals?.cvr,
-        TikTokConversionAudienceComparison?.cvr,
+        TikTokConversionAudienceTotals?.cvr ||
+          TikTokConversionAudienceTotals?.conRate,
+        TikTokConversionAudienceComparison?.cvr ||
+          TikTokConversionAudienceComparison?.conRate,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

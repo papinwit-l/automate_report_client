@@ -284,11 +284,6 @@ function AsiaHotelFBReach01() {
         FacebookReachAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookReachAudienceTotals?.cvr,
-        FacebookReachAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookReachAudienceTotals?.cpm,
         FacebookReachAudienceComparison?.cpm,

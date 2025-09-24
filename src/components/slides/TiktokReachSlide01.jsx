@@ -261,11 +261,6 @@ function TiktokReachSlide01() {
         TikTokReachAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        TikTokReachAudienceTotals?.cvr,
-        TikTokReachAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         TikTokReachAudienceTotals?.cpm,
         TikTokReachAudienceComparison?.cpm,
@@ -317,8 +312,9 @@ function TiktokReachSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        TikTokReachAudienceTotals?.conRate,
-        TikTokReachAudienceComparison?.conRate,
+        TikTokReachAudienceTotals?.conRate || TikTokReachAudienceTotals?.cvr,
+        TikTokReachAudienceComparison?.conRate ||
+          TikTokReachAudienceComparison?.cvr,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

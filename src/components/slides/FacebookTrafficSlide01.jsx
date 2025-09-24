@@ -290,11 +290,6 @@ function FacebookTrafficSlide01() {
         FacebookTrafficAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookTrafficAudienceTotals?.cvr,
-        FacebookTrafficAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookTrafficAudienceTotals?.cpm,
         FacebookTrafficAudienceComparison?.cpm,
@@ -346,8 +341,10 @@ function FacebookTrafficSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        FacebookTrafficAudienceTotals?.conRate,
-        FacebookTrafficAudienceComparison?.conRate,
+        FacebookTrafficAudienceTotals?.conRate ||
+          FacebookTrafficAudienceTotals?.cvr,
+        FacebookTrafficAudienceComparison?.conRate ||
+          FacebookTrafficAudienceComparison?.cvr,
         "percentage"
       ),
     };

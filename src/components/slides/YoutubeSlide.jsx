@@ -246,11 +246,6 @@ function YoutubeSlide() {
         YoutubeComparison?.Spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        YoutubeTotals?.cvr,
-        YoutubeComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         YoutubeTotals?.cpm,
         YoutubeComparison?.cpm,
@@ -302,8 +297,8 @@ function YoutubeSlide() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        YoutubeTotals?.conRate,
-        YoutubeComparison?.conRate,
+        YoutubeTotals?.conRate || YoutubeTotals?.cvr,
+        YoutubeComparison?.conRate || YoutubeComparison?.cvr,
         "percentage"
       ),
     };

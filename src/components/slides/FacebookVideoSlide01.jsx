@@ -290,11 +290,6 @@ function FacebookVideoSlide01() {
         FacebookVideoComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookVideoAudienceTotals?.cvr,
-        FacebookVideoComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookVideoAudienceTotals?.cpm,
         FacebookVideoComparison?.cpm,
@@ -346,8 +341,9 @@ function FacebookVideoSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        FacebookVideoAudienceTotals?.conRate,
-        FacebookVideoComparison?.conRate,
+        FacebookVideoAudienceTotals?.conRate ||
+          FacebookVideoAudienceTotals?.cvr,
+        FacebookVideoComparison?.conRate || FacebookVideoComparison?.cvr,
         "percentage"
       ),
     };

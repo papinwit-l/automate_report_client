@@ -234,11 +234,6 @@ function PerformanceMaxSlide() {
         PerformanceMaxComparison?.Spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        PerformanceMaxTotals?.cvr,
-        PerformanceMaxComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         PerformanceMaxTotals?.cpm,
         PerformanceMaxComparison?.cpm,
@@ -290,8 +285,8 @@ function PerformanceMaxSlide() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        PerformanceMaxTotals?.conRate,
-        PerformanceMaxComparison?.conRate,
+        PerformanceMaxTotals?.conRate || PerformanceMaxTotals?.cvr,
+        PerformanceMaxComparison?.conRate || PerformanceMaxComparison?.cvr,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

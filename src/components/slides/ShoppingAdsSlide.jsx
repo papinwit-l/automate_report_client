@@ -260,11 +260,6 @@ function ShoppingAdsSlide() {
         ShoppingAdsComparison?.Spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        ShoppingAdsTotals?.cvr,
-        ShoppingAdsComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         ShoppingAdsTotals?.cpm,
         ShoppingAdsComparison?.cpm,
@@ -316,8 +311,8 @@ function ShoppingAdsSlide() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        ShoppingAdsTotals?.cvr,
-        ShoppingAdsComparison?.cvr,
+        ShoppingAdsTotals?.cvr || ShoppingAdsTotals?.conRate,
+        ShoppingAdsComparison?.cvr || ShoppingAdsComparison?.conRate,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

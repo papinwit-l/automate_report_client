@@ -286,11 +286,6 @@ function FacebookConversionSlide01() {
         FacebookConversionAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookConversionAudienceTotals?.cvr,
-        FacebookConversionAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookConversionAudienceTotals?.cpm,
         FacebookConversionAudienceComparison?.cpm,
@@ -330,6 +325,13 @@ function FacebookConversionSlide01() {
         FacebookConversionAudienceTotals?.cpa,
         FacebookConversionAudienceComparison?.cpa,
         "compact"
+      ),
+      conRateData: formatDisplayData(
+        FacebookConversionAudienceTotals?.conRate ||
+          FacebookConversionAudienceTotals?.cvr,
+        FacebookConversionAudienceComparison?.conRate ||
+          FacebookConversionAudienceComparison?.cvr,
+        "percentage"
       ),
     };
   }, [FacebookConversionAudienceTotals, FacebookConversionAudienceComparison]);
@@ -449,10 +451,12 @@ function FacebookConversionSlide01() {
               <NumberDisplayBox
                 title={"%Con Rate"}
                 value={
-                  isNoData ? "No Data" : formattedMetrics.conRate?.displayValue
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conRateData?.displayValue
                 }
-                compareValue={formattedMetrics.conRate?.compareValue}
-                isNegative={formattedMetrics.conRate?.isNegative}
+                compareValue={formattedMetrics.conconRateDataRate?.compareValue}
+                isNegative={formattedMetrics.conRateData?.isNegative}
                 isConversion={true}
               />
 

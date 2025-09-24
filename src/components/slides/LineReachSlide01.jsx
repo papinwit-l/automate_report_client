@@ -257,11 +257,6 @@ function LineReachSlide01() {
         LineReachAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        LineReachAudienceTotals?.cvr,
-        LineReachAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         LineReachAudienceTotals?.cpm,
         LineReachAudienceComparison?.cpm,
@@ -313,8 +308,9 @@ function LineReachSlide01() {
         "compact"
       ),
       conRateData: formatDisplayData(
-        LineReachAudienceTotals?.cvr,
-        LineReachAudienceComparison?.cvr,
+        LineReachAudienceTotals?.cvr || LineReachAudienceTotals?.conRate,
+        LineReachAudienceComparison?.cvr ||
+          LineReachAudienceComparison?.conRate,
         "percentage"
       ),
       purchaseConValueData: formatDisplayData(

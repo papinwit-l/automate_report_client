@@ -87,6 +87,18 @@ import AsiaHotelFBAwareness01 from "@/components/slides/asia-hotel/AsiaHotelFBAw
 import AsiaHotelFBAwareness02 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness02";
 import AsiaHotelFBReach01 from "@/components/slides/asia-hotel/AsiaHotelFBReach01";
 import AsiaHotelFBReach02 from "@/components/slides/asia-hotel/AsiaHotelFBReach02";
+import AsiaHotelFBEngage01 from "@/components/slides/asia-hotel/AsiaHotelFBEngage01";
+import AsiaHotelFBEngage02 from "@/components/slides/asia-hotel/AsiaHotelFBEngage02";
+import AsiaHotelFBTraffic01 from "@/components/slides/asia-hotel/AsiaHotelFBTraffic01";
+import AsiaHotelFBTraffic02 from "@/components/slides/asia-hotel/AsiaHotelFBTraffic02";
+import AsiaHotelFBVideo01 from "@/components/slides/asia-hotel/AsiaHotelFBVideo01";
+import AsiaHotelFBVideo02 from "@/components/slides/asia-hotel/AsiaHotelFBVideo02";
+import AsiaHotelFBMessage01 from "@/components/slides/asia-hotel/AsiaHotelFBMessage01";
+import AsiaHotelFBMessage02 from "@/components/slides/asia-hotel/AsiaHotelFBMessage02";
+import AsiaHotelFBLead01 from "@/components/slides/asia-hotel/AsiaHotelFBLead01";
+import AsiaHotelFBLead02 from "@/components/slides/asia-hotel/AsiaHotelFBLead02";
+import AsiaHotelFBConv01 from "@/components/slides/asia-hotel/AsiaHotelFBConv01";
+import AsiaHotelFBConv02 from "@/components/slides/asia-hotel/AsiaHotelFBConv02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -717,6 +729,18 @@ function SlideReport() {
                       <AsiaHotelFBAwareness02 />
                       <AsiaHotelFBReach01 />
                       <AsiaHotelFBReach02 />
+                      <AsiaHotelFBEngage01 />
+                      <AsiaHotelFBEngage02 />
+                      <AsiaHotelFBTraffic01 />
+                      <AsiaHotelFBTraffic02 />
+                      <AsiaHotelFBVideo01 />
+                      <AsiaHotelFBVideo02 />
+                      <AsiaHotelFBMessage01 />
+                      <AsiaHotelFBMessage02 />
+                      <AsiaHotelFBLead01 />
+                      <AsiaHotelFBLead02 />
+                      <AsiaHotelFBConv01 />
+                      <AsiaHotelFBConv02 />
                       <AsiaHotelFBCatalog01 />
                       <AsiaHotelFBCatalog02 />
                     </>
