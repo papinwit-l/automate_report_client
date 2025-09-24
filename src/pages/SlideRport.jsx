@@ -625,10 +625,10 @@ function SlideReport() {
             )}
 
             {presentationUrl && (
-              <Alert className="border-green-200 bg-green-50 fixed top-20 right-10 z-10 w-fit">
+              <Alert className="border-green-200 bg-green-50 fixed top-20 right-10 z-50 w-fit">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800 pr-8">
-                  Presentation created successfully!{" "}
+                  Presentation created successfully!
                   <a
                     href={presentationUrl}
                     target="_blank"
@@ -834,7 +834,12 @@ function SlideReport() {
           }
         }}
       >
-        <DialogContent className="max-w-lg gap-2">
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault(); // Prevent closing on outside click
+          }}
+          className="max-w-lg gap-2"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-800">
               <AlertTriangle className="h-5 w-5" />

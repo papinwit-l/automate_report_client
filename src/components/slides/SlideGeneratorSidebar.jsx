@@ -50,6 +50,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { TEMPLATE_SELECT_OPTIONS } from "@/configs/overallTemplateConfig";
+import ExportLoadingDialog from "./utils/ExportLoadingDialog";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -563,6 +564,8 @@ const SlideGeneratorSidebar = ({
           )}
         </div>
       </div>
+
+      <ExportLoadingDialog isOpen={isExporting} />
 
       {/* Overlay */}
       {isOpen && (
