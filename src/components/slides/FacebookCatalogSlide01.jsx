@@ -261,11 +261,6 @@ function FacebookCatalogSlide01() {
         FacebookCatalogAudienceComparison?.spent,
         "compact"
       ),
-      conRate: formatDisplayData(
-        FacebookCatalogAudienceTotals?.cvr,
-        FacebookCatalogAudienceComparison?.cvr,
-        "percentage"
-      ),
       cpmData: formatDisplayData(
         FacebookCatalogAudienceTotals?.cpm,
         FacebookCatalogAudienceComparison?.cpm,
