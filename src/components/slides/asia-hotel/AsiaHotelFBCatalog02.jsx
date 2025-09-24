@@ -537,7 +537,7 @@ function AsiaHotelFBCatalog02() {
                   "purchase",
                   "cvr",
                   "spent",
-                  "purchaseConValue",
+                  "conversionValue",
                   "roas",
                 ]}
                 formatValue={formatTableValue}

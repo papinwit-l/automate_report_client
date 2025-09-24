@@ -526,10 +526,10 @@ export const processSocialMediaData = (
       config.fields.forEach((field) => {
         acc[creativeKey][field.key] = 0;
       });
-    }
 
-    // for convalue initialization
-    acc[creativeKey]["conversionValue"] = 0;
+      // for convalue initialization
+      acc[creativeKey]["conversionValue"] = 0;
+    }
 
     config.fields.forEach((field) => {
       if (CON_VALUE_KEY.includes(field.key)) {
@@ -544,7 +544,7 @@ export const processSocialMediaData = (
     return acc;
   }, {});
 
-  // console.log("creativeData:", creativeData);
+  console.log("creativeData:", creativeData);
 
   // Calculate enhanced metrics for audience data
   const enhancedAudienceData = {};
@@ -566,15 +566,19 @@ export const processSocialMediaData = (
 
   // Calculate totals for audience data
   const audienceTotals = Object.values(audienceData).reduce((acc, item) => {
-    config.fields.forEach((field) => {
-      if (CON_VALUE_KEY.includes(field.key)) {
-        acc["conversionValue"] =
-          (acc["conversionValue"] || 0) + item["conversionValue"];
-      } else {
-        acc[field.key] = (acc[field.key] || 0) + item[field.key];
-      }
+    Object.keys(item).forEach((key) => {
+      acc[key] = (acc[key] || 0) + item[key];
     });
     return acc;
+    // config.fields.forEach((field) => {
+    //   if (CON_VALUE_KEY.includes(field.key)) {
+    //     acc["conversionValue"] =
+    //       (acc["conversionValue"] || 0) + item["conversionValue"];
+    //   } else {
+    //     acc[field.key] = (acc[field.key] || 0) + item[field.key];
+    //   }
+    // });
+    // return acc;
   }, {});
 
   // console.log("audienceTotals:", audienceTotals);

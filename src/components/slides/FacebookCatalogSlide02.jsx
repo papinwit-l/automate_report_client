@@ -538,7 +538,7 @@ function FacebookCatalogSlide02() {
                   "purchase",
                   "cvr",
                   "spent",
-                  "purchaseConValue",
+                  "conversionValue",
                   "roas",
                 ]}
                 formatValue={formatTableValue}

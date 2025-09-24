@@ -449,7 +449,7 @@ function processData(data, channel, config, setters, metrics, options) {
     options;
   // console.log("==ProcessData: channel===", channel);
   if (channel["Channel"].trim() === "FB Catalog Sales") {
-    // console.log("==FB Catalog Sales==");
+    console.log("==FB Catalog Sales==");
   }
   try {
     const displayMetrics = metrics || [];

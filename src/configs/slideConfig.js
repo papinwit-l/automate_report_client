@@ -1,3 +1,5 @@
+import AsiaHotelFBAwareness01 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness01";
+import AsiaHotelFBAwareness02 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness02";
 import AsiaHotelFBCatalog01 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog01";
 import AsiaHotelFBCatalog02 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog02";
 import DiscoverySlide from "@/components/slides/DiscoverySlide";
@@ -43,7 +45,7 @@ export const GOOGLE_SLIDES = {
 };
 
 export const ASIA_HOTEL_FACEBOOK_SLIDES = {
-  "FB Awareness": [FacebookAwarenessSlide01, FacebookAwarenessSlide02],
+  "FB Awareness": [AsiaHotelFBAwareness01, AsiaHotelFBAwareness02],
   "FB Reach": [FacebookReachSlide01, FacebookReachSlide02],
   "FB Engagement": [FacebookEngagementSlide01, FacebookEngagementSlide02],
   "FB Traffic": [FacebookTrafficSlide01, FacebookTrafficSlide02],

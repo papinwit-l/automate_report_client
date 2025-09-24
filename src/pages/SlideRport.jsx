@@ -80,7 +80,9 @@ import {
   TIKTOK_SLIDES,
 } from "@/configs/slideConfig";
 import createAxiosInstance from "@/configs/axiosConfigs";
-import { handleSlideTemplate } from "@/utils/slideTemplateRender";
+import { handleSlideTemplate } from "@/utils/slideTemplatehandler";
+import AsiaHotelFBCatalog01 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog01";
+import AsiaHotelFBCatalog02 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -706,7 +708,10 @@ function SlideReport() {
                     componentID={"facebook-section-component"}
                   />
                   {template === "asia-hotel" ? (
-                    <FacebookAwarenessSlide01 />
+                    <>
+                      <AsiaHotelFBCatalog01 />
+                      <AsiaHotelFBCatalog02 />
+                    </>
                   ) : (
                     <>
                       <FacebookAwarenessSlide01 />

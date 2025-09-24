@@ -392,27 +392,6 @@ function AsiaHotelFBCatalog01() {
     );
   }
 
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) formattedMetrics:",
-    formattedMetrics
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceData:",
-    FacebookCatalogAudienceData
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogAudienceTotals:",
-    FacebookCatalogAudienceTotals
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeData:",
-    FacebookCatalogCreativeData
-  );
-  console.log(
-    "🎯 Facebook Catalog Sale (1/2) FacebookCatalogCreativeTotals:",
-    FacebookCatalogCreativeTotals
-  );
-
   return (
     <div
       id="facebook-catalog-01-component"
@@ -547,7 +526,7 @@ function AsiaHotelFBCatalog01() {
                   "purchase",
                   "cvr",
                   "spent",
-                  "purchaseConValue",
+                  "conversionValue",
                   "roas",
                 ]}
                 formatValue={formatTableValue}
