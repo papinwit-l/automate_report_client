@@ -447,9 +447,9 @@ export const getFilterValues = async (dataType, id, filterField) => {
 function processData(data, channel, config, setters, metrics, options) {
   const { enableDateRange = false, dateRange = { from: null, to: null } } =
     options;
-  // console.log("==ProcessData: channel===", channel);
+  // debud log
   if (channel["Channel"].trim() === "FB Catalog Sales") {
-    console.log("==FB Catalog Sales==");
+    // console.log("==FB Catalog Sales==");
   }
   try {
     const displayMetrics = metrics || [];

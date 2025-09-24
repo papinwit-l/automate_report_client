@@ -544,7 +544,7 @@ export const processSocialMediaData = (
     return acc;
   }, {});
 
-  console.log("creativeData:", creativeData);
+  // console.log("creativeData:", creativeData);
 
   // Calculate enhanced metrics for audience data
   const enhancedAudienceData = {};
