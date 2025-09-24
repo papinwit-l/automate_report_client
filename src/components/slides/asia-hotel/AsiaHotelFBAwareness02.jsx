@@ -255,87 +255,138 @@ function AsiaHotelFBAwareness02() {
       );
   };
 
-  // Format display data with safe fallbacks
-  // Using optional chaining to handle undefined/null values from useState
-  const impressionData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.impressions,
-    FacebookAwarenessAudienceComparison?.impressions,
-    "compact"
-  );
-  const clicksData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.clicks,
-    FacebookAwarenessAudienceComparison?.clicks,
-    "compact"
-  );
-  const ctrData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.ctr,
-    FacebookAwarenessAudienceComparison?.ctr,
-    "percentage"
-  );
-  const cpcData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cpc,
-    FacebookAwarenessAudienceComparison?.cpc,
-    "compact"
-  );
-  const conversionsData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.conversions,
-    FacebookAwarenessAudienceComparison?.conversions,
-    "number"
-  );
-  const cplData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cpl,
-    FacebookAwarenessAudienceComparison?.cpl,
-    "compact"
-  );
-  const spentData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.spent,
-    FacebookAwarenessAudienceComparison?.spent,
-    "compact"
-  );
-  const conRate = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cvr, // Changed from conRate to cvr
-    FacebookAwarenessAudienceComparison?.cvr,
-    "percentage"
-  );
-  const cpmData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cpm,
-    FacebookAwarenessAudienceComparison?.cpm,
-    "compact"
-  );
-  const reachData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.reach,
-    FacebookAwarenessAudienceComparison?.reach,
-    "compact"
-  );
-  const frequencyData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.frequency,
-    FacebookAwarenessAudienceComparison?.frequency,
-    "compact"
-  );
-  const cprData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cpr,
-    FacebookAwarenessAudienceComparison?.cpr,
-    "compact"
-  );
-  const engagementData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.engagements,
-    FacebookAwarenessAudienceComparison?.engagements,
-    "compact"
-  );
-  const engagementRateData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.engagementRate,
-    FacebookAwarenessAudienceComparison?.engagementRate,
-    "percentage"
-  );
-  const cpeData = formatDisplayData(
-    FacebookAwarenessAudienceTotals?.cpe,
-    FacebookAwarenessAudienceComparison?.cpe,
-    "compact"
-  );
+  const formattedMetrics = useMemo(() => {
+    if (
+      !FacebookAwarenessAudienceTotals ||
+      !FacebookAwarenessAudienceComparison
+    ) {
+      return {};
+    }
 
-  // Alternative: Batch formatting approach (safer for useState data)
-  // const formattedMetrics = formatMetricsData(DiscTotals, DiscComparison, METRIC_CONFIGS);
-  // console.log("facebookMEtrics", FacebookAudienceMetrics);
+    return {
+      impressionData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.impressions,
+        FacebookAwarenessAudienceComparison?.impressions,
+        "compact"
+      ),
+      clicksData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.clicks,
+        FacebookAwarenessAudienceComparison?.clicks,
+        "compact"
+      ),
+      ctrData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.ctr,
+        FacebookAwarenessAudienceComparison?.ctr,
+        "percentage"
+      ),
+      cpcData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpc,
+        FacebookAwarenessAudienceComparison?.cpc,
+        "compact"
+      ),
+      conversionsData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.conversions,
+        FacebookAwarenessAudienceComparison?.conversions,
+        "number"
+      ),
+      cplData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpl,
+        FacebookAwarenessAudienceComparison?.cpl,
+        "compact"
+      ),
+      spentData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.spent,
+        FacebookAwarenessAudienceComparison?.spent,
+        "compact"
+      ),
+      conRate: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cvr,
+        FacebookAwarenessAudienceComparison?.cvr,
+        "percentage"
+      ),
+      cpmData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpm,
+        FacebookAwarenessAudienceComparison?.cpm,
+        "compact"
+      ),
+      reachData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.reach,
+        FacebookAwarenessAudienceComparison?.reach,
+        "compact"
+      ),
+      frequencyData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.frequency,
+        FacebookAwarenessAudienceComparison?.frequency,
+        "compact"
+      ),
+      cprData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpr,
+        FacebookAwarenessAudienceComparison?.cpr,
+        "compact"
+      ),
+      engagementData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.engagements,
+        FacebookAwarenessAudienceComparison?.engagements,
+        "compact"
+      ),
+      engagementRateData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.engagementRate,
+        FacebookAwarenessAudienceComparison?.engagementRate,
+        "percentage"
+      ),
+      cpeData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpe,
+        FacebookAwarenessAudienceComparison?.cpe,
+        "compact"
+      ),
+      viewRateData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.viewRate,
+        FacebookAwarenessAudienceComparison?.viewRate,
+        "percentage"
+      ),
+      VideoViewsData: formatDisplayData(
+        FacebookAwarenessAudienceTotals["views"],
+        FacebookAwarenessAudienceComparison["views"],
+        "number"
+      ),
+      cpvData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.cpv,
+        FacebookAwarenessAudienceComparison?.cpv,
+        "compact"
+      ),
+      conRateData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.conRate,
+        FacebookAwarenessAudienceComparison?.conRate,
+        "percentage"
+      ),
+      conversionValueData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.conversionValue,
+        FacebookAwarenessAudienceComparison?.conversionValue,
+        "compact"
+      ),
+      purchaseConValueData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.purchaseConValue,
+        FacebookAwarenessAudienceComparison?.purchaseConValue,
+        "compact"
+      ),
+      roasData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.roas,
+        FacebookAwarenessAudienceComparison?.roas,
+        "compact"
+      ),
+      purchaseData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.purchase,
+        FacebookAwarenessAudienceComparison?.purchase,
+        "number"
+      ),
+      addToCartData: formatDisplayData(
+        FacebookAwarenessAudienceTotals?.addToCart,
+        FacebookAwarenessAudienceComparison?.addToCart,
+        "number"
+      ),
+    };
+  }, [FacebookAwarenessAudienceTotals, FacebookAwarenessAudienceComparison]);
+
   return (
     <div
       id="facebook-awareness-02-component"
@@ -357,42 +408,60 @@ function AsiaHotelFBAwareness02() {
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-13 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-8 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
-                value={isNoData ? "No Data" : impressionData.displayValue}
-                compareValue={impressionData.compareValue}
-                isNegative={impressionData.isNegative}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.impressionData?.displayValue
+                }
+                compareValue={formattedMetrics.impressionData?.compareValue}
+                isNegative={formattedMetrics.impressionData?.isNegative}
               />
               <NumberDisplayBox
                 title={"CPM"}
-                value={isNoData ? "No Data" : cpmData.displayValue}
-                compareValue={cpmData.compareValue}
-                isNegative={cpmData.isNegative}
+                value={
+                  isNoData ? "No Data" : formattedMetrics.cpmData?.displayValue
+                }
+                compareValue={formattedMetrics.cpmData?.compareValue}
+                isNegative={formattedMetrics.cpmData?.isNegative}
                 invertCompareColor={true}
               />
               <NumberDisplayBox
                 title={"Reach"}
-                value={isNoData ? "No Data" : reachData.displayValue}
-                compareValue={reachData.compareValue}
-                isNegative={reachData.isNegative}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.reachData?.displayValue
+                }
+                compareValue={formattedMetrics.reachData?.compareValue}
+                isNegative={formattedMetrics.reachData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Engagements"}
-                value={isNoData ? "No Data" : engagementData.displayValue}
-                compareValue={engagementData.compareValue}
-                isNegative={engagementData.isNegative}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.engagementData?.displayValue
+                }
+                compareValue={formattedMetrics.engagementData?.compareValue}
+                isNegative={formattedMetrics.engagementData?.isNegative}
               />
               <NumberDisplayBox
                 title={"%Engage Rate"}
-                value={isNoData ? "No Data" : engagementRateData.displayValue}
-                compareValue={engagementRateData.compareValue}
-                isNegative={engagementRateData.isNegative}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.engagementRateData?.displayValue
+                }
+                compareValue={formattedMetrics.engagementRateData?.compareValue}
+                isNegative={formattedMetrics.engagementRateData?.isNegative}
               />
               {/* <NumberDisplayBox
                 title={"CPE"}
@@ -403,48 +472,41 @@ function AsiaHotelFBAwareness02() {
               /> */}
               <NumberDisplayBox
                 title={"Conversions"}
-                value={isNoData ? "No Data" : conversionsData.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionsData?.displayValue
+                }
                 isConversion={true}
-                compareValue={conversionsData.compareValue}
-                isNegative={conversionsData.isNegative}
+                compareValue={formattedMetrics.conversionsData?.compareValue}
+                isNegative={formattedMetrics.conversionsData?.isNegative}
+              />
+              <NumberDisplayBox
+                title={"Con value"}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionValueData?.displayValue
+                }
+                isConversion={true}
+                compareValue={
+                  formattedMetrics.conversionValueData?.compareValue
+                }
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
               />
               <NumberDisplayBox
                 title={"Spent"}
-                value={isNoData ? "No Data" : spentData.displayValue}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.spentData?.displayValue
+                }
                 isConversion={true}
-                compareValue={spentData.compareValue}
-                isNegative={spentData.isNegative}
+                compareValue={formattedMetrics.spentData?.compareValue}
+                isNegative={formattedMetrics.spentData?.isNegative}
                 invertCompareColor={true}
               />
             </div>
-            {/* <div>
-              <h4 className="text-lg font-semibold">Performance by Audience</h4>
-
-              <AdvancedDataTable
-                firstMetric="Ad set name"
-                channelData={FacebookAudienceData}
-                totalData={FacebookAwarenessAudienceTotals}
-                metrics={[
-                  "Ad set name",
-                  "impressions",
-                  "cpm",
-                  "reach",
-                  "clicks",
-                  "ctr",
-                  "cpc",
-                  "engagements",
-                  "engagementRate",
-                  "cpe",
-                  "conversions",
-                  "spent",
-                ]}
-                formatValue={formatTableValue}
-                maxRows={maxTableRows[0]}
-                defaultSortBy="impressions"
-                defaultSortOrder="desc"
-                enableSorting={true} // Can disable sorting if needed
-              />
-            </div> */}
             <div>
               <h4 className="text-lg font-semibold">Performance by Creative</h4>
 
@@ -462,8 +524,8 @@ function AsiaHotelFBAwareness02() {
                   "cpc",
                   "engagements",
                   "engagementRate",
-                  // "cpe",
                   "conversions",
+                  "conversionValue",
                   "spent",
                 ]}
                 formatValue={formatTableValue}

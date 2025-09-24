@@ -332,7 +332,7 @@ function OverallAsiaHotel() {
                 invertCompareColor={true}
               />
               <NumberDisplayBox
-                title={"Con Value"}
+                title={"Con value"}
                 value={formattedMetrics.purchaseConValueData?.displayValue}
                 compareValue={
                   formattedMetrics.purchaseConValueData?.compareValue

@@ -590,15 +590,19 @@ export const processSocialMediaData = (
 
   // Calculate totals for creative data
   const creativeTotals = Object.values(creativeData).reduce((acc, item) => {
-    config.fields.forEach((field) => {
-      if (CON_VALUE_KEY.includes(field.key)) {
-        acc["conversionValue"] =
-          (acc["conversionValue"] || 0) + item["conversionValue"];
-      } else {
-        acc[field.key] = (acc[field.key] || 0) + item[field.key];
-      }
+    Object.keys(item).forEach((key) => {
+      acc[key] = (acc[key] || 0) + item[key];
     });
     return acc;
+    // config.fields.forEach((field) => {
+    //   if (CON_VALUE_KEY.includes(field.key)) {
+    //     acc["conversionValue"] =
+    //       (acc["conversionValue"] || 0) + item["conversionValue"];
+    //   } else {
+    //     acc[field.key] = (acc[field.key] || 0) + item[field.key];
+    //   }
+    // });
+    // return acc;
   }, {});
 
   const enhancedCreativeTotals = {

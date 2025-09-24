@@ -83,6 +83,10 @@ import createAxiosInstance from "@/configs/axiosConfigs";
 import { handleSlideTemplate } from "@/utils/slideTemplatehandler";
 import AsiaHotelFBCatalog01 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog01";
 import AsiaHotelFBCatalog02 from "@/components/slides/asia-hotel/AsiaHotelFBCatalog02";
+import AsiaHotelFBAwareness01 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness01";
+import AsiaHotelFBAwareness02 from "@/components/slides/asia-hotel/AsiaHotelFBAwareness02";
+import AsiaHotelFBReach01 from "@/components/slides/asia-hotel/AsiaHotelFBReach01";
+import AsiaHotelFBReach02 from "@/components/slides/asia-hotel/AsiaHotelFBReach02";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -709,6 +713,10 @@ function SlideReport() {
                   />
                   {template === "asia-hotel" ? (
                     <>
+                      <AsiaHotelFBAwareness01 />
+                      <AsiaHotelFBAwareness02 />
+                      <AsiaHotelFBReach01 />
+                      <AsiaHotelFBReach02 />
                       <AsiaHotelFBCatalog01 />
                       <AsiaHotelFBCatalog02 />
                     </>

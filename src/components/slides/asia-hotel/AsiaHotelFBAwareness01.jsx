@@ -436,11 +436,11 @@ function AsiaHotelFBAwareness01() {
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-12 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-8 gap-2">
               <h4 className="col-span-5 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
+              <h4 className="col-span-3 text-lg font-semibold">Conversions</h4>
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -510,6 +510,19 @@ function AsiaHotelFBAwareness01() {
                 isNegative={formattedMetrics.conversionsData?.isNegative}
               />
               <NumberDisplayBox
+                title={"Con value"}
+                value={
+                  isNoData
+                    ? "No Data"
+                    : formattedMetrics.conversionValueData?.displayValue
+                }
+                isConversion={true}
+                compareValue={
+                  formattedMetrics.conversionValueData?.compareValue
+                }
+                isNegative={formattedMetrics.conversionValueData?.isNegative}
+              />
+              <NumberDisplayBox
                 title={"Spent"}
                 value={
                   isNoData
@@ -540,6 +553,7 @@ function AsiaHotelFBAwareness01() {
                   "engagements",
                   "engagementRate",
                   "conversions",
+                  "conversionValue",
                   "spent",
                 ]}
                 formatValue={formatTableValue}

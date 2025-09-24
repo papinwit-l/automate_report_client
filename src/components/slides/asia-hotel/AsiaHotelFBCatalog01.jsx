@@ -486,7 +486,7 @@ function AsiaHotelFBCatalog01() {
               />
 
               <NumberDisplayBox
-                title={"Con Value"}
+                title={"Con value"}
                 value={
                   isNoData
                     ? "No Data"
