@@ -246,9 +246,6 @@ function AsiaHotelFBMessage01() {
       return {};
     }
 
-    console.log("🎯 formattedMetrics:", FacebookMessageAudienceTotals);
-    console.log("🎯 formattedMetrics:", FacebookMessageAudienceComparison);
-
     return {
       impressionData: formatDisplayData(
         FacebookMessageAudienceTotals?.impressions,
