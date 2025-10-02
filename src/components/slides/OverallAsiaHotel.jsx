@@ -377,7 +377,7 @@ function OverallAsiaHotel() {
             <div className="grid grid-cols-2">
               <div className="col-span-2">
                 {/* Summary */}
-                <div className="px-4">
+                <div className="px-4 pt-2">
                   <h4 className="text-lg font-semibold">Summary</h4>
                   <ul className="list-disc pl-6">
                     <div

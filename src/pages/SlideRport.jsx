@@ -414,16 +414,72 @@ function SlideReport() {
 
     try {
       const axiosInstance = await createAxiosInstance();
-      console.log("Starting export with Google Sheets image handling...");
+      console.log("Starting export...");
 
-      // STEP 1: Convert all external images from Google Sheets to base64
-      await convertGoogleSheetsImagesToBase64();
-
-      // STEP 2: Ensure all images are fully loaded
+      // Ensure all images are fully loaded
       await ensureImagesLoaded();
 
-      // STEP 3: Define slide components
-      // const slideComponents = EXPORT_SLIDE_COMPONENT_LISTS;
+      // Lock all table dimensions BEFORE capture
+      const lockTableDimensions = () => {
+        const allTables = document.querySelectorAll("table");
+        const lockedDimensions = [];
+
+        allTables.forEach((table) => {
+          const container = table.closest(".overflow-x-auto");
+          if (container) {
+            // Get computed styles to preserve spacing
+            const computedContainerStyle = window.getComputedStyle(container);
+            const computedTableStyle = window.getComputedStyle(table);
+
+            // Store original dimensions and styles
+            const tableRect = table.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const originalStyles = {
+              containerOverflow: container.style.overflow,
+              containerWidth: container.style.width,
+              // Removed containerHeight - don't lock height
+              containerPadding: container.style.padding,
+              containerMargin: container.style.margin,
+              tableWidth: table.style.width,
+              tableMargin: table.style.margin,
+            };
+
+            // Lock width but NOT height - let height be natural
+            container.style.width = `${containerRect.width}px`;
+            // Don't set height - removed this line
+            container.style.padding = computedContainerStyle.padding;
+            container.style.margin = computedContainerStyle.margin;
+            container.style.overflow = "visible";
+
+            table.style.width = `${tableRect.width}px`;
+            table.style.margin = computedTableStyle.margin;
+
+            lockedDimensions.push({ container, table, originalStyles });
+          }
+        });
+
+        return lockedDimensions;
+      };
+
+      const restoreTableDimensions = (lockedDimensions) => {
+        lockedDimensions.forEach(({ container, table, originalStyles }) => {
+          container.style.overflow = originalStyles.containerOverflow;
+          container.style.width = originalStyles.containerWidth;
+          // Removed height restoration
+          container.style.padding = originalStyles.containerPadding;
+          container.style.margin = originalStyles.containerMargin;
+          table.style.width = originalStyles.tableWidth;
+          table.style.margin = originalStyles.tableMargin;
+        });
+      };
+
+      const lockedDimensions = lockTableDimensions();
+
+      // Wait for layout to settle
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // Define slide components
       const slideComponents = getExportableSlides();
       const slideData = [];
 
@@ -437,15 +493,14 @@ function SlideReport() {
         console.log(`Capturing ${slide.title}...`);
 
         try {
-          // Optimized settings for base64 images
           const imageData = await domtoimage.toPng(element, {
             quality: 0.95,
             bgcolor: "#ffffff",
             width: element.offsetWidth,
             height: element.offsetHeight,
-            cacheBust: false, // Cache is good for base64 images
-            useCORS: false, // Not needed with base64
-            allowTaint: true, // Allow for better compatibility
+            cacheBust: false,
+            useCORS: true,
+            allowTaint: true,
             filter: (node) => {
               if (node.tagName === "SCRIPT") return false;
               if (node.classList && node.classList.contains("exclude-export"))
@@ -476,7 +531,7 @@ function SlideReport() {
               bgcolor: "#ffffff",
               width: element.offsetWidth,
               height: element.offsetHeight,
-              useCORS: false,
+              useCORS: true,
               allowTaint: true,
             });
 
@@ -492,7 +547,6 @@ function SlideReport() {
               fallbackError
             );
 
-            // Last resort: Create error slide
             const errorCanvas = document.createElement("canvas");
             const errorCtx = errorCanvas.getContext("2d");
             errorCanvas.width = 1200;
@@ -514,6 +568,9 @@ function SlideReport() {
           }
         }
       }
+
+      // Restore table dimensions
+      restoreTableDimensions(lockedDimensions);
 
       if (slideData.length === 0) {
         throw new Error("No slides were captured successfully.");

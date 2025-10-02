@@ -562,7 +562,7 @@ function TiktokConversionEcommerceSlide01() {
           </div>
           <div className="col-span-20 flex flex-col justify-between">
             {/* Summary */}
-            <div className="px-4">
+            <div className="px-4 pt-2">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
                 <div
