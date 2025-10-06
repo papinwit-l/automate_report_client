@@ -8,8 +8,8 @@ import { Button } from "../ui/button";
 
 // Import utility functions
 import { formatDisplayData, formatTableValue } from "@/utils/dataDisplayUtils";
-import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 import OverallTextEditorModal from "./utils/OverallTextEditorModal";
+import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
 function OverallAsiaHotel() {
   const {

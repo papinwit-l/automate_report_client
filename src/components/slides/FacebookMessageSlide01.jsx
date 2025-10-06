@@ -52,9 +52,9 @@ function FacebookMessageSlide01() {
     }
 
     let summaryTextTemp = "";
-    const overallText = `Overall messages: ** ${parseFloat(
-      FacebookMessageAudienceTotals?.messages?.toFixed(2) || 0
-    )?.toLocaleString()} messages**`;
+    const overallText = `Overall conversions: ** ${parseFloat(
+      FacebookMessageAudienceTotals?.conversions?.toFixed(2) || 0
+    )?.toLocaleString()} conversions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
     summaryTextTemp += `<li>Average CPA: **${FacebookMessageAudienceTotals.cpa?.toLocaleString(
@@ -65,15 +65,15 @@ function FacebookMessageSlide01() {
     // Find top audience by engagements (simpler approach)
     const topAudience = Object.entries(FacebookMessageAudienceData).reduce(
       (max, [key, value]) =>
-        (value.messages || 0) > (max.value.messages || 0)
+        (value.conversions || 0) > (max.value.conversions || 0)
           ? { key, value }
           : max,
-      { key: "", value: { messages: 0 } }
+      { key: "", value: { conversions: 0 } }
     );
 
     const topAudienceText = `Top audience: **${
       topAudience.key
-    } (with ${topAudience.value.messages?.toLocaleString()} messages)**`;
+    } (with ${topAudience.value.conversions?.toLocaleString()} conversions)**`;
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
@@ -442,7 +442,6 @@ function FacebookMessageSlide01() {
                   "impressions",
                   "reach",
                   "clicks",
-                  // "messages",
                   "ctr",
                   "conversions",
                   "cvr",

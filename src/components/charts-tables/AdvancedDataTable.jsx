@@ -13,11 +13,12 @@ export const AdvancedDataTable = ({
   isPictureTable = false,
   pictureSize = "w-16 h-16",
   pictureKey = "Ad Picture",
-  isLimitWidth = false, // ✅ NEW PROP: Manual control for width limiting
+  isLimitWidth = false,
 }) => {
   const [sortBy, setSortBy] = useState(defaultSortBy);
   const [sortOrder, setSortOrder] = useState(defaultSortOrder);
   const [shouldLimitWidth, setShouldLimitWidth] = useState(isLimitWidth);
+  const [isInitialized, setIsInitialized] = useState(false);
   const tableRef = useRef(null);
 
   const formatMetricName = (metric) => {
@@ -134,61 +135,49 @@ export const AdvancedDataTable = ({
     );
   });
 
-  // FIXED: Width detection effect - always return cleanup function
+  // FIXED: Improved width detection with proper initialization
   useEffect(() => {
-    // If isLimitWidth is provided, use it directly and skip detection
     if (typeof isLimitWidth === "boolean") {
       setShouldLimitWidth(isLimitWidth);
-      // Return empty cleanup function to maintain consistent hook behavior
-      return () => {};
+      setIsInitialized(true);
+      return;
     }
 
     const checkTableWidth = () => {
-      if (tableRef.current) {
-        // Temporarily remove any max-width constraints to measure natural width
-        const firstCells = tableRef.current.querySelectorAll(
-          "th:first-child, td:first-child"
-        );
-        const originalStyles = [];
+      if (!tableRef.current) return;
 
-        // Store and remove existing styles
-        firstCells.forEach((cell, index) => {
-          originalStyles[index] = cell.style.maxWidth;
-          cell.style.maxWidth = "none";
-        });
+      // Create a temporary clone to measure natural width
+      const clone = tableRef.current.cloneNode(true);
+      clone.style.position = "absolute";
+      clone.style.visibility = "hidden";
+      clone.style.width = "auto";
+      clone.style.maxWidth = "none";
 
-        // Force reflow and measure
-        tableRef.current.offsetHeight;
-        const naturalWidth = tableRef.current.scrollWidth;
+      // Remove all max-width constraints from first column
+      const firstCells = clone.querySelectorAll(
+        "th:first-child, td:first-child"
+      );
+      firstCells.forEach((cell) => {
+        cell.style.maxWidth = "none";
+        cell.style.width = "auto";
+      });
 
-        // Restore original styles
-        firstCells.forEach((cell, index) => {
-          if (originalStyles[index]) {
-            cell.style.maxWidth = originalStyles[index];
-          } else {
-            cell.style.removeProperty("max-width");
-          }
-        });
+      document.body.appendChild(clone);
+      const naturalWidth = clone.scrollWidth;
+      document.body.removeChild(clone);
 
-        setShouldLimitWidth(naturalWidth > 900);
-        console.log(
-          "Table natural width:",
-          naturalWidth,
-          "Should limit:",
-          naturalWidth > 900
-        );
-      }
+      const shouldLimit = naturalWidth > 900;
+      setShouldLimitWidth(shouldLimit);
+      setIsInitialized(true);
     };
 
-    // Check multiple times to ensure proper measurement
-    const timeoutId1 = setTimeout(checkTableWidth, 50);
-    const timeoutId2 = setTimeout(checkTableWidth, 200);
-    const timeoutId3 = setTimeout(checkTableWidth, 500);
+    // Initial checks with delays to ensure proper measurement
+    const timeoutId1 = setTimeout(checkTableWidth, 0);
+    const timeoutId2 = setTimeout(checkTableWidth, 100);
+    const timeoutId3 = setTimeout(checkTableWidth, 300);
 
-    // Check on window resize
     window.addEventListener("resize", checkTableWidth);
 
-    // Always return cleanup function
     return () => {
       window.removeEventListener("resize", checkTableWidth);
       clearTimeout(timeoutId1);
@@ -259,7 +248,7 @@ export const AdvancedDataTable = ({
 
     if (!isPictureTable) {
       return (
-        <span className={`${textClass}`} title={keyword}>
+        <span className={textClass} title={keyword}>
           {keyword}
         </span>
       );
@@ -326,14 +315,20 @@ export const AdvancedDataTable = ({
         })
       : [];
 
-  // Dynamic styles for first column
-  const firstColumnStyle = shouldLimitWidth ? { maxWidth: "120px" } : {};
+  // FIXED: Apply consistent width styling
+  const firstColumnStyle = shouldLimitWidth
+    ? { maxWidth: "120px", minWidth: "120px", width: "120px" }
+    : { minWidth: "auto" };
+
+  // Show a subtle loading state if not initialized (prevents flash of unstyled content)
+  const tableOpacity = isInitialized ? "opacity-100" : "opacity-0";
 
   return (
     <div className="overflow-x-auto">
       <table
         ref={tableRef}
-        className="min-w-full table-auto border border-gray-300 text-[12px]"
+        className={`min-w-full table-auto border border-gray-300 text-[12px] transition-opacity duration-200 ${tableOpacity}`}
+        style={{ tableLayout: shouldLimitWidth ? "fixed" : "auto" }}
       >
         <thead>
           <tr className="bg-gray-200">

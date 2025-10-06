@@ -419,6 +419,11 @@ function SlideReport() {
       // Ensure all images are fully loaded
       await ensureImagesLoaded();
 
+      // CRITICAL: Wait for table components to initialize their width detection
+      // The AdvancedDataTable has delays up to 500ms for width detection
+      console.log("Waiting for tables to initialize...");
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
       // Lock all table dimensions BEFORE capture
       const lockTableDimensions = () => {
         const allTables = document.querySelectorAll("table");
@@ -438,24 +443,43 @@ function SlideReport() {
             const originalStyles = {
               containerOverflow: container.style.overflow,
               containerWidth: container.style.width,
-              // Removed containerHeight - don't lock height
               containerPadding: container.style.padding,
               containerMargin: container.style.margin,
               tableWidth: table.style.width,
+              tableTableLayout: table.style.tableLayout,
               tableMargin: table.style.margin,
             };
 
-            // Lock width but NOT height - let height be natural
+            // Lock the table layout
+            if (table.style.tableLayout === "fixed") {
+              // If already fixed, lock all column widths
+              const cells = table.querySelectorAll("th, td");
+              cells.forEach((cell) => {
+                const cellRect = cell.getBoundingClientRect();
+                if (cellRect.width > 0) {
+                  cell.style.width = `${cellRect.width}px`;
+                  cell.style.minWidth = `${cellRect.width}px`;
+                  cell.style.maxWidth = `${cellRect.width}px`;
+                }
+              });
+            }
+
+            // Lock container and table widths
             container.style.width = `${containerRect.width}px`;
-            // Don't set height - removed this line
+            container.style.minWidth = `${containerRect.width}px`;
             container.style.padding = computedContainerStyle.padding;
             container.style.margin = computedContainerStyle.margin;
             container.style.overflow = "visible";
 
             table.style.width = `${tableRect.width}px`;
+            table.style.minWidth = `${tableRect.width}px`;
             table.style.margin = computedTableStyle.margin;
 
             lockedDimensions.push({ container, table, originalStyles });
+
+            console.log(
+              `Locked table: ${tableRect.width}px x ${tableRect.height}px`
+            );
           }
         });
 
@@ -466,18 +490,35 @@ function SlideReport() {
         lockedDimensions.forEach(({ container, table, originalStyles }) => {
           container.style.overflow = originalStyles.containerOverflow;
           container.style.width = originalStyles.containerWidth;
-          // Removed height restoration
+          container.style.minWidth = "";
           container.style.padding = originalStyles.containerPadding;
           container.style.margin = originalStyles.containerMargin;
+
           table.style.width = originalStyles.tableWidth;
+          table.style.minWidth = "";
+          table.style.tableLayout = originalStyles.tableTableLayout;
           table.style.margin = originalStyles.tableMargin;
+
+          // Remove locked cell widths
+          const cells = table.querySelectorAll("th, td");
+          cells.forEach((cell) => {
+            if (
+              cell.style.width &&
+              cell.style.minWidth &&
+              cell.style.maxWidth
+            ) {
+              cell.style.width = "";
+              cell.style.minWidth = "";
+              cell.style.maxWidth = "";
+            }
+          });
         });
       };
 
       const lockedDimensions = lockTableDimensions();
 
-      // Wait for layout to settle
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Wait for layout to settle after locking
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Define slide components
       const slideComponents = getExportableSlides();
@@ -492,13 +533,16 @@ function SlideReport() {
 
         console.log(`Capturing ${slide.title}...`);
 
+        // Force a reflow before capture
+        element.offsetHeight;
+
         try {
           const imageData = await domtoimage.toPng(element, {
             quality: 0.95,
             bgcolor: "#ffffff",
             width: element.offsetWidth,
             height: element.offsetHeight,
-            cacheBust: false,
+            cacheBust: true, // Changed to true to avoid caching issues
             useCORS: true,
             allowTaint: true,
             filter: (node) => {
@@ -531,6 +575,7 @@ function SlideReport() {
               bgcolor: "#ffffff",
               width: element.offsetWidth,
               height: element.offsetHeight,
+              cacheBust: true,
               useCORS: true,
               allowTaint: true,
             });

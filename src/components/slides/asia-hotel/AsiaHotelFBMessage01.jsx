@@ -50,10 +50,12 @@ function AsiaHotelFBMessage01() {
       return;
     }
 
+    const KEY = "conversions";
+
     let summaryTextTemp = "";
-    const overallText = `Overall messages: ** ${parseFloat(
-      FacebookMessageAudienceTotals?.messages?.toFixed(2) || 0
-    )?.toLocaleString()} messages**`;
+    const overallText = `Overall conversions: ** ${parseFloat(
+      FacebookMessageAudienceTotals[KEY]?.toFixed(2) || 0
+    )?.toLocaleString()} conversions**`;
     summaryTextTemp = `<li>${overallText}</li>`;
 
     summaryTextTemp += `<li>Average CPA: **${FacebookMessageAudienceTotals.cpa?.toLocaleString(
@@ -64,15 +66,13 @@ function AsiaHotelFBMessage01() {
     // Find top audience by engagements (simpler approach)
     const topAudience = Object.entries(FacebookMessageAudienceData).reduce(
       (max, [key, value]) =>
-        (value.messages || 0) > (max.value.messages || 0)
-          ? { key, value }
-          : max,
-      { key: "", value: { messages: 0 } }
+        (value[KEY] || 0) > (max.value[KEY] || 0) ? { key, value } : max,
+      { key: "", value: { [KEY]: 0 } }
     );
 
     const topAudienceText = `Top audience: **${
       topAudience.key
-    } (with ${topAudience.value.messages?.toLocaleString()} messages)**`;
+    } (with ${topAudience.value[KEY]?.toLocaleString()} conversions)**`;
     summaryTextTemp += `<li>${topAudienceText}</li>`;
 
     // Find top creative by impressions (simpler approach)
@@ -527,7 +527,6 @@ function AsiaHotelFBMessage01() {
                   "impressions",
                   "reach",
                   "clicks",
-                  // "messages",
                   "ctr",
                   "conversions",
                   "cvr",
