@@ -53,6 +53,7 @@ export const GOOGLE_SLIDES = {
   SEM: [SEMConversionSlide, SEMClickSlide],
   GDN: [GDNSlide],
   Discovery: [DiscoverySlide],
+  "Demand Gen": [DiscoverySlide],
   YouTube: [YoutubeSlide],
   Shopping: [ShoppingAdsSlide],
   "Performance Max": [PerformanceMaxSlide],
