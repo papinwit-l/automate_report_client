@@ -79,6 +79,10 @@ export const AdvancedDataTable = ({
         return "ROAS";
       case "view6sec":
         return "6-second video views";
+      case "viewrate6sec":
+        return "%View Rate (6 sec)";
+      case "cpv6sec":
+        return "CPV (6 sec)";
       case "follows":
         return "Followers";
       case "cpf":

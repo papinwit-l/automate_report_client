@@ -99,6 +99,7 @@ import AsiaHotelFBLead01 from "@/components/slides/asia-hotel/AsiaHotelFBLead01"
 import AsiaHotelFBLead02 from "@/components/slides/asia-hotel/AsiaHotelFBLead02";
 import AsiaHotelFBConv01 from "@/components/slides/asia-hotel/AsiaHotelFBConv01";
 import AsiaHotelFBConv02 from "@/components/slides/asia-hotel/AsiaHotelFBConv02";
+import NokkualokTktokReach from "@/components/slides/nokkualok/NokkualokTktokReach";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -788,7 +789,11 @@ function SlideReport() {
                       id: "tiktok-section-component",
                     }}
                     checkSlideDetected={checkSlideDetected}
-                    slideTypes={TIKTOK_SLIDES}
+                    slideTypes={handleSlideTemplate(
+                      TIKTOK_SLIDES,
+                      template,
+                      "tiktok"
+                    )}
                   />
                   <SlideRenderer
                     sectionData={{
@@ -884,7 +889,11 @@ function SlideReport() {
                     title={"Tiktok"}
                     componentID={"tiktok-section-component"}
                   />
-                  <TiktokReachSlide01 />
+                  {template === "nokkualok" ? (
+                    <NokkualokTktokReach />
+                  ) : (
+                    <TiktokReachSlide01 />
+                  )}
                   <TiktokVideoSlide01 />
                   <TiktokTrafficSlide01 />
                   <TiktokFollowerSlide01 />

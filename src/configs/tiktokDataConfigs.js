@@ -41,6 +41,8 @@ export const TIKTOK_CALCULATED_FIELDS = [
   { key: "roas", type: "roas" },
   { key: "engagementRate", type: "engagementRate" },
   { key: "viewRate", type: "viewRate" },
+  { key: "viewRate6sec", type: "viewRate6sec" },
+  { key: "cpv6sec", type: "cpv6sec" },
 ];
 
 export const TIKTOK_PROCESSED_FIELDS = [

@@ -368,6 +368,37 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
             : 0;
         break;
 
+      case "viewRate6sec":
+        console.log("🎯 viewRate6sec data:", data);
+        enhanced[field.key] =
+          data.impressions > 0
+            ? Number(((data.view6sec / data.impressions) * 100).toFixed(2)) // Changed from views6sec to view6sec
+            : 0;
+        break;
+
+      case "cpv6sec":
+        let view6sec = data.view6sec; // Changed from views6sec to view6sec
+        let cost6sec = data.spent;
+
+        if (typeof view6sec === "string") {
+          // Remove leading zeros and convert to number
+          view6sec = parseFloat(view6sec.replace(/^0+/, "") || "0") || 0;
+        } else {
+          view6sec = Number(view6sec) || 0;
+        }
+
+        if (typeof cost6sec === "string") {
+          // Remove leading zeros and convert to number
+          cost6sec = parseFloat(cost6sec.replace(/^0+/, "") || "0") || 0;
+        } else {
+          cost6sec = Number(cost6sec) || 0; // Added else block for consistency
+        }
+
+        const cpv6secResult =
+          view6sec > 0 ? Number((cost6sec / view6sec).toFixed(6)) : 0;
+        enhanced[field.key] = cpv6secResult;
+        break;
+
       case "roas":
         // Try to find conversion value from multiple possible field names
         // Priority order: purchaseConValue > conversionValue > "Conversion value"
