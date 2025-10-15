@@ -300,6 +300,7 @@ function OverallNokkualok() {
                 value={formattedMetrics.cpmData?.displayValue}
                 compareValue={formattedMetrics.cpmData?.compareValue}
                 isNegative={formattedMetrics.cpmData?.isNegative}
+                invertCompareColor={true}
               />
               <NumberDisplayBox
                 title={"Engagements"}
