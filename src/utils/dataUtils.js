@@ -34,28 +34,51 @@ export const getPreviousPeriodDates = (from, to) => {
 };
 
 // Helper function to filter data by date range
+// Helper function to convert Excel serial date to Date object
+const serialToDate = (serial) => {
+  if (typeof serial !== "number") return null;
+  const epoch = new Date(1899, 11, 30);
+  return new Date(epoch.getTime() + serial * 24 * 60 * 60 * 1000);
+};
+
 export const filterDataByDateRange = (data, from, to) => {
   if (!from || !to) return data;
 
-  const formatDateLocal = (date) => {
-    if (date instanceof Date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-    return date;
-  };
+  // Convert from/to to Date objects if they're strings
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
 
-  const fromStr = formatDateLocal(from);
-  const toStr = formatDateLocal(to);
+  // Set time to start/end of day for accurate comparison
+  fromDate.setHours(0, 0, 0, 0);
+  toDate.setHours(23, 59, 59, 999);
 
   const filtered = data.filter((item) => {
-    const itemDate = item["Updated Date"] || item["Date"];
-    if (!itemDate) return false;
+    const itemDateValue = item["Updated Date"] || item["Date"];
+    if (!itemDateValue) return false;
 
-    const itemDateStr = itemDate.toString().trim();
-    return itemDateStr >= fromStr && itemDateStr <= toStr;
+    let itemDate;
+
+    // Handle serial number (from UNFORMATTED_VALUE)
+    if (typeof itemDateValue === "number") {
+      itemDate = serialToDate(itemDateValue);
+      if (!itemDate) return false;
+    }
+    // Handle date string (YYYY-MM-DD or other formats)
+    else if (typeof itemDateValue === "string") {
+      itemDate = new Date(itemDateValue);
+    }
+    // Handle Date object
+    else if (itemDateValue instanceof Date) {
+      itemDate = itemDateValue;
+    } else {
+      return false;
+    }
+
+    // Check if date is valid
+    if (isNaN(itemDate.getTime())) return false;
+
+    // Compare dates
+    return itemDate >= fromDate && itemDate <= toDate;
   });
 
   return filtered;

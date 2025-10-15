@@ -300,9 +300,6 @@ export const fetchDataSheetEnhanced = async (
       throw new Error(`dataTypeMap must be an object`);
     }
 
-    //for debugging
-    // console.log("endpoint:", endpoint);
-
     // Fetch data from API
     const response = await axiosInstance.get(`/data-sheets/${endpoint}/${id}`);
     const rawData = response.data.data;

@@ -247,6 +247,9 @@ export const processAdvertisingData = (
 const calculateEnhancedMetrics = (data, calculatedFields) => {
   const enhanced = {};
 
+  // console.log("🎯 calculatedFields:", calculatedFields);
+  // console.log("🎯 data:", data);
+
   calculatedFields.forEach((field) => {
     switch (field.type) {
       case "cpv":

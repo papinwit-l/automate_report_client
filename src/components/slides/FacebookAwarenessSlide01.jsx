@@ -338,6 +338,19 @@ function FacebookAwarenessSlide01() {
     "compact"
   );
 
+  // console.log(
+  //   "🎯 FacebookAwarenessAudienceTotals:",
+  //   FacebookAwarenessAudienceTotals
+  // );
+  // console.log(
+  //   "🎯 FacebookAwarenessAudienceData:",
+  //   FacebookAwarenessAudienceData
+  // );
+  // console.log(
+  //   "🎯 FacebookAwarenessCreativeData:",
+  //   FacebookAwarenessCreativeData
+  // );
+
   // Show loading state
   if (loading) {
     return (
