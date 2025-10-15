@@ -15,7 +15,7 @@ import {
 } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "@/components/charts-tables/AdvancedDataTable";
 
-function NokkualokTktokReach() {
+function NokkualokTiktokReach() {
   const {
     loading,
     error,
@@ -354,12 +354,6 @@ function NokkualokTktokReach() {
     };
   }, [TikTokReachAudienceTotals, TikTokReachAudienceComparison]);
 
-  console.log("🎯 TikTokReachSlide01 audeincedata:", TikTokReachAudienceData);
-  console.log(
-    "🎯 TikTokReachSlide01 audeincetotals:",
-    TikTokReachAudienceTotals
-  );
-
   // Memoize text formatter
   const renderFormattedText = useCallback((text) => {
     return text
@@ -425,10 +419,10 @@ function NokkualokTktokReach() {
         <div className="grid grid-cols-20 h-full">
           <div className="col-span-16 flex flex-col gap-2">
             <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-5 text-lg font-semibold">
+              <h4 className="col-span-7 text-lg font-semibold">
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-2 text-lg font-semibold">Conversions</h4>
+              {/* <h4 className="col-span-2 text-lg font-semibold">Conversions</h4> */}
 
               <NumberDisplayBox
                 title={"Impression"}
@@ -474,9 +468,9 @@ function NokkualokTktokReach() {
               <NumberDisplayBox
                 title={"Spent"}
                 value={formattedMetrics.spentData?.displayValue}
-                isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>
@@ -525,6 +519,10 @@ function NokkualokTktokReach() {
                 enableSorting={true}
               />
             </div>
+          </div>
+          <div className="col-span-4 flex flex-col justify-between">
+            {/* Image Preview */}
+            <div className=""></div>
             {/* Summary */}
             <div className="px-4 pt-2">
               <h4 className="text-lg font-semibold">Summary</h4>
@@ -537,10 +535,6 @@ function NokkualokTktokReach() {
                 />
               </ul>
             </div>
-          </div>
-          <div className="col-span-4 flex flex-col justify-between">
-            {/* Image Preview */}
-            <div className=""></div>
           </div>
         </div>
       </div>
@@ -559,4 +553,4 @@ function NokkualokTktokReach() {
   );
 }
 
-export default NokkualokTktokReach;
+export default NokkualokTiktokReach;

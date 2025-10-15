@@ -318,6 +318,7 @@ function FacebookAwarenessSlide() {
                 value={spentData.displayValue}
                 compareValue={spentData.compareValue}
                 isNegative={spentData.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>

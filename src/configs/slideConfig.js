@@ -36,7 +36,7 @@ import FacebookTrafficSlide02 from "@/components/slides/FacebookTrafficSlide02";
 import FacebookVideoSlide01 from "@/components/slides/FacebookVideoSlide01";
 import FacebookVideoSlide02 from "@/components/slides/FacebookVideoSlide02";
 import GDNSlide from "@/components/slides/GDNSlide";
-import NokkualokTktokReach from "@/components/slides/nokkualok/NokkualokTktokReach";
+import NokkualokTiktokReach from "@/components/slides/nokkualok/NokkualokTiktokReach";
 import PerformanceMaxSlide from "@/components/slides/PerformanceMaxSlide";
 import SEMClickSlide from "@/components/slides/SEMClickSlide";
 import SEMConversionSlide from "@/components/slides/SEMConversionSlide";
@@ -73,7 +73,7 @@ export const ASIA_HOTEL_FACEBOOK_SLIDES = {
 };
 
 export const NOKKUALOK_TIKTOK_SLIDES = {
-  "TikTok Reach": [NokkualokTktokReach],
+  "TikTok Reach": [NokkualokTiktokReach],
   "TikTok VDO View": [TiktokVideoSlide01],
   "TikTok Traffic": [TiktokTrafficSlide01],
   "TikTok Lead": [TiktokLeadSlide01],

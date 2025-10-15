@@ -301,7 +301,7 @@ export const fetchDataSheetEnhanced = async (
     }
 
     //for debugging
-    console.log("endpoint:", endpoint);
+    // console.log("endpoint:", endpoint);
 
     // Fetch data from API
     const response = await axiosInstance.get(`/data-sheets/${endpoint}/${id}`);

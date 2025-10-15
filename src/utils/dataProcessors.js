@@ -369,7 +369,6 @@ const calculateEnhancedMetrics = (data, calculatedFields) => {
         break;
 
       case "viewRate6sec":
-        console.log("🎯 viewRate6sec data:", data);
         enhanced[field.key] =
           data.impressions > 0
             ? Number(((data.view6sec / data.impressions) * 100).toFixed(2)) // Changed from views6sec to view6sec

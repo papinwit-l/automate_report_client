@@ -443,6 +443,7 @@ function PerformanceMaxSlide() {
                 isConversion={true}
                 compareValue={formattedMetrics.spentData?.compareValue}
                 isNegative={formattedMetrics.spentData?.isNegative}
+                invertCompareColor={true}
               />
             </div>
             <div>
