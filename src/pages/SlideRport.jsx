@@ -100,6 +100,7 @@ import AsiaHotelFBLead02 from "@/components/slides/asia-hotel/AsiaHotelFBLead02"
 import AsiaHotelFBConv01 from "@/components/slides/asia-hotel/AsiaHotelFBConv01";
 import AsiaHotelFBConv02 from "@/components/slides/asia-hotel/AsiaHotelFBConv02";
 import NokkualokTiktokReach from "@/components/slides/nokkualok/NokkualokTiktokReach";
+import OverallCustom from "@/components/custom-templates/OverallCustom";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -126,6 +127,7 @@ function SlideReport() {
     enableSmartSlideDetection,
     template,
     setTemplate,
+    enableCustomTemplate,
   } = useData();
   const [mediaPlanData, setMediaPlanData] = React.useState(null);
 
@@ -755,7 +757,11 @@ function SlideReport() {
 
             {/* Preview Panel */}
             {slideGenerated ? (
-              enableSmartSlideDetection ? (
+              enableCustomTemplate ? (
+                <div className="w-full flex flex-col items-center gap-10">
+                  <OverallCustom />
+                </div>
+              ) : enableSmartSlideDetection ? (
                 <div className="w-full flex flex-col items-center gap-10">
                   <TitleSlide
                     projectName={projectName}

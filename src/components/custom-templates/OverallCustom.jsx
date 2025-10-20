@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import SlideHeader from "./SlideHeader";
-import NumberDisplayBox from "./utils/NumberDisplayBox";
-import TextEditorModal from "./utils/TextEditorModal";
+import SlideHeader from "@/components/slides/SlideHeader";
+import NumberDisplayBox from "@/components/slides/utils/NumberDisplayBox";
+import TextEditorModal from "@/components/slides/utils/TextEditorModal";
 import { useData } from "@/contexts/dataContext";
 import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
@@ -9,7 +9,6 @@ import { Button } from "../ui/button";
 // Import utility functions
 import { formatDisplayData, formatTableValue } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
-import OverallTextEditorModal from "./utils/OverallTextEditorModal";
 
 function OverallCustom() {
   const {

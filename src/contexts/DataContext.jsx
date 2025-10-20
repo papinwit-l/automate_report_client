@@ -43,6 +43,9 @@ export const DataProvider = ({ children }) => {
     useState(true);
   const [slideDetectedList, setSlideDetectedList] = useState([]);
 
+  //custom slide
+  const [enableCustomTemplate, setEnableCustomTemplate] = useState(false);
+
   //Overall Data
   const [overallData, setOverallData] = useState({});
   const [overallTotals, setOverallTotals] = useState({});
@@ -983,6 +986,10 @@ export const DataProvider = ({ children }) => {
     setEnableSmartSlideDetection,
     slideDetectedList,
     setSlideDetectedList,
+
+    // Custom Slide
+    enableCustomTemplate,
+    setEnableCustomTemplate,
 
     // sheet not found list
     notFoundSheetList,

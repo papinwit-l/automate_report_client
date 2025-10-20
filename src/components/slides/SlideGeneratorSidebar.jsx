@@ -51,6 +51,7 @@ import {
 } from "../ui/tooltip";
 import { TEMPLATE_SELECT_OPTIONS } from "@/configs/overallTemplateConfig";
 import ExportLoadingDialog from "./utils/ExportLoadingDialog";
+import { useNavigate } from "react-router-dom";
 
 const SlideGeneratorSidebar = ({
   isOpen,
@@ -80,7 +81,11 @@ const SlideGeneratorSidebar = ({
     setEnableSmartSlideDetection,
     template,
     setTemplate,
+    enableCustomTemplate,
+    setEnableCustomTemplate,
   } = useData();
+
+  const navigate = useNavigate();
 
   // Storage key for localStorage
   const STORAGE_KEY = "slide_generator_saved_urls";
@@ -195,6 +200,10 @@ const SlideGeneratorSidebar = ({
 
   const handleSmartSlideDetectionChange = () => {
     setEnableSmartSlideDetection(!enableSmartSlideDetection);
+  };
+
+  const handleEnableCustomTemplateChange = () => {
+    setEnableCustomTemplate(!enableCustomTemplate);
   };
 
   return (
@@ -479,6 +488,39 @@ const SlideGeneratorSidebar = ({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+
+                {/* Custom Template */}
+                <Card className="shadow-sm py-1">
+                  <CardContent className="p-4 space-y-1 py-2 flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="custom-slide-enable"
+                        checked={enableCustomTemplate}
+                        onChange={handleEnableCustomTemplateChange}
+                        className="rounded border-gray-300"
+                      />
+                      <label
+                        htmlFor="custom-slide-enable"
+                        className="text-sm font-medium"
+                      >
+                        Enable custom slide
+                      </label>
+                    </div>
+                    {enableCustomTemplate && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button>Load</Button>
+                        <Button
+                          onClick={() => {
+                            navigate("/template-manager");
+                          }}
+                        >
+                          Create
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
 
                 {/* Template Selection */}
                 <div className="flex gap-2">

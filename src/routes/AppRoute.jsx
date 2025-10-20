@@ -3,6 +3,7 @@ import MainLayout from "@/layouts/MainLayout";
 import DataSheet from "@/pages/DataSheet";
 import Home from "@/pages/Home";
 import SlideRport from "@/pages/SlideRport";
+import TemplateManager from "@/pages/TemplateManager";
 import React from "react";
 import {
   createBrowserRouter,
@@ -25,13 +26,13 @@ const router = createBrowserRouter([
       },
       {
         path: "/slide-report",
-        element: (
-          <DataProvider>
-            <SlideRport />
-          </DataProvider>
-        ),
+        element: <SlideRport />,
       },
     ],
+  },
+  {
+    path: "/template-manager",
+    element: <TemplateManager />,
   },
   {
     path: "*",
@@ -40,7 +41,11 @@ const router = createBrowserRouter([
 ]);
 
 function AppRoute() {
-  return <RouterProvider router={router} />;
+  return (
+    <DataProvider>
+      <RouterProvider router={router} />
+    </DataProvider>
+  );
 }
 
 export default AppRoute;
