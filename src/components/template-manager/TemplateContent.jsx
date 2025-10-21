@@ -2,7 +2,7 @@ import React from "react";
 
 function TemplateContent({ slides = [] }) {
   return (
-    <main className="flex-1 overflow-y-auto">
+    <main className="flex-1 overflow-y-auto bg-slate-200">
       <div className="flex flex-col gap-8 items-center py-4">
         {slides.map((slide, index) => {
           const id = `slide-${index}`;
