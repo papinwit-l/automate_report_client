@@ -1,9 +1,62 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  FileSpreadsheet,
+  Loader2,
+} from "lucide-react";
 import React, { useState } from "react";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import SidebarProjectFilterSection from "../slides/SidebarProjectFilterSection";
+import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
+import DateRangePicker from "../slides/utils/DateRangePicker";
+import { useData } from "@/contexts/DataContext";
 
 function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
+  const { fetchData, enableDateRange, setEnableDateRange } = useData();
+
+  const [error, setError] = useState(null);
+
   const [showSlideSection, setShowSlideSection] = useState(true);
+
+  // data section
   const [showDataSection, setShowDataSection] = useState(true);
+  const [sheetsID, setSheetsID] = useState("");
+  const [sheetsLink, setSheetsLink] = useState("");
+  const [ableToGenerate, setAbleToGenerate] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleEnableDateRangeChange = (event) => {
+    setEnableDateRange(event.target.checked);
+  };
+
+  const handleSheetsLinkChange = (event) => {
+    const value = event.target.value;
+    setSheetsLink(value);
+
+    if (!value.trim()) {
+      setSheetsID("");
+      setAbleToGenerate(false);
+      return;
+    }
+
+    const match = value.match(
+      /^(https:\/\/docs\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9-_]+)/
+    );
+
+    if (!match) {
+      setSheetsID("Invalid Sheets Link");
+      setAbleToGenerate(false);
+      return;
+    }
+
+    const sheetsId = match[2];
+    setSheetsID(sheetsId);
+    setAbleToGenerate(true);
+  };
 
   const handleSlideSwap = (index, action) => {
     if (action === "up") {
@@ -19,12 +72,35 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
     }
   };
 
+  const handleGenerate = async () => {
+    if (!ableToGenerate) {
+      setError("Please enter a valid Google Sheets link");
+      return;
+    }
+
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      await fetchData(sheetsID);
+      setSlideGenerated(true);
+    } catch (error) {
+      setError("Failed to generate slides: " + error.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 p-4 flex flex-col gap-4">
       {/* Data Section */}
-      <div className="flex flex-col rounded-lg overflow-hidden shadow-sm border border-slate-200">
+      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
         {/* Data Section Title */}
-        <div className="flex items-center justify-between bg-white p-3 cursor-pointer transition-colors">
+        <div
+          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+            !showDataSection && "rounded-lg"
+          }`}
+        >
           <h2 className="text-sm font-semibold text-slate-700">Data</h2>
           <button
             onClick={() => setShowDataSection(!showDataSection)}
@@ -37,10 +113,98 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
             )}
           </button>
         </div>
-        {/* Data Section Content - Add your content here */}
+        {/* Data Section Content*/}
         {showDataSection && (
-          <div className="p-3 bg-slate-50/50">
-            {/* Data content goes here */}
+          <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
+            <Label htmlFor="sheet-link" className="text-sm font-medium">
+              Raw Dashboard
+            </Label>
+            <Input
+              id="sheet-link"
+              type="text"
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              value={sheetsLink}
+              onChange={handleSheetsLinkChange}
+              className="font-mono text-sm"
+            />
+            {sheetsID && (
+              <>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm text-muted-foreground">
+                      Sheet ID
+                    </Label>
+                    <Badge
+                      variant={ableToGenerate ? "default" : "destructive"}
+                      className={`text-xs ${
+                        ableToGenerate ? "bg-green-200 text-green-700" : ""
+                      }`}
+                    >
+                      {ableToGenerate ? "Valid" : "Invalid"}
+                    </Badge>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md text-sm font-mono break-all border-1">
+                    {sheetsID}
+                  </div>
+                </div>
+                {/* Project Filter Section */}
+                <SidebarProjectFilterSection sheetsID={sheetsID} />
+              </>
+            )}
+
+            {/* Date Range Section */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-3">
+                <Calendar className="h-4 w-4 text-blue-600" />
+                <h3 className="font-medium text-sm">Date Range</h3>
+              </div>
+
+              <Card className="shadow-sm py-1">
+                <CardContent className="p-4 space-y-1 py-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="date-range-enable"
+                      checked={enableDateRange}
+                      onChange={handleEnableDateRangeChange}
+                      className="rounded border-gray-300"
+                    />
+                    <Label
+                      htmlFor="date-range-enable"
+                      className="text-sm font-medium"
+                    >
+                      Enable date filtering
+                    </Label>
+                  </div>
+
+                  {enableDateRange && (
+                    <div className="pt-2 flex flex-col gap-2">
+                      <DateRangePicker />
+                      {/* <DateRangePickerV2 /> */}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating || !ableToGenerate}
+              className="w-full"
+              size="sm"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading Data...
+                </>
+              ) : (
+                <>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Load Data
+                </>
+              )}
+            </Button>
           </div>
         )}
       </div>
