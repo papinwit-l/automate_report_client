@@ -4,6 +4,8 @@ import {
   ChevronUp,
   FileSpreadsheet,
   Loader2,
+  Plus,
+  X,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Label } from "../ui/label";
@@ -15,12 +17,15 @@ import { Card, CardContent } from "../ui/card";
 import DateRangePicker from "../slides/utils/DateRangePicker";
 import { useData } from "@/contexts/DataContext";
 
+import CreateSlideDialog from "./CreateSlideDialog";
+
 function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   const { fetchData, enableDateRange, setEnableDateRange } = useData();
 
   const [error, setError] = useState(null);
 
   const [showSlideSection, setShowSlideSection] = useState(true);
+  const [slideGenerated, setSlideGenerated] = useState(false);
 
   // data section
   const [showDataSection, setShowDataSection] = useState(true);
@@ -28,6 +33,12 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   const [sheetsLink, setSheetsLink] = useState("");
   const [ableToGenerate, setAbleToGenerate] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Add slide dialog state
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  // Remove mode state
+  const [isRemoveMode, setIsRemoveMode] = useState(false);
 
   const handleEnableDateRangeChange = (event) => {
     setEnableDateRange(event.target.checked);
@@ -72,6 +83,11 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
     }
   };
 
+  const handleRemoveSlide = (index) => {
+    const newSlideTemplates = slideTemplates.filter((_, i) => i !== index);
+    setSlideTemplates(newSlideTemplates);
+  };
+
   const handleGenerate = async () => {
     if (!ableToGenerate) {
       setError("Please enter a valid Google Sheets link");
@@ -89,6 +105,11 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleAddSlide = (newSlide) => {
+    setSlideTemplates([...slideTemplates, newSlide]);
+    setIsAddDialogOpen(false);
   };
 
   return (
@@ -180,7 +201,6 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
                   {enableDateRange && (
                     <div className="pt-2 flex flex-col gap-2">
                       <DateRangePicker />
-                      {/* <DateRangePickerV2 /> */}
                     </div>
                   )}
                 </CardContent>
@@ -228,40 +248,81 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
 
         {/* Slide Section Content */}
         {showSlideSection && (
-          <div className="flex flex-col gap-1.5 p-2 bg-slate-50/50">
-            {slideTemplates.map((slide, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-md hover:border-slate-300 hover:shadow-sm transition-all group"
+          <>
+            <div className="flex justify-between items-center p-1 px-2 bg-white border-t border-b border-slate-200">
+              <button
+                onClick={() => setIsAddDialogOpen(true)}
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
               >
-                <span className="text-sm text-slate-700 font-medium truncate flex-1">
-                  {slide.title}
-                </span>
-                <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                  {index > 0 && (
-                    <button
-                      onClick={() => handleSlideSwap(index, "up")}
-                      className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                      aria-label="Move slide up"
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </button>
-                  )}
-                  {index < slideTemplates.length - 1 && (
-                    <button
-                      onClick={() => handleSlideSwap(index, "down")}
-                      className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                      aria-label="Move slide down"
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
+                <Plus className="h-4 w-4" />
+                Add
+              </button>
+              <button
+                onClick={() => setIsRemoveMode(!isRemoveMode)}
+                className={`text-sm font-medium transition-colors ${
+                  isRemoveMode
+                    ? "text-red-700 bg-red-50 px-2 py-1 rounded"
+                    : "text-red-600 hover:text-red-700"
+                }`}
+              >
+                {isRemoveMode ? "Cancel Remove" : "Remove"}
+              </button>
+            </div>
+            <div className="flex flex-col gap-1.5 p-2 bg-slate-50/50">
+              {slideTemplates.map((slide, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    if (isRemoveMode) {
+                      handleRemoveSlide(index);
+                    }
+                  }}
+                  className={`flex items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-md transition-all group ${
+                    isRemoveMode
+                      ? "cursor-pointer hover:bg-red-50 hover:border-red-300 hover:shadow-sm"
+                      : "hover:border-slate-300 hover:shadow-sm"
+                  }`}
+                >
+                  <span className="text-sm text-slate-700 font-medium truncate flex-1">
+                    {slide.title}
+                  </span>
+                  {isRemoveMode ? (
+                    <X className="h-4 w-4 text-red-500" />
+                  ) : (
+                    <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                      {index > 0 && (
+                        <button
+                          onClick={() => handleSlideSwap(index, "up")}
+                          className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                          aria-label="Move slide up"
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                      )}
+                      {index < slideTemplates.length - 1 && (
+                        <button
+                          onClick={() => handleSlideSwap(index, "down")}
+                          className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                          aria-label="Move slide down"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
+
+      {/* Add Slide Dialog - Separate from trigger */}
+      <CreateSlideDialog
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        onAddSlide={handleAddSlide}
+      />
     </div>
   );
 }

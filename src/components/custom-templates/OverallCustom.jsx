@@ -10,7 +10,64 @@ import { Button } from "../ui/button";
 import { formatDisplayData, formatTableValue } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
 
-function OverallCustom() {
+function OverallCustom({
+  id = "overall-slide",
+  title = "Overall Slide Custom",
+  table = [
+    "Impressions",
+    "Clicks",
+    "ctr",
+    "Conversions",
+    "conRate",
+    "cpl",
+    "Spent",
+  ],
+  metricData = [
+    {
+      label: "Impressions",
+      value: "impressionData",
+      isConversion: false,
+      invertCompare: false,
+    },
+    {
+      label: "Clicks",
+      value: "clicksData",
+      isConversion: false,
+      invertCompare: false,
+    },
+    {
+      label: "%CTR",
+      value: "ctrData",
+      isConversion: false,
+      invertCompare: false,
+    },
+    {
+      label: "Conversions",
+      value: "conversionsData",
+      isConversion: true,
+      invertCompare: false,
+    },
+    {
+      label: "%Conv rate",
+      value: "conRateData",
+      isConversion: true,
+      invertCompare: false,
+    },
+    {
+      label: "CPL",
+      value: "cplData",
+      isConversion: true,
+      invertCompare: true,
+    },
+    {
+      label: "Spent",
+      value: "spentData",
+      isConversion: true,
+      invertCompare: true,
+    },
+  ],
+  metricConvLength = 4,
+}) {
   const {
     loading,
     error,
@@ -148,6 +205,11 @@ function OverallCustom() {
         overallComparison?.cpl,
         "compact"
       ),
+      cpaData: formatDisplayData(
+        overallTotals?.cpa,
+        overallComparison?.cpa,
+        "compact"
+      ),
       spentData: formatDisplayData(
         overallTotals?.spent || overallTotals?.Spent,
         overallComparison?.spent || overallComparison?.Spent,
@@ -262,9 +324,9 @@ function OverallCustom() {
 
   return (
     <div
-      id="overall-component"
+      id={id}
       data-exportable={true}
-      data-export-title="Overall"
+      data-export-title={title}
       className="flex flex-col py-7 px-10 border w-7xl h-[720px] gap-2 relative group bg-white"
     >
       {/* EDIT BUTTON */}
@@ -277,65 +339,39 @@ function OverallCustom() {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={"Overall"} />
+      <SlideHeader title={title} />
       <div className="flex flex-col justify-between h-full">
         <div className="grid grid-cols-16">
           <div className="col-span-16 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <h4 className="col-span-3 text-lg font-semibold">
+            <div className={`grid grid-cols-${metricData.length || 1} gap-2`}>
+              <h4
+                className={`col-span-${
+                  metricData.length - metricConvLength
+                } text-lg font-semibold`}
+              >
                 Awareness & Considerations
               </h4>
-              <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+              <h4
+                className={`${
+                  metricConvLength > 0 && "col-span-" + metricConvLength
+                } text-lg font-semibold`}
+              >
+                Conversions
+              </h4>
 
-              <NumberDisplayBox
-                title={"Impression"}
-                value={formattedMetrics.impressionData?.displayValue}
-                compareValue={formattedMetrics.impressionData?.compareValue}
-                isNegative={formattedMetrics.impressionData?.isNegative}
-              />
-
-              <NumberDisplayBox
-                title={"Clicks"}
-                value={formattedMetrics.clicksData?.displayValue}
-                compareValue={formattedMetrics.clicksData?.compareValue}
-                isNegative={formattedMetrics.clicksData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={"%CTR"}
-                value={formattedMetrics.ctrData?.displayValue}
-                compareValue={formattedMetrics.ctrData?.compareValue}
-                isNegative={formattedMetrics.ctrData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={"Conversions"}
-                value={formattedMetrics.conversionsData?.displayValue}
-                isConversion={true}
-                compareValue={formattedMetrics.conversionsData?.compareValue}
-                isNegative={formattedMetrics.conversionsData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={"%Con Rate"}
-                value={formattedMetrics.conRateData?.displayValue}
-                compareValue={formattedMetrics.conRateData?.compareValue}
-                isConversion={true}
-                isNegative={formattedMetrics.conRateData?.isNegative}
-              />
-              <NumberDisplayBox
-                title={isCPA ? "CPA" : "CPL"}
-                value={formattedMetrics.cplData?.displayValue}
-                compareValue={formattedMetrics.cplData?.compareValue}
-                isConversion={true}
-                isNegative={formattedMetrics.cplData?.isNegative}
-                invertCompareColor={true}
-              />
-              <NumberDisplayBox
-                title={"Spent"}
-                value={formattedMetrics.spentData?.displayValue}
-                compareValue={formattedMetrics.spentData?.compareValue}
-                isConversion={true}
-                isNegative={formattedMetrics.spentData?.isNegative}
-                invertCompareColor={true}
-              />
+              {metricData.map((metric, index) => {
+                return (
+                  <NumberDisplayBox
+                    key={index}
+                    title={metric.label}
+                    value={formattedMetrics[metric.value]?.displayValue}
+                    compareValue={formattedMetrics[metric.value]?.compareValue}
+                    isNegative={formattedMetrics[metric.value]?.isNegative}
+                    isConversion={metric.isConversion}
+                    invertCompareColor={metric.invertCompare}
+                  />
+                );
+              })}
             </div>
             <div>
               <h4 className="text-lg font-semibold">Performance by Channel</h4>
@@ -344,15 +380,7 @@ function OverallCustom() {
                 firstMetric="Channel"
                 channelData={overallData}
                 totalData={overallTotals}
-                metrics={[
-                  "Impressions",
-                  "Clicks",
-                  "ctr",
-                  "Conversions",
-                  "conRate",
-                  isCPA ? "cpa" : "cpl",
-                  "Spent",
-                ]}
+                metrics={table}
                 formatValue={formatTableValue}
                 maxRows={maxTableRows[0]}
                 defaultSortBy="Conversions"
