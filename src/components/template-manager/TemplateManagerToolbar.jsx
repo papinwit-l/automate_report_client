@@ -113,7 +113,7 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   };
 
   return (
-    <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 p-4 flex flex-col gap-4">
+    <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 p-4 flex flex-col gap-4 overflow-y-auto">
       {/* Data Section */}
       <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
         {/* Data Section Title */}
@@ -230,9 +230,13 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
       </div>
 
       {/* Slide Section */}
-      <div className="flex flex-col rounded-lg overflow-hidden shadow-sm border border-slate-200">
+      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
         {/* Slide Section Title */}
-        <div className="flex items-center justify-between bg-white p-3 cursor-pointer transition-colors">
+        <div
+          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+            !showSlideSection && "rounded-lg"
+          }`}
+        >
           <h2 className="text-sm font-semibold text-slate-700">Slides</h2>
           <button
             onClick={() => setShowSlideSection(!showSlideSection)}

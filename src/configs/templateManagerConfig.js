@@ -1,5 +1,6 @@
 import BlankMediaPlan from "@/components/custom-templates/BlankMediaPlan";
 import EndSlideCustom from "@/components/custom-templates/EndSlideCustom";
+import GoogleSlideCustom from "@/components/custom-templates/GoogleSlideCustom";
 import OverallCustom from "@/components/custom-templates/OverallCustom";
 import SectionSlideCustom from "@/components/custom-templates/SectionSlideCustom";
 import TitleSlideCustom from "@/components/custom-templates/TitleSlideCustom";
@@ -98,6 +99,72 @@ export const CREATE_SLIDE_LIST = [
       },
     ],
   },
+  {
+    title: "Google Slide",
+    name: "google-slide",
+    Component: GoogleSlideCustom,
+    table: [
+      "Keyword",
+      "Impressions",
+      "Clicks",
+      "ctr",
+      "cpc",
+      "Conversions",
+      "conRate",
+      "cpl",
+      "Spent",
+    ],
+    metricData: [
+      {
+        label: "Keyword",
+        value: "keyword",
+        isConversion: false,
+        invertCompare: false,
+      },
+      {
+        label: "Impressions",
+        value: "impressionData",
+        isConversion: false,
+        invertCompare: false,
+      },
+      {
+        label: "Clicks",
+        value: "clicksData",
+        isConversion: false,
+        invertCompare: false,
+      },
+      {
+        label: "%CTR",
+        value: "ctrData",
+        isConversion: false,
+        invertCompare: false,
+      },
+      {
+        label: "Conversions",
+        value: "conversionsData",
+        isConversion: true,
+        invertCompare: false,
+      },
+      {
+        label: "%Con Rate",
+        value: "conRateData",
+        isConversion: true,
+        invertCompare: false,
+      },
+      {
+        label: "CPA",
+        value: "cpaData",
+        isConversion: true,
+        invertCompare: true,
+      },
+      {
+        label: "Spent",
+        value: "spentData",
+        isConversion: true,
+        invertCompare: true,
+      },
+    ],
+  },
 ];
 
 export const METRIC_DATA_LIST = [
@@ -125,6 +192,20 @@ export const METRIC_DATA_LIST = [
 ];
 
 export const OVERALL_TABLE = [
+  { label: "Impressions", value: "Impressions" },
+  { label: "Clicks", value: "Clicks" },
+  { label: "%CTR", value: "ctr" },
+  { label: "Conversions", value: "Conversions" },
+  { label: "%Conv rate", value: "conRate" },
+  { label: "Engagements", value: "Post Engagement" },
+  { label: "Spent", value: "Spent" },
+  { label: "CPL", value: "cpl" },
+  { label: "CPA", value: "cpa" },
+  { label: "CPC", value: "cpc" },
+];
+
+export const GOOGLE_TABLE = [
+  { label: "Keyword", value: "Keyword" },
   { label: "Impressions", value: "Impressions" },
   { label: "Clicks", value: "Clicks" },
   { label: "%CTR", value: "ctr" },

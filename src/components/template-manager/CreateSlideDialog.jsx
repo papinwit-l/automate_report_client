@@ -22,15 +22,20 @@ import {
   CREATE_SLIDE_LIST,
   OVERALL_TABLE,
   METRIC_DATA_LIST,
+  GOOGLE_TABLE,
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
+import { useData } from "@/contexts/DataContext";
 
 function CreateSlideDialog({
   isAddDialogOpen,
   setIsAddDialogOpen,
   onAddSlide,
 }) {
+  const { getDataList } = useData();
+  // console.log("🎯 CreateSlideDialog getDataList:", getDataList());
+
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
   const [newSlideType, setNewSlideType] = useState("");
   const [newSlide, setNewSlide] = useState({
@@ -39,6 +44,9 @@ function CreateSlideDialog({
     table: [],
     metricData: [],
   });
+
+  // Data Source
+  const [dataSource, setDataSource] = useState("");
 
   // Table Section
   const [isTableRemoveMode, setIsTableRemoveMode] = useState(false);
@@ -104,10 +112,10 @@ function CreateSlideDialog({
   };
 
   const handleSelectSlideType = (slideName) => {
-    setNewSlideType(slideName);
     const selectedSlide = CREATE_SLIDE_LIST.find(
       (slide) => slide.name === slideName
     );
+    setNewSlideType(selectedSlide.name);
     if (selectedSlide) {
       setNewSlide({
         ...selectedSlide,
@@ -145,6 +153,9 @@ function CreateSlideDialog({
   const getTableList = () => {
     if (newSlideType === "overall-slide") {
       return OVERALL_TABLE;
+    }
+    if (newSlideType === "google-slide") {
+      return GOOGLE_TABLE;
     }
     return [];
   };
@@ -242,6 +253,10 @@ function CreateSlideDialog({
     });
   };
 
+  const handleDataSourceChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, dataSource: value }));
+  };
+
   const { enableAdvancedSlideInfo } = useMemo(() => {
     const advancedSlide = [
       "",
@@ -300,6 +315,26 @@ function CreateSlideDialog({
           {enableAdvancedSlideInfo && (
             <div className="space-y-4">
               <h2 className="text-lg font-medium">Advanced Slide Info</h2>
+
+              {/* Data Source Section */}
+              <div className="space-y-2">
+                <h3 className="text-md font-medium">Data Source:</h3>
+                <Select
+                  value={newSlide.dataSource}
+                  onValueChange={handleDataSourceChange}
+                >
+                  <SelectTrigger id="data-source">
+                    <SelectValue placeholder="Select data source" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    {getDataList().map((data, index) => (
+                      <SelectItem key={index} value={data.label}>
+                        {data.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Table Section */}
               <div className="space-y-2">

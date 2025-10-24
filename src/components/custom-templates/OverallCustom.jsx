@@ -354,7 +354,7 @@ function OverallCustom({
               <h4
                 className={`${
                   metricConvLength > 0 && "col-span-" + metricConvLength
-                } text-lg font-semibold`}
+                } text-lg font-semibold ${metricConvLength === 0 && "hidden"}`}
               >
                 Conversions
               </h4>
