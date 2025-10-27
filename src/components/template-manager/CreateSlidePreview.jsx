@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useData } from "@/contexts/DataContext";
@@ -10,6 +10,8 @@ const CreateSlidePreview = memo(({ slide }) => {
     table = [],
     metricConvLength = 2,
     metricData = [],
+    summaryPosition = "bottom",
+    extraContentType = "none",
   } = slide;
 
   const dataSource = slide.dataSource;
@@ -35,6 +37,8 @@ const CreateSlidePreview = memo(({ slide }) => {
                   metricConvLength={metricConvLength}
                   metricData={metricData}
                   dataSource={dataSource}
+                  summaryPosition={summaryPosition}
+                  extraContentType={extraContentType}
                 />
               ) : (
                 <Component

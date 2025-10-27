@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 // Import utility functions
 import { formatDisplayData, formatTableValue } from "@/utils/dataDisplayUtils";
 import { AdvancedDataTable } from "../charts-tables/AdvancedDataTable";
+import { metricDataProcess } from "@/utils/dataUtils";
 
 function OverallCustom({
   id = "overall-slide",
@@ -174,128 +175,7 @@ function OverallCustom({
 
     // console.log("🎯 overallTotals:", overallTotals);
 
-    return {
-      impressionData: formatDisplayData(
-        overallTotals?.impressions || overallTotals?.Impressions,
-        overallComparison?.impressions || overallComparison?.Impressions,
-        "compact"
-      ),
-      clicksData: formatDisplayData(
-        overallTotals?.clicks || overallTotals?.Clicks,
-        overallComparison?.clicks || overallComparison?.Clicks,
-        "compact"
-      ),
-      ctrData: formatDisplayData(
-        overallTotals?.ctr,
-        overallComparison?.ctr,
-        "percentage"
-      ),
-      cpcData: formatDisplayData(
-        overallTotals?.cpc,
-        overallComparison?.cpc,
-        "compact"
-      ),
-      conversionsData: formatDisplayData(
-        overallTotals?.conversions || overallTotals?.Conversions,
-        overallComparison?.conversions || overallComparison?.Conversions,
-        "number"
-      ),
-      cplData: formatDisplayData(
-        overallTotals?.cpl,
-        overallComparison?.cpl,
-        "compact"
-      ),
-      cpaData: formatDisplayData(
-        overallTotals?.cpa,
-        overallComparison?.cpa,
-        "compact"
-      ),
-      spentData: formatDisplayData(
-        overallTotals?.spent || overallTotals?.Spent,
-        overallComparison?.spent || overallComparison?.Spent,
-        "compact"
-      ),
-      cpmData: formatDisplayData(
-        overallTotals?.cpm,
-        overallComparison?.cpm,
-        "compact"
-      ),
-      reachData: formatDisplayData(
-        overallTotals?.reach || overallTotals?.Reach,
-        overallComparison?.reach || overallComparison?.Reach,
-        "compact"
-      ),
-      frequencyData: formatDisplayData(
-        overallTotals?.frequency || overallTotals?.Frequency,
-        overallComparison?.frequency || overallComparison?.Frequency,
-        "compact"
-      ),
-      cprData: formatDisplayData(
-        overallTotals?.cpr,
-        overallComparison?.cpr,
-        "compact"
-      ),
-      engagementData: formatDisplayData(
-        overallTotals?.engagements || overallTotals?.Engagements,
-        overallComparison?.engagements || overallComparison?.Engagements,
-        "compact"
-      ),
-      engagementRateData: formatDisplayData(
-        overallTotals?.engagementRate,
-        overallComparison?.engagementRate,
-        "percentage"
-      ),
-      cpeData: formatDisplayData(
-        overallTotals?.cpe,
-        overallComparison?.cpe,
-        "compact"
-      ),
-      viewRateData: formatDisplayData(
-        overallTotals?.viewRate,
-        overallComparison?.viewRate,
-        "percentage"
-      ),
-      VideoViewsData: formatDisplayData(
-        overallTotals["views"],
-        overallComparison["views"],
-        "number"
-      ),
-      cpvData: formatDisplayData(
-        overallTotals?.cpv,
-        overallComparison?.cpv,
-        "compact"
-      ),
-      conRateData: formatDisplayData(
-        overallTotals?.cvr || overallTotals?.conRate,
-        overallComparison?.cvr || overallComparison?.conRate,
-        "percentage"
-      ),
-      purchaseConValueData: formatDisplayData(
-        overallTotals?.purchaseConValue,
-        overallComparison?.purchaseConValue,
-        "compact"
-      ),
-      roasData: formatDisplayData(
-        overallTotals?.roas,
-        overallComparison?.roas,
-        "compact"
-      ),
-      purchaseData: formatDisplayData(
-        overallTotals?.purchase,
-        overallComparison?.purchase,
-        "number"
-      ),
-      addToCartData: formatDisplayData(
-        overallTotals?.addToCart,
-        overallComparison?.addToCart,
-        "number"
-      ),
-      view6secData: formatDisplayData(
-        overallTotals?.view6sec,
-        overallComparison?.view6sec,
-        "number"
-      ),
-    };
+    return metricDataProcess(overallTotals, overallComparison);
   }, [overallTotals, overallComparison]);
 
   // Show loading state

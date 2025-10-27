@@ -20,6 +20,29 @@ export const START_TEMPLATES = [
   },
 ];
 
+export const INITIAL_NEW_SLIDE = {
+  title: "Title",
+  Component: null,
+  table: [],
+  metricData: [],
+  metricConvLength: 2,
+  dataSource: "",
+  extraContentType: "none",
+  summaryPosition: "bottom",
+  demographicChart: [
+    {
+      title: "Chart 1",
+      chartBy: "Gender",
+      dataBy: "Clicks",
+    },
+    {
+      title: "Chart 2",
+      chartBy: "None",
+      dataBy: "Clicks",
+    },
+  ],
+};
+
 export const CREATE_SLIDE_LIST = [
   {
     title: "Title Slide",
@@ -100,6 +123,7 @@ export const CREATE_SLIDE_LIST = [
     ],
   },
   {
+    ...INITIAL_NEW_SLIDE,
     title: "Google Slide",
     name: "google-slide",
     Component: GoogleSlideCustom,
@@ -115,12 +139,6 @@ export const CREATE_SLIDE_LIST = [
       "Spent",
     ],
     metricData: [
-      {
-        label: "Keyword",
-        value: "keyword",
-        isConversion: false,
-        invertCompare: false,
-      },
       {
         label: "Impressions",
         value: "impressionData",
@@ -165,6 +183,15 @@ export const CREATE_SLIDE_LIST = [
       },
     ],
   },
+];
+
+export const DEMOGRAPHIC_DATA_LIST = [
+  { label: "Conversion", value: "Conversion" },
+  { label: "Clicks", value: "Clicks" },
+  { label: "Impressions", value: "Impressions" },
+  { label: "Spent", value: "Spent" },
+  { label: "Engagements", value: "Engagements" },
+  { label: "Video views", value: "Video views" },
 ];
 
 export const METRIC_DATA_LIST = [

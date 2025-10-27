@@ -1,5 +1,7 @@
 // utils/dataUtils.js
 
+import { formatDisplayData } from "./dataDisplayUtils";
+
 // Helper function to calculate date difference in days
 export const getDateDifference = (from, to) => {
   const fromDate = from instanceof Date ? from : new Date(from);
@@ -111,9 +113,9 @@ export const createStateSettersMap = (stateSetter) => {
   return {
     overall: {
       setData: stateSetter.setOverallData,
-      setTotals: stateSetter.setOverallTotals,
+      setTotals: stateSetter.settotalsData,
       setMetrics: stateSetter.setOverallMetrics,
-      setComparison: stateSetter.setOverallComparison,
+      setComparison: stateSetter.setcomparisonData,
     },
     SEM: {
       setData: stateSetter.setSEMData,
@@ -334,4 +336,103 @@ export const createStateSettersMap = (stateSetter) => {
       setComparison: stateSetter.setTaboolaComparison,
     },
   };
+};
+
+export const metricDataProcess = (totalsData, comparisonData) => {
+  const result = {
+    impressionData: formatDisplayData(
+      totalsData?.impressions || totalsData?.Impressions,
+      comparisonData?.impressions || comparisonData?.Impressions,
+      "compact"
+    ),
+    clicksData: formatDisplayData(
+      totalsData?.clicks || totalsData?.Clicks,
+      comparisonData?.clicks || comparisonData?.Clicks,
+      "compact"
+    ),
+    ctrData: formatDisplayData(
+      totalsData?.ctr,
+      comparisonData?.ctr,
+      "percentage"
+    ),
+    cpcData: formatDisplayData(totalsData?.cpc, comparisonData?.cpc, "compact"),
+    conversionsData: formatDisplayData(
+      totalsData?.conversions || totalsData?.Conversions,
+      comparisonData?.conversions || comparisonData?.Conversions,
+      "number"
+    ),
+    cplData: formatDisplayData(totalsData?.cpl, comparisonData?.cpl, "compact"),
+    cpaData: formatDisplayData(totalsData?.cpa, comparisonData?.cpa, "compact"),
+    spentData: formatDisplayData(
+      totalsData?.spent || totalsData?.Spent,
+      comparisonData?.spent || comparisonData?.Spent,
+      "compact"
+    ),
+    cpmData: formatDisplayData(totalsData?.cpm, comparisonData?.cpm, "compact"),
+    reachData: formatDisplayData(
+      totalsData?.reach || totalsData?.Reach,
+      comparisonData?.reach || comparisonData?.Reach,
+      "compact"
+    ),
+    frequencyData: formatDisplayData(
+      totalsData?.frequency || totalsData?.Frequency,
+      comparisonData?.frequency || comparisonData?.Frequency,
+      "compact"
+    ),
+    cprData: formatDisplayData(totalsData?.cpr, comparisonData?.cpr, "compact"),
+    engagementData: formatDisplayData(
+      totalsData?.engagements || totalsData?.Engagements,
+      comparisonData?.engagements || comparisonData?.Engagements,
+      "compact"
+    ),
+    engagementRateData: formatDisplayData(
+      totalsData?.engagementRate,
+      comparisonData?.engagementRate,
+      "percentage"
+    ),
+    cpeData: formatDisplayData(totalsData?.cpe, comparisonData?.cpe, "compact"),
+    viewRateData: formatDisplayData(
+      totalsData?.viewRate,
+      comparisonData?.viewRate,
+      "percentage"
+    ),
+    VideoViewsData: formatDisplayData(
+      totalsData["views"],
+      comparisonData["views"],
+      "number"
+    ),
+    cpvData: formatDisplayData(totalsData?.cpv, comparisonData?.cpv, "compact"),
+    conRateData: formatDisplayData(
+      totalsData?.cvr || totalsData?.conRate,
+      comparisonData?.cvr || comparisonData?.conRate,
+      "percentage"
+    ),
+    purchaseConValueData: formatDisplayData(
+      totalsData?.purchaseConValue,
+      comparisonData?.purchaseConValue,
+      "compact"
+    ),
+    roasData: formatDisplayData(
+      totalsData?.roas,
+      comparisonData?.roas,
+      "compact"
+    ),
+    purchaseData: formatDisplayData(
+      totalsData?.purchase,
+      comparisonData?.purchase,
+      "number"
+    ),
+    addToCartData: formatDisplayData(
+      totalsData?.addToCart,
+      comparisonData?.addToCart,
+      "number"
+    ),
+    view6secData: formatDisplayData(
+      totalsData?.view6sec,
+      comparisonData?.view6sec,
+      "number"
+    ),
+  };
+
+  return result;
 };

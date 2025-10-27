@@ -10,19 +10,24 @@ import { Button } from "../ui/button";
 import { AdvancedDataTable } from "@/components/charts-tables/AdvancedDataTable";
 
 // Import utility functions
-import {
-  formatDisplayData,
-  formatTableValue,
-  formatMetricsData,
-  METRIC_CONFIGS,
-} from "@/utils/dataDisplayUtils";
+import { formatTableValue } from "@/utils/dataDisplayUtils";
+import { metricDataProcess } from "@/utils/dataUtils";
 
 function GoogleSlideCustom(props) {
-  const { id, title, table, metricData, metricConvLength, dataSource } = props;
+  const {
+    id,
+    title,
+    table,
+    metricData,
+    metricConvLength,
+    dataSource,
+    summaryPosition,
+    extraContentType,
+  } = props;
 
   const { getDataList } = useData();
 
-  const { data, totals, metrics, comparison, demographicData } = useMemo(() => {
+  const { data, totals, comparison, demographicData } = useMemo(() => {
     if (!dataSource)
       return {
         data: {},
@@ -47,18 +52,9 @@ function GoogleSlideCustom(props) {
     const { data, totals, metrics, comparison, demographicData } =
       selectedData.value;
     return { data, totals, metrics, comparison, demographicData };
-  }, [dataSource]);
+  }, [dataSource, getDataList]);
 
-  const {
-    loading,
-    error,
-    refetch,
-    SEMData,
-    SEMTotals,
-    SEMMetrics,
-    SEMComparison,
-    GGDemographicData,
-  } = useData();
+  const { loading, error, refetch } = useData();
 
   const [summaryText, setSummaryText] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -209,36 +205,20 @@ function GoogleSlideCustom(props) {
       );
   };
 
-  // Format display data with safe fallbacks
-  // Using optional chaining to handle undefined/null values from useState
-  const impressionData = formatDisplayData(
-    totals?.Impressions,
-    comparison?.Impressions,
-    "compact"
-  );
-  const clicksData = formatDisplayData(
-    totals?.Clicks,
-    comparison?.Clicks,
-    "compact"
-  );
-  const ctrData = formatDisplayData(totals?.ctr, comparison?.ctr, "percentage");
-  const cpcData = formatDisplayData(totals?.cpc, comparison?.cpc, "compact");
-  const conversionsData = formatDisplayData(
-    totals?.Conversions,
-    comparison?.Conversions,
-    "number"
-  );
-  const conRateData = formatDisplayData(
-    totals?.conRate,
-    comparison?.conRate,
-    "percentage"
-  );
-  const cplData = formatDisplayData(totals?.cpl, comparison?.cpl, "compact");
-  const spentData = formatDisplayData(
-    totals?.Spent,
-    comparison?.Spent,
-    "compact"
-  );
+  console.log("🎯 data:", data);
+  // console.log("🎯 totals:", totals);
+  // console.log("🎯 comparison:", comparison);
+  console.log("🎯 demographicData:", demographicData);
+
+  const formattedMetrics = useMemo(() => {
+    if (!totals || !comparison) {
+      return {};
+    }
+
+    // console.log("🎯 overallTotals:", overallTotals);
+
+    return metricDataProcess(totals, comparison);
+  }, [totals, comparison]);
 
   // Show loading state
   if (loading) {
@@ -283,75 +263,40 @@ function GoogleSlideCustom(props) {
       </div>
       <SlideHeader title={title} />
       <div className="grid grid-cols-16">
-        <div className="col-span-12 flex flex-col gap-2">
-          <div className="grid grid-cols-7 gap-2">
-            <h4 className="col-span-3 text-lg font-semibold">
+        <div
+          className={`flex flex-col gap-2 ${
+            extraContentType === "none" ? "col-span-16" : "col-span-12"
+          }`}
+        >
+          <div className={`grid grid-cols-${metricData.length || 1} gap-2`}>
+            <h4
+              className={`col-span-${
+                metricData.length - metricConvLength
+              } text-lg font-semibold`}
+            >
               Awareness & Considerations
             </h4>
-            <h4 className="col-span-4 text-lg font-semibold">Conversions</h4>
+            <h4
+              className={`${
+                metricConvLength > 0 && "col-span-" + metricConvLength
+              } text-lg font-semibold ${metricConvLength === 0 && "hidden"}`}
+            >
+              Conversions
+            </h4>
 
-            <NumberDisplayBox
-              title={"Impression"}
-              value={impressionData.displayValue}
-              compareValue={impressionData.compareValue}
-              isNegative={impressionData.isNegative}
-            />
-
-            <NumberDisplayBox
-              title={"Clicks"}
-              value={clicksData.displayValue}
-              compareValue={clicksData.compareValue}
-              isNegative={clicksData.isNegative}
-            />
-
-            <NumberDisplayBox
-              title={"%CTR"}
-              value={ctrData.displayValue}
-              compareValue={ctrData.compareValue}
-              isNegative={ctrData.isNegative}
-            />
-
-            {/* <NumberDisplayBox
-              title={"CPC"}
-              value={cpcData.displayValue}
-              compareValue={cpcData.compareValue}
-              isNegative={cpcData.isNegative}
-              invertCompareColor={true}
-            /> */}
-
-            <NumberDisplayBox
-              title={"Conversions"}
-              value={conversionsData.displayValue}
-              isConversion={true}
-              compareValue={conversionsData.compareValue}
-              isNegative={conversionsData.isNegative}
-            />
-
-            <NumberDisplayBox
-              title={"%Con Rate"}
-              value={conRateData.displayValue}
-              isConversion={true}
-              compareValue={conRateData.compareValue}
-              isNegative={conRateData.isNegative}
-            />
-
-            <NumberDisplayBox
-              title={isCPA ? "CPA" : "CPL"}
-              value={cplData.displayValue}
-              isConversion={true}
-              compareValue={cplData.compareValue}
-              isNegative={cplData.isNegative}
-              invertCompareColor={true}
-            />
-
-            <NumberDisplayBox
-              title={"Spent"}
-              value={spentData.displayValue}
-              isConversion={true}
-              compareValue={spentData.compareValue}
-              isNegative={spentData.isNegative}
-              invertCompareColor={true}
-            />
+            {metricData.map((metric, index) => {
+              return (
+                <NumberDisplayBox
+                  key={index}
+                  title={metric.label}
+                  value={formattedMetrics[metric.value]?.displayValue}
+                  compareValue={formattedMetrics[metric.value]?.compareValue}
+                  isNegative={formattedMetrics[metric.value]?.isNegative}
+                  isConversion={metric.isConversion}
+                  invertCompareColor={metric.invertCompare}
+                />
+              );
+            })}
           </div>
           <div>
             <h4 className="text-lg font-semibold">Performance by Keywords</h4>
@@ -367,43 +312,62 @@ function GoogleSlideCustom(props) {
               enableSorting={true}
             />
           </div>
-        </div>
-        <div className="col-span-4 flex flex-col">
-          {clicksByGender && Object.keys(clicksByGender).length > 0 && (
-            <DonutChart
-              data={clicksByGender}
-              title="Conversions by Gender"
-              width={200}
-              height={160}
-              innerRadius={30}
-              outerRadius={60}
-              isPercentage={true}
-            />
-          )}
-          {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
-            <DonutChart
-              data={clicksByDevice}
-              title="Conversions by Device"
-              width={200}
-              height={140}
-              innerRadius={30}
-              outerRadius={60}
-              isPercentage={true}
-            />
-          )}
           {/* Summary */}
-          <div className="mt-4 p-4">
-            <h4 className="text-lg font-semibold">Summary</h4>
-            <ul className="list-disc pl-6">
-              <div
-                className="text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: renderFormattedText(summaryText),
-                }}
-              />
-            </ul>
-          </div>
+          {summaryPosition === "bottom" && (
+            <div className="p-4">
+              <h4 className="text-lg font-semibold">Summary</h4>
+              <ul className="list-disc pl-6">
+                <div
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: renderFormattedText(summaryText),
+                  }}
+                />
+              </ul>
+            </div>
+          )}
         </div>
+        {extraContentType !== "none" && (
+          <div className="col-span-4 flex flex-col">
+            {clicksByGender && Object.keys(clicksByGender).length > 0 && (
+              <DonutChart
+                data={clicksByGender}
+                title="Conversions by Gender"
+                width={200}
+                height={160}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+            {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
+              <DonutChart
+                data={clicksByDevice}
+                title="Conversions by Device"
+                width={200}
+                height={140}
+                innerRadius={30}
+                outerRadius={60}
+                isPercentage={true}
+              />
+            )}
+
+            {/* Summary */}
+            {summaryPosition === "right" && (
+              <div className="mt-4 p-4">
+                <h4 className="text-lg font-semibold">Summary</h4>
+                <ul className="list-disc pl-6">
+                  <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{
+                      __html: renderFormattedText(summaryText),
+                    }}
+                  />
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <TextEditorModal

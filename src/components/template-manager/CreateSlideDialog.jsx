@@ -23,10 +23,20 @@ import {
   OVERALL_TABLE,
   METRIC_DATA_LIST,
   GOOGLE_TABLE,
+  DEMOGRAPHIC_DATA_LIST,
+  INITIAL_NEW_SLIDE,
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
+import { Checkbox } from "../ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import {
+  SearchableSelect,
+  SearchableSelectContent,
+  SearchableSelectItem,
+  SearchableSelectTrigger,
+} from "../custom-ui/searchable-select";
 
 function CreateSlideDialog({
   isAddDialogOpen,
@@ -38,72 +48,49 @@ function CreateSlideDialog({
 
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
   const [newSlideType, setNewSlideType] = useState("");
-  const [newSlide, setNewSlide] = useState({
-    title: "Title",
-    Component: null,
-    table: [],
-    metricData: [],
-  });
-
-  // Data Source
-  const [dataSource, setDataSource] = useState("");
+  const [newSlide, setNewSlide] = useState({ ...INITIAL_NEW_SLIDE });
 
   // Table Section
   const [isTableRemoveMode, setIsTableRemoveMode] = useState(false);
   const [showTableList, setShowTableList] = useState(false);
+  const [tableSelectValue, setTableSelectValue] = useState("");
   const [tableSearchQuery, setTableSearchQuery] = useState("");
-  const tableDropdownRef = useRef(null);
 
   // Metric Data Section
   const [isMetricRemoveMode, setIsMetricRemoveMode] = useState(false);
   const [showMetricList, setShowMetricList] = useState(false);
+  const [metricSelectValue, setMetricSelectValue] = useState("");
   const [metricSearchQuery, setMetricSearchQuery] = useState("");
   const [selectedMetric, setSelectedMetric] = useState(null);
   const [isConversionToggle, setIsConversionToggle] = useState(false);
-  const metricDropdownRef = useRef(null);
   const [metricConvLength, setmetricConvLength] = useState(2);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        tableDropdownRef.current &&
-        !tableDropdownRef.current.contains(event.target)
-      ) {
-        setShowTableList(false);
-      }
-      if (
-        metricDropdownRef.current &&
-        !metricDropdownRef.current.contains(event.target)
-      ) {
-        setShowMetricList(false);
-        setSelectedMetric(null);
-      }
-    };
-
-    if (showTableList || showMetricList) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showTableList, showMetricList]);
+  // Extra Content Section
+  const [extraContentType, setExtraContentType] = useState("none");
+  const [summaryPosition, setSummaryPosition] = useState("bottom");
 
   const handleAddSlide = () => {
     const slideToAdd = { ...newSlide };
     slideToAdd.title = newSlideTitle;
     slideToAdd.metricConvLength = metricConvLength;
+    slideToAdd.extraContentType = extraContentType;
+    slideToAdd.summaryPosition = summaryPosition;
     onAddSlide(slideToAdd);
-    setNewSlide({
-      title: "Title",
-      Component: null,
-      table: [],
-      metricData: [],
-      metricConvLength: 2,
-    });
+
+    // Reset to initial state
+    setNewSlide({ ...INITIAL_NEW_SLIDE });
     setNewSlideTitle("New Slide");
     setNewSlideType("");
+  };
+
+  const handleExtraContentTypeChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, extraContentType: value }));
+    setExtraContentType(value);
+  };
+
+  const handleSummaryPositionChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, summaryPosition: value }));
+    setSummaryPosition(value);
   };
 
   const handleSlideTitleChange = (event) => {
@@ -122,6 +109,8 @@ function CreateSlideDialog({
         title: newSlideTitle,
         table: selectedSlide.table || [],
         metricData: selectedSlide.metricData || [],
+        demographicChart:
+          selectedSlide.demographicChart || INITIAL_NEW_SLIDE.demographicChart,
       });
     }
   };
@@ -162,12 +151,14 @@ function CreateSlideDialog({
 
   const handleAddTableSelect = (tableValue) => {
     if (newSlide.table.includes(tableValue)) {
+      setTableSelectValue(""); // Reset even if it's a duplicate
       return;
     }
     const newTable = [...newSlide.table, tableValue];
     setNewSlide((prev) => ({ ...prev, table: newTable }));
     setShowTableList(false);
     setTableSearchQuery("");
+    setTableSelectValue(""); // Reset the select value
   };
 
   // Metric Data handlers
@@ -204,7 +195,7 @@ function CreateSlideDialog({
   };
 
   const getMetricList = () => {
-    if (newSlideType === "overall-slide") {
+    if (newSlideType === "overall-slide" || newSlideType === "google-slide") {
       return METRIC_DATA_LIST;
     }
     return [];
@@ -216,6 +207,7 @@ function CreateSlideDialog({
     }
     setSelectedMetric(metric);
     setIsConversionToggle(false); // Reset to false by default
+    setMetricSelectValue("");
   };
 
   const handleConfirmAddMetric = () => {
@@ -230,12 +222,17 @@ function CreateSlideDialog({
     setNewSlide((prev) => ({ ...prev, metricData: newMetricData }));
     setSelectedMetric(null);
     setIsConversionToggle(false);
+    setShowMetricList(false);
     setMetricSearchQuery("");
+    setMetricSelectValue(""); // Reset select value
   };
 
   const handleCancelAddMetric = () => {
     setSelectedMetric(null);
     setIsConversionToggle(false);
+    setShowMetricList(false);
+    setMetricSearchQuery("");
+    setMetricSelectValue(""); // Reset select value
   };
 
   const filteredTableList = getTableList().filter((table) =>
@@ -255,6 +252,39 @@ function CreateSlideDialog({
 
   const handleDataSourceChange = (value) => {
     setNewSlide((prev) => ({ ...prev, dataSource: value }));
+  };
+
+  const handleChartByChange = (value, chartIndex) => {
+    setNewSlide((prev) => {
+      const newCharts = [...(prev.demographicChart || [])];
+      newCharts[chartIndex] = {
+        ...newCharts[chartIndex],
+        chartBy: value,
+      };
+      return { ...prev, demographicChart: newCharts };
+    });
+  };
+
+  const handleChartTitleChange = (event, chartIndex) => {
+    setNewSlide((prev) => {
+      const newCharts = [...(prev.demographicChart || [])];
+      newCharts[chartIndex] = {
+        ...newCharts[chartIndex],
+        title: event.target.value,
+      };
+      return { ...prev, demographicChart: newCharts };
+    });
+  };
+
+  const handleChartDataByChange = (value, chartIndex) => {
+    setNewSlide((prev) => {
+      const newCharts = [...(prev.demographicChart || [])];
+      newCharts[chartIndex] = {
+        ...newCharts[chartIndex],
+        dataBy: value,
+      };
+      return { ...prev, demographicChart: newCharts };
+    });
   };
 
   const { enableAdvancedSlideInfo } = useMemo(() => {
@@ -336,231 +366,88 @@ function CreateSlideDialog({
                 </Select>
               </div>
 
-              {/* Table Section */}
-              <div className="space-y-2">
-                <h3 className="text-md font-medium">Table Section:</h3>
-                <div className="flex items-center gap-2 py-2">
-                  <div className="relative" ref={tableDropdownRef}>
-                    <button
-                      onClick={() => setShowTableList(!showTableList)}
-                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add
-                    </button>
-
-                    {showTableList && (
-                      <div className="absolute top-full left-0 mt-2 w-[300px] bg-white border border-slate-200 rounded-md shadow-lg z-50">
-                        <div className="p-2 border-b flex items-center gap-2">
-                          <Input
-                            placeholder="Search table..."
-                            value={tableSearchQuery}
-                            onChange={(e) =>
-                              setTableSearchQuery(e.target.value)
-                            }
-                            className="h-8 text-sm"
-                            autoFocus
-                          />
-                        </div>
-                        <div className="max-h-[200px] overflow-y-auto">
-                          {filteredTableList.length === 0 ? (
-                            <div className="p-4 text-sm text-center text-muted-foreground">
-                              No tables found.
-                            </div>
-                          ) : (
-                            filteredTableList.map((table, index) => (
-                              <button
-                                key={index}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAddTableSelect(table.value);
-                                }}
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 transition-colors"
-                                disabled={newSlide.table.includes(table.value)}
-                              >
-                                <span
-                                  className={
-                                    newSlide.table.includes(table.value)
-                                      ? "text-muted-foreground"
-                                      : ""
-                                  }
-                                >
-                                  {table.label}
-                                  {newSlide.table.includes(table.value) &&
-                                    " (added)"}
-                                </span>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => setIsTableRemoveMode(!isTableRemoveMode)}
-                    className={`text-sm font-medium transition-colors ${
-                      isTableRemoveMode
-                        ? "text-red-700 bg-red-50 px-2 py-1 rounded"
-                        : "text-red-600 hover:text-red-700"
-                    }`}
-                  >
-                    {isTableRemoveMode ? "Cancel Remove" : "Remove"}
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {newSlide.table &&
-                    newSlide.table.map((table, index) => (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          if (isTableRemoveMode) {
-                            handleRemoveTable(index);
-                          }
-                        }}
-                        className={`flex items-center gap-1 border border-slate-200 p-1 px-2 rounded-sm bg-white ${
-                          isTableRemoveMode
-                            ? "cursor-pointer hover:bg-red-50 hover:border-red-300"
-                            : ""
-                        }`}
-                      >
-                        {!isTableRemoveMode && index > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTableSwap(index, "left");
-                            }}
-                            className="hover:bg-slate-100 rounded p-0.5"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </button>
-                        )}
-                        <span className="text-sm">{table}</span>
-                        {isTableRemoveMode ? (
-                          <X className="h-3 w-3 text-red-500" />
-                        ) : (
-                          index < newSlide.table.length - 1 && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleTableSwap(index, "right");
-                              }}
-                              className="hover:bg-slate-100 rounded p-0.5"
-                            >
-                              <ChevronRight className="h-4 w-4" />
-                            </button>
-                          )
-                        )}
-                      </div>
-                    ))}
-                </div>
-              </div>
-
               {/* Metric Data Section */}
               <div className="space-y-2">
                 <h3 className="text-md font-medium">Metric Data Section:</h3>
-                <div className="flex items-center gap-2 py-2">
-                  <div className="relative" ref={metricDropdownRef}>
-                    <button
-                      onClick={() => setShowMetricList(!showMetricList)}
-                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                <div className="flex items-center gap-2">
+                  {!selectedMetric ? (
+                    <SearchableSelect
+                      value={metricSelectValue}
+                      open={showMetricList}
+                      onOpenChange={setShowMetricList}
+                      onValueChange={(value) => {
+                        const metric = METRIC_DATA_LIST.find(
+                          (m) => m.value === value
+                        );
+                        handleMetricClick(metric);
+                      }}
                     >
-                      <Plus className="h-4 w-4" />
-                      Add
-                    </button>
-
-                    {showMetricList && (
-                      <div className="absolute top-full left-0 mt-2 w-[350px] bg-white border border-slate-200 rounded-md shadow-lg z-50">
-                        {!selectedMetric ? (
-                          <>
-                            <div className="p-2 border-b flex items-center gap-2">
-                              <Input
-                                placeholder="Search metric..."
-                                value={metricSearchQuery}
-                                onChange={(e) =>
-                                  setMetricSearchQuery(e.target.value)
-                                }
-                                className="h-8 text-sm"
-                                autoFocus
-                              />
+                      <SearchableSelectTrigger>
+                        <Plus className="h-4 w-4" />
+                        Add
+                      </SearchableSelectTrigger>
+                      <SearchableSelectContent
+                        className="w-[350px]"
+                        position="popper"
+                        onSearch={setMetricSearchQuery}
+                        searchValue={metricSearchQuery}
+                        searchPlaceholder="Search metric..."
+                      >
+                        <div className="max-h-[200px] overflow-y-auto">
+                          {filteredMetricList.length === 0 ? (
+                            <div className="p-4 text-sm text-center text-muted-foreground">
+                              No metrics found.
                             </div>
-                            <div className="max-h-[200px] overflow-y-auto">
-                              {filteredMetricList.length === 0 ? (
-                                <div className="p-4 text-sm text-center text-muted-foreground">
-                                  No metrics found.
-                                </div>
-                              ) : (
-                                filteredMetricList.map((metric, index) => (
-                                  <button
-                                    key={index}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMetricClick(metric);
-                                    }}
-                                    className="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 transition-colors"
-                                    disabled={newSlide.metricData.some(
-                                      (m) => m.value === metric.value
-                                    )}
-                                  >
-                                    <span
-                                      className={
-                                        newSlide.metricData.some(
-                                          (m) => m.value === metric.value
-                                        )
-                                          ? "text-muted-foreground"
-                                          : ""
-                                      }
-                                    >
-                                      {metric.label}
-                                      {newSlide.metricData.some(
-                                        (m) => m.value === metric.value
-                                      ) && " (added)"}
-                                    </span>
-                                  </button>
-                                ))
-                              )}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="p-4 space-y-4">
-                            <div>
-                              <h4 className="font-medium text-sm mb-2">
-                                {selectedMetric.label}
-                              </h4>
-                              <div className="flex items-center justify-between">
-                                <Label
-                                  htmlFor="is-conversion"
-                                  className="text-sm"
-                                >
-                                  Is Conversion
-                                </Label>
-                                <Switch
-                                  id="is-conversion"
-                                  checked={isConversionToggle}
-                                  onCheckedChange={setIsConversionToggle}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleCancelAddMetric}
+                          ) : (
+                            filteredMetricList.map((metric, index) => (
+                              <SearchableSelectItem
+                                key={index}
+                                value={metric.value}
+                                disabled={newSlide.metricData.some(
+                                  (m) => m.value === metric.value
+                                )}
                               >
-                                Cancel
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={handleConfirmAddMetric}
-                              >
-                                Add
-                              </Button>
-                            </div>
-                          </div>
-                        )}
+                                {metric.label}
+                                {newSlide.metricData.some(
+                                  (m) => m.value === metric.value
+                                ) && " (added)"}
+                              </SearchableSelectItem>
+                            ))
+                          )}
+                        </div>
+                      </SearchableSelectContent>
+                    </SearchableSelect>
+                  ) : (
+                    <div className="border border-slate-200 rounded-md p-4 space-y-4 bg-white shadow-sm">
+                      <div>
+                        <h4 className="font-medium text-sm mb-2">
+                          {selectedMetric.label}
+                        </h4>
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="is-conversion" className="text-sm">
+                            Is Conversion
+                          </Label>
+                          <Switch
+                            id="is-conversion"
+                            checked={isConversionToggle}
+                            onCheckedChange={setIsConversionToggle}
+                          />
+                        </div>
                       </div>
-                    )}
-                  </div>
+                      <div className="flex gap-2 justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCancelAddMetric}
+                        >
+                          Cancel
+                        </Button>
+                        <Button size="sm" onClick={handleConfirmAddMetric}>
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     onClick={() => setIsMetricRemoveMode(!isMetricRemoveMode)}
@@ -573,6 +460,7 @@ function CreateSlideDialog({
                     {isMetricRemoveMode ? "Cancel Remove" : "Remove"}
                   </button>
                 </div>
+
                 <div className="flex gap-1">
                   <div
                     className={`flex-1 grid grid-cols-${newSlide.metricData.length} gap-1 border-t border-b border-slate-200`}
@@ -621,6 +509,7 @@ function CreateSlideDialog({
                     </button>
                   )}
                 </div>
+
                 <div
                   className={`grid grid-cols-${newSlide.metricData.length} gap-1`}
                 >
@@ -686,6 +575,429 @@ function CreateSlideDialog({
                       </div>
                     ))}
                 </div>
+              </div>
+
+              {/* Table Section */}
+              <div className="space-y-2">
+                <h3 className="text-md font-medium">Table Section:</h3>
+                <div className="flex items-center gap-2">
+                  <SearchableSelect
+                    value={tableSelectValue}
+                    open={showTableList}
+                    onOpenChange={setShowTableList}
+                    onValueChange={(value) => {
+                      handleAddTableSelect(value);
+                    }}
+                  >
+                    <SearchableSelectTrigger>
+                      <Plus className="h-4 w-4" />
+                      Add
+                    </SearchableSelectTrigger>
+                    <SearchableSelectContent
+                      className="w-[300px]"
+                      position="popper"
+                      onSearch={setTableSearchQuery}
+                      searchValue={tableSearchQuery}
+                      searchPlaceholder="Search table..."
+                    >
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {filteredTableList.length === 0 ? (
+                          <div className="p-4 text-sm text-center text-muted-foreground">
+                            No tables found.
+                          </div>
+                        ) : (
+                          filteredTableList.map((table, index) => (
+                            <SearchableSelectItem
+                              key={index}
+                              value={table.value}
+                              disabled={newSlide.table.includes(table.value)}
+                            >
+                              {table.label}
+                              {newSlide.table.includes(table.value) &&
+                                " (added)"}
+                            </SearchableSelectItem>
+                          ))
+                        )}
+                      </div>
+                    </SearchableSelectContent>
+                  </SearchableSelect>
+
+                  <button
+                    onClick={() => setIsTableRemoveMode(!isTableRemoveMode)}
+                    className={`text-sm font-medium transition-colors ${
+                      isTableRemoveMode
+                        ? "text-red-700 bg-red-50 px-2 py-1 rounded"
+                        : "text-red-600 hover:text-red-700"
+                    }`}
+                  >
+                    {isTableRemoveMode ? "Cancel Remove" : "Remove"}
+                  </button>
+                </div>
+
+                {/* Table Columns Arrangement */}
+                <div className="flex flex-wrap gap-1">
+                  {newSlide.table &&
+                    newSlide.table.map((table, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          if (isTableRemoveMode) {
+                            handleRemoveTable(index);
+                          }
+                        }}
+                        className={`flex items-center gap-1 border border-slate-200 p-1 px-2 rounded-sm bg-white ${
+                          isTableRemoveMode
+                            ? "cursor-pointer hover:bg-red-50 hover:border-red-300"
+                            : ""
+                        }`}
+                      >
+                        {!isTableRemoveMode && index > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTableSwap(index, "left");
+                            }}
+                            className="hover:bg-slate-100 rounded p-0.5"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                        )}
+                        <span className="text-sm">{table}</span>
+                        {isTableRemoveMode ? (
+                          <X className="h-3 w-3 text-red-500" />
+                        ) : (
+                          index < newSlide.table.length - 1 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleTableSwap(index, "right");
+                              }}
+                              className="hover:bg-slate-100 rounded p-0.5"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </button>
+                          )
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Extra Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Extra Content</h3>
+
+                <div className="flex gap-6">
+                  {/* Left Column - Content Type Selection */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Content Type</Label>
+                    <RadioGroup
+                      value={extraContentType}
+                      onValueChange={handleExtraContentTypeChange}
+                      className="space-y-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="none" id="extra-none" />
+                        <Label
+                          htmlFor="extra-none"
+                          className="cursor-pointer font-normal"
+                        >
+                          None
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="demographic"
+                          id="extra-demographic"
+                        />
+                        <Label
+                          htmlFor="extra-demographic"
+                          className="cursor-pointer font-normal"
+                        >
+                          Demographic
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="picture"
+                          id="extra-picture"
+                          disabled={newSlideType !== "facebook-slide"}
+                        />
+                        <Label
+                          htmlFor="extra-picture"
+                          className={`cursor-pointer font-normal ${
+                            newSlideType !== "facebook-slide" &&
+                            "text-muted-foreground cursor-not-allowed"
+                          }`}
+                        >
+                          Picture
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Right Column - Content Configuration */}
+                  <div className="flex-1">
+                    {extraContentType === "demographic" ? (
+                      <div className="space-y-4 p-4 border border-slate-200 rounded-md bg-slate-50">
+                        <h4 className="text-md font-semibold">
+                          Demographic Charts
+                        </h4>
+
+                        <div className="grid grid-cols-2 gap-6">
+                          {/* Chart 1 */}
+                          <div className="space-y-3 p-3 bg-white border border-slate-200 rounded-md">
+                            <h5 className="text-sm font-semibold text-slate-700">
+                              Chart 1
+                            </h5>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Chart By
+                              </Label>
+                              <RadioGroup
+                                className="flex items-center gap-3"
+                                value={
+                                  newSlide.demographicChart?.[0]?.chartBy ||
+                                  "Gender"
+                                }
+                                onValueChange={(value) =>
+                                  handleChartByChange(value, 0)
+                                }
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="Gender"
+                                    id="chart1-by-gender"
+                                  />
+                                  <Label
+                                    htmlFor="chart1-by-gender"
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    Gender
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="Device"
+                                    id="chart1-by-device"
+                                  />
+                                  <Label
+                                    htmlFor="chart1-by-device"
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    Device
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Title
+                              </Label>
+                              <Input
+                                value={
+                                  newSlide.demographicChart?.[0]?.title || ""
+                                }
+                                onChange={(e) => handleChartTitleChange(e, 0)}
+                                className="h-9"
+                                placeholder="Enter chart title"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Data By
+                              </Label>
+                              <Select
+                                value={
+                                  newSlide.demographicChart?.[0]?.dataBy ||
+                                  "Clicks"
+                                }
+                                onValueChange={(value) =>
+                                  handleChartDataByChange(value, 0)
+                                }
+                              >
+                                <SelectTrigger className="h-9">
+                                  <SelectValue placeholder="Select data by" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
+                                    <SelectItem key={index} value={data.value}>
+                                      {data.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {/* Chart 2 */}
+                          <div className="space-y-3 p-3 bg-white border border-slate-200 rounded-md">
+                            <h5 className="text-sm font-semibold text-slate-700">
+                              Chart 2
+                            </h5>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Chart By
+                              </Label>
+                              <RadioGroup
+                                className="flex items-center gap-3"
+                                value={
+                                  newSlide.demographicChart?.[1]?.chartBy ||
+                                  "None"
+                                }
+                                onValueChange={(value) =>
+                                  handleChartByChange(value, 1)
+                                }
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="None"
+                                    id="chart2-by-none"
+                                  />
+                                  <Label
+                                    htmlFor="chart2-by-none"
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    None
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="Gender"
+                                    id="chart2-by-gender"
+                                  />
+                                  <Label
+                                    htmlFor="chart2-by-gender"
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    Gender
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="Device"
+                                    id="chart2-by-device"
+                                  />
+                                  <Label
+                                    htmlFor="chart2-by-device"
+                                    className="text-sm cursor-pointer"
+                                  >
+                                    Device
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Title
+                              </Label>
+                              <Input
+                                value={
+                                  newSlide.demographicChart?.[1]?.title || ""
+                                }
+                                onChange={(e) => handleChartTitleChange(e, 1)}
+                                className="h-9"
+                                placeholder="Enter chart title"
+                                disabled={
+                                  newSlide.demographicChart?.[1]?.chartBy ===
+                                  "None"
+                                }
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium text-slate-600">
+                                Data By
+                              </Label>
+                              <Select
+                                value={
+                                  newSlide.demographicChart?.[1]?.dataBy ||
+                                  "Clicks"
+                                }
+                                onValueChange={(value) =>
+                                  handleChartDataByChange(value, 1)
+                                }
+                                disabled={
+                                  newSlide.demographicChart?.[1]?.chartBy ===
+                                  "None"
+                                }
+                              >
+                                <SelectTrigger className="h-9">
+                                  <SelectValue placeholder="Select data by" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
+                                    <SelectItem key={index} value={data.value}>
+                                      {data.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : extraContentType === "picture" ? (
+                      <div className="p-4 border border-slate-200 rounded-md bg-slate-50">
+                        <p className="text-sm text-muted-foreground">
+                          Picture configuration will appear here
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-4 border border-dashed border-slate-300 rounded-md bg-slate-50/50">
+                        <p className="text-sm text-muted-foreground text-center">
+                          Select a content type to configure
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Summary Position - Only show when content type is not "none" */}
+                {extraContentType !== "none" && (
+                  <div className="space-y-3 pt-4 border-t border-slate-200">
+                    <Label className="text-sm font-medium">
+                      Summary Position
+                    </Label>
+                    <RadioGroup
+                      value={summaryPosition}
+                      onValueChange={handleSummaryPositionChange}
+                      className="flex items-center gap-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="bottom"
+                          id="summary-position-bottom"
+                        />
+                        <Label
+                          htmlFor="summary-position-bottom"
+                          className="cursor-pointer font-normal"
+                        >
+                          Bottom
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="right"
+                          id="summary-position-right"
+                        />
+                        <Label
+                          htmlFor="summary-position-right"
+                          className="cursor-pointer font-normal"
+                        >
+                          Right (Under Extra Content)
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
               </div>
             </div>
           )}
