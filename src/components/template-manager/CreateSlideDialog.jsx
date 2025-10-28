@@ -25,6 +25,7 @@ import {
   GOOGLE_TABLE,
   DEMOGRAPHIC_DATA_LIST,
   INITIAL_NEW_SLIDE,
+  GROUP_BY_LIST,
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
@@ -43,7 +44,7 @@ function CreateSlideDialog({
   setIsAddDialogOpen,
   onAddSlide,
 }) {
-  const { getDataList } = useData();
+  const { getDataList, rawSEMData } = useData();
   // console.log("🎯 CreateSlideDialog getDataList:", getDataList());
 
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
@@ -84,8 +85,18 @@ function CreateSlideDialog({
   };
 
   const handleExtraContentTypeChange = (value) => {
-    setNewSlide((prev) => ({ ...prev, extraContentType: value }));
-    setExtraContentType(value);
+    setNewSlide((prev) => {
+      const slide = { ...prev };
+
+      setExtraContentType(value);
+      slide.extraContentType = value;
+
+      if (value === "none") {
+        setSummaryPosition("bottom");
+        slide.summaryPosition = "bottom";
+      }
+      return slide;
+    });
   };
 
   const handleSummaryPositionChange = (value) => {
@@ -254,6 +265,10 @@ function CreateSlideDialog({
     setNewSlide((prev) => ({ ...prev, dataSource: value }));
   };
 
+  const handleDataGroupByChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, dataGroupBy: value }));
+  };
+
   const handleChartByChange = (value, chartIndex) => {
     setNewSlide((prev) => {
       const newCharts = [...(prev.demographicChart || [])];
@@ -305,6 +320,34 @@ function CreateSlideDialog({
     };
   }, [newSlideType]);
 
+  const { dataGroupByList } = useMemo(() => {
+    const data = getDataList().filter(
+      (data) => data.label === newSlide.dataSource
+    );
+
+    // Safety checks
+    if (!data || data.length === 0 || !data[0].value?.rawData) {
+      return { dataGroupByList: [] };
+    }
+
+    const rawData = data[0].value.rawData;
+
+    // Check if rawData has items
+    if (!Array.isArray(rawData) || rawData.length === 0) {
+      return { dataGroupByList: [] };
+    }
+
+    const groupByList = Object.keys(rawData[0]).filter((key) =>
+      GROUP_BY_LIST.find(
+        (item) => item.value.includes(key) || key.includes(item.value)
+      )
+    );
+
+    return { dataGroupByList: groupByList };
+  }, [newSlide.dataSource, getDataList]);
+
+  console.log("🎯 dataGroupByList:", dataGroupByList);
+
   return (
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
       <DialogContent className="!w-[80vw] !h-[80vh] !max-w-none !max-h-[80vh] flex flex-col">
@@ -347,24 +390,54 @@ function CreateSlideDialog({
               <h2 className="text-lg font-medium">Advanced Slide Info</h2>
 
               {/* Data Source Section */}
-              <div className="space-y-2">
-                <h3 className="text-md font-medium">Data Source:</h3>
-                <Select
-                  value={newSlide.dataSource}
-                  onValueChange={handleDataSourceChange}
-                >
-                  <SelectTrigger id="data-source">
-                    <SelectValue placeholder="Select data source" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    {getDataList().map((data, index) => (
-                      <SelectItem key={index} value={data.label}>
-                        {data.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {newSlideType !== "overall-slide" && (
+                <div className="space-y-2">
+                  <h3 className="text-md font-medium">Data Source:</h3>
+                  <div className="flex gap-2 items-center">
+                    <Select
+                      value={newSlide.dataSource}
+                      onValueChange={handleDataSourceChange}
+                    >
+                      <SelectTrigger id="data-source">
+                        <SelectValue placeholder="Select data source" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        {getDataList().map((data, index) => (
+                          <SelectItem key={index} value={data.label}>
+                            {data.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {newSlide?.dataSource !== "" && (
+                      <div className="flex gap-2 items-center">
+                        <Label
+                          htmlFor="data-group-by"
+                          className="text-sm font-medium"
+                        >
+                          Group By:
+                        </Label>
+                        <Select
+                          value={newSlide.dataGroupBy}
+                          onValueChange={handleDataGroupByChange}
+                        >
+                          <SelectTrigger id="data-group-by">
+                            <SelectValue placeholder="Select group by" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            <SelectItem value="default">Default</SelectItem>
+                            {dataGroupByList.map((groupBy, index) => (
+                              <SelectItem key={index} value={groupBy}>
+                                {groupBy}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Metric Data Section */}
               <div className="space-y-2">

@@ -436,3 +436,5 @@ export const metricDataProcess = (totalsData, comparisonData) => {
 
   return result;
 };
+
+export const chartDataProcess = (demoData, chartTemplate) => {};

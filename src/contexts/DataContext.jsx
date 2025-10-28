@@ -57,6 +57,7 @@ export const DataProvider = ({ children }) => {
   const [SEMTotals, setSEMTotals] = useState({});
   const [SEMMetrics, setSEMMetrics] = useState(DEFAULT_METRICS.SEM);
   const [SEMComparison, setSEMComparison] = useState({});
+  const [rawSEMData, setRawSEMData] = useState([]);
 
   // GG Demographic Data
   const [GGDemographicData, setGGDemographicData] = useState({});
@@ -70,18 +71,21 @@ export const DataProvider = ({ children }) => {
   const [GDNTotals, setGDNTotals] = useState({});
   const [GDNMetrics, setGDNMetrics] = useState(DEFAULT_METRICS.GDN);
   const [GDNComparison, setGDNComparison] = useState({});
+  const [rawGDNData, setRawGDNData] = useState([]);
 
   // Disc Data
   const [DiscData, setDiscData] = useState({});
   const [DiscTotals, setDiscTotals] = useState({});
   const [DiscMetrics, setDiscMetrics] = useState(DEFAULT_METRICS.Disc);
   const [DiscComparison, setDiscComparison] = useState({});
+  const [rawDiscData, setRawDiscData] = useState([]);
 
   // Youtube Data
   const [YoutubeData, setYoutubeData] = useState({});
   const [YoutubeTotals, setYoutubeTotals] = useState({});
   const [YoutubeMetrics, setYoutubeMetrics] = useState(DEFAULT_METRICS.Youtube);
   const [YoutubeComparison, setYoutubeComparison] = useState({});
+  const [rawYoutubeData, setRawYoutubeData] = useState([]);
 
   // Shopping Ads Data
   const [ShoppingAdsData, setShoppingAdsData] = useState({});
@@ -90,6 +94,7 @@ export const DataProvider = ({ children }) => {
     DEFAULT_METRICS.ShoppingAds
   );
   const [ShoppingAdsComparison, setShoppingAdsComparison] = useState({});
+  const [rawShoppingAdsData, setRawShoppingAdsData] = useState([]);
 
   // Performance Max Data
   const [PerformanceMaxData, setPerformanceMaxData] = useState({});
@@ -98,6 +103,7 @@ export const DataProvider = ({ children }) => {
     DEFAULT_METRICS.PerformanceMax
   );
   const [PerformanceMaxComparison, setPerformanceMaxComparison] = useState({});
+  const [rawPerformanceMaxData, setRawPerformanceMaxData] = useState([]);
 
   // Facebook Data
   const [FacebookAudienceData, setFacebookAudienceData] = useState({});
@@ -110,6 +116,7 @@ export const DataProvider = ({ children }) => {
   const [FacebookAudienceComparison, setFacebookAudienceComparison] = useState(
     {}
   );
+  const [rawFacebookData, setRawFacebookData] = useState([]);
 
   const [FBDemographicData, setFBDemographicData] = useState({});
   const [FBDemographicTotals, setFBDemographicTotals] = useState({});
@@ -283,6 +290,7 @@ export const DataProvider = ({ children }) => {
     DEFAULT_METRICS.TikTokAudience
   );
   const [TikTokAudienceComparison, setTikTokAudienceComparison] = useState({});
+  const [rawTikTokData, setRawTikTokData] = useState([]);
 
   // TikTok Lead Data
   const [TikTokLeadAudienceData, setTikTokLeadAudienceData] = useState({});
@@ -630,7 +638,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawSEMData
     );
   };
 
@@ -650,7 +659,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawGDNData
     );
   };
 
@@ -660,7 +670,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawDiscData
     );
     // console.log("🎯 getDiscData result:", result);
     return result;
@@ -672,7 +683,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawYoutubeData
     );
     // console.log("🎯 getYoutubeData result:", result);
     return result;
@@ -688,7 +700,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawShoppingAdsData
     );
     // console.log("🎯 getShoppingAdsData result:", result);
     return result;
@@ -704,7 +717,8 @@ export const DataProvider = ({ children }) => {
       id,
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
-      setNotFoundSheetList
+      setNotFoundSheetList,
+      setRawPerformanceMaxData
     );
     // console.log("🎯 getPerformanceMaxData result:", result);
     return result;
@@ -722,7 +736,8 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
       setNotFoundSheetList,
-      endpoint
+      endpoint,
+      setRawFacebookData
     );
 
     // The result now contains all Facebook data types
@@ -744,7 +759,8 @@ export const DataProvider = ({ children }) => {
       buildFetchOptions(filterBy, filterValue),
       projectFilter,
       setNotFoundSheetList,
-      endpoint
+      endpoint,
+      setRawTikTokData
     );
 
     // debug log
@@ -978,6 +994,7 @@ export const DataProvider = ({ children }) => {
           metrics: SEMMetrics,
           comparison: SEMComparison,
           demographicData: GGDemographicData,
+          rawData: rawSEMData,
         },
       },
       {
@@ -988,6 +1005,7 @@ export const DataProvider = ({ children }) => {
           metrics: GDNMetrics,
           comparison: GDNComparison,
           demographicData: GGDemographicData,
+          rawData: rawGDNData,
         },
       },
       {
@@ -998,6 +1016,7 @@ export const DataProvider = ({ children }) => {
           metrics: DiscMetrics,
           comparison: DiscComparison,
           demographicData: GGDemographicData,
+          rawData: rawDiscData,
         },
       },
       {
@@ -1008,6 +1027,7 @@ export const DataProvider = ({ children }) => {
           metrics: YoutubeMetrics,
           comparison: YoutubeComparison,
           demographicData: GGDemographicData,
+          rawData: rawYoutubeData,
         },
       },
       {
@@ -1018,6 +1038,7 @@ export const DataProvider = ({ children }) => {
           metrics: ShoppingAdsMetrics,
           comparison: ShoppingAdsComparison,
           demographicData: GGDemographicData,
+          rawData: rawShoppingAdsData,
         },
       },
       {
@@ -1028,6 +1049,7 @@ export const DataProvider = ({ children }) => {
           metrics: PerformanceMaxMetrics,
           comparison: PerformanceMaxComparison,
           demographicData: GGDemographicData,
+          rawData: rawPerformanceMaxData,
         },
       },
 
@@ -1043,6 +1065,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookAwarenessAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1056,6 +1079,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookReachAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1069,6 +1093,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookEngagementAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1082,6 +1107,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookMessageAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1095,6 +1121,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookLeadAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1108,6 +1135,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookConversionAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1121,6 +1149,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookTrafficAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1134,6 +1163,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookVideoComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
       {
@@ -1147,6 +1177,7 @@ export const DataProvider = ({ children }) => {
           comparison: FacebookCatalogAudienceComparison,
           adsPicture: FacebookAdsPicture,
           demographicData: FBDemographicData,
+          rawData: rawFacebookData,
         },
       },
 
@@ -1160,6 +1191,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokLeadCreativeTotals,
           metrics: TikTokLeadAudienceMetrics,
           comparison: TikTokLeadAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
       {
@@ -1171,6 +1203,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokReachCreativeTotals,
           metrics: TikTokReachAudienceMetrics,
           comparison: TikTokReachAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
       {
@@ -1182,6 +1215,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokTrafficCreativeTotals,
           metrics: TikTokTrafficAudienceMetrics,
           comparison: TikTokTrafficAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
       {
@@ -1193,6 +1227,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokConversionCreativeTotals,
           metrics: TikTokConversionAudienceMetrics,
           comparison: TikTokConversionAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
       {
@@ -1204,6 +1239,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokVideoCreativeTotals,
           metrics: TikTokVideoAudienceMetrics,
           comparison: TikTokVideoAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
       {
@@ -1215,6 +1251,7 @@ export const DataProvider = ({ children }) => {
           creativeTotals: TikTokFollowerCreativeTotals,
           metrics: TikTokFollowerAudienceMetrics,
           comparison: TikTokFollowerAudienceComparison,
+          rawData: rawTikTokData,
         },
       },
 
@@ -1451,6 +1488,7 @@ export const DataProvider = ({ children }) => {
     SEMTotals,
     SEMMetrics,
     SEMComparison,
+    rawSEMData,
 
     // GG Demographic
     GGDemographicData,

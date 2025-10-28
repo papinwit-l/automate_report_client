@@ -19,7 +19,8 @@ export const fetchDataSheet = async (
   id,
   options = {},
   projectList = [],
-  setNotFoundSheetList
+  setNotFoundSheetList,
+  setRawData
 ) => {
   const {
     enableDateRange = false,
@@ -73,6 +74,11 @@ export const fetchDataSheet = async (
     const dataObjects = projectFilteredData.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
+
+    // Set raw data
+    if (setRawData) {
+      setRawData(dataObjects);
+    }
 
     //for debugging
     if (config.endpoint == "facebook-data") {
@@ -276,7 +282,8 @@ export const fetchDataSheetEnhanced = async (
   options = {},
   projectList = [],
   setNotFoundSheetList,
-  endpoint
+  endpoint,
+  setRawData
 ) => {
   const {
     enableDateRange = false,
@@ -318,6 +325,11 @@ export const fetchDataSheetEnhanced = async (
     const dataObjects = projectFilteredData.map((row) =>
       Object.fromEntries(headers.map((header, index) => [header, row[index]]))
     );
+
+    // Set raw data
+    if (setRawData) {
+      setRawData(dataObjects);
+    }
 
     const results = {};
 

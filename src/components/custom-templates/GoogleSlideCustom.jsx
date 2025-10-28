@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import SlideHeader from "@/components/slides/SlideHeader";
 import NumberDisplayBox from "@/components/slides/utils/NumberDisplayBox";
 import TextEditorModal from "@/components/slides/utils/TextEditorModal";
@@ -11,7 +11,21 @@ import { AdvancedDataTable } from "@/components/charts-tables/AdvancedDataTable"
 
 // Import utility functions
 import { formatTableValue } from "@/utils/dataDisplayUtils";
-import { metricDataProcess } from "@/utils/dataUtils";
+import {
+  calculateComparison,
+  filterDataByDateRange,
+  getPreviousPeriodDates,
+  metricDataProcess,
+} from "@/utils/dataUtils";
+import {
+  cleanObjectData,
+  processAdvertisingData,
+  processSocialMediaData,
+} from "@/utils/dataProcessors";
+import {
+  FACEBOOK_CALCULATED_FIELDS,
+  FACEBOOK_FIELDS,
+} from "@/configs/facebookDataConfigs";
 
 function GoogleSlideCustom(props) {
   const {
@@ -21,38 +35,152 @@ function GoogleSlideCustom(props) {
     metricData,
     metricConvLength,
     dataSource,
+    dataGroupBy,
     summaryPosition,
     extraContentType,
+    demographicChart,
   } = props;
 
-  const { getDataList } = useData();
+  const { getDataList, enableDateRange, dateRange } = useData();
 
-  const { data, totals, comparison, demographicData } = useMemo(() => {
-    if (!dataSource)
-      return {
-        data: {},
-        totals: {},
-        metrics: [],
-        comparison: {},
-        demographicData: {},
-      };
+  const { data, totals, comparison, demographicData, displayTable } =
+    useMemo(() => {
+      if (!dataSource)
+        return {
+          data: {},
+          totals: {},
+          metrics: [],
+          comparison: {},
+          demographicData: {},
+          displayTable: table,
+        };
 
-    const dataList = getDataList();
-    const selectedData = dataList.find((data) => data.label === dataSource);
+      const dataList = getDataList();
+      const selectedData = dataList.find((data) => data.label === dataSource);
 
-    if (!selectedData)
-      return {
-        data: {},
-        totals: {},
-        metrics: [],
-        comparison: {},
-        demographicData: {},
-      };
+      if (!selectedData)
+        return {
+          data: {},
+          totals: {},
+          metrics: [],
+          comparison: {},
+          demographicData: {},
+          displayTable: table,
+        };
 
-    const { data, totals, metrics, comparison, demographicData } =
-      selectedData.value;
-    return { data, totals, metrics, comparison, demographicData };
-  }, [dataSource, getDataList]);
+      const { data, totals, metrics, comparison, demographicData, rawData } =
+        selectedData.value;
+
+      let disTable = table;
+
+      if (dataGroupBy !== "default") {
+        const allFields = Object.keys(rawData[0]);
+        console.log("🎯 allFields:", allFields);
+        const cleanedData = cleanObjectData(rawData, metrics);
+        console.log("🎯 cleanedData:", cleanedData);
+
+        // Apply date range filtering
+        let currentPeriodData = [];
+        let previousPeriodData = [];
+        let comparison = {};
+        if (enableDateRange && dateRange.from && dateRange.to) {
+          currentPeriodData = filterDataByDateRange(
+            cleanedData,
+            dateRange.from,
+            dateRange.to
+          );
+
+          const previousPeriodDates = getPreviousPeriodDates(
+            dateRange.from,
+            dateRange.to
+          );
+
+          previousPeriodData = filterDataByDateRange(
+            cleanedData,
+            previousPeriodDates.from,
+            previousPeriodDates.to
+          );
+
+          let currentPeriodResults;
+          let previousPeriodResults;
+
+          const platform = dataSource === "Youtube" ? "Youtube" : "default";
+
+          currentPeriodResults = processAdvertisingData(
+            currentPeriodData,
+            allFields,
+            metrics,
+            dataGroupBy,
+            platform
+          );
+
+          previousPeriodResults = processAdvertisingData(
+            previousPeriodData,
+            allFields,
+            metrics,
+            dataGroupBy,
+            platform
+          );
+          comparison = calculateComparison(
+            currentPeriodResults.enhancedTotals,
+            previousPeriodResults.enhancedTotals
+          );
+
+          if (dataSource.trim().toLowerCase().includes("facebook")) {
+            const config = {
+              audienceGroupBy: dataGroupBy,
+              creativeGroupBy: dataGroupBy,
+              fields: FACEBOOK_FIELDS,
+              calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+            };
+
+            disTable = table.map((item) => {
+              if (item.trim().toLowerCase() === "conrate") return "cvr";
+              return item.trim().toLowerCase();
+            });
+
+            currentPeriodResults = processSocialMediaData(
+              currentPeriodData,
+              allFields,
+              metrics,
+              config
+            );
+            previousPeriodResults = processSocialMediaData(
+              previousPeriodData,
+              allFields,
+              metrics,
+              config
+            );
+            comparison = calculateComparison(
+              currentPeriodResults.enhancedTotals,
+              previousPeriodResults.enhancedTotals
+            );
+          }
+
+          console.log("🎯 currentPeriodResults:", currentPeriodResults);
+
+          return {
+            data: currentPeriodResults.enhancedFieldData,
+            totals: currentPeriodResults.enhancedTotals,
+            metrics,
+            comparison,
+            demographicData,
+            displayTable: disTable,
+          };
+        }
+      }
+
+      return { data, totals, metrics, comparison, demographicData, rawData };
+    }, [
+      dataSource,
+      getDataList,
+      dataGroupBy,
+      enableDateRange,
+      dateRange,
+      table,
+    ]);
+
+  // console.log("data--", rawData);
 
   const { loading, error, refetch } = useData();
 
@@ -62,66 +190,70 @@ function GoogleSlideCustom(props) {
 
   const [isCPA, setIsCPA] = useState(false);
 
-  // Memoize the chart data calculations to prevent unnecessary re-renders
-  const { clicksByGender, clicksByDevice } = useMemo(() => {
-    if (!demographicData || !Array.isArray(demographicData)) {
-      return { clicksByGender: {}, clicksByDevice: {} };
-    }
-
-    const SEMDemographicData = demographicData.filter((item) => {
-      return item.Channel.trim() === "SEM";
+  const chartDataProcess = (demoData, chartTemplate, source) => {
+    const channelFilterd = demoData.filter((item) => {
+      return item.Channel.trim().toLowerCase() === source.trim().toLowerCase();
     });
 
-    if (SEMDemographicData.length === 0) {
-      return { clicksByGender: {}, clicksByDevice: {} };
+    if (channelFilterd.length === 0) {
+      return [];
     }
 
-    const sumClicksByGender = SEMDemographicData.reduce((acc, item) => {
-      if (item.Gender) {
-        acc[item.Gender] = (acc[item.Gender] || 0) + item.Conversions;
-      }
-      return acc;
-    }, {});
+    const chartData = chartTemplate.map((chart) => {
+      // console.log("🎯 chart:", chart);
+      const { chartBy, title, dataBy } = chart;
 
-    const totalClicks = Object.values(sumClicksByGender).reduce(
-      (a, b) => a + b,
-      0
-    );
+      const data = channelFilterd.reduce((acc, item) => {
+        const key = item[chartBy];
+        const value = parseFloat(item[dataBy]);
 
-    if (totalClicks === 0) {
-      return { clicksByGender: {}, clicksByDevice: {} };
+        if (key === undefined || isNaN(value)) return acc;
+
+        acc[key] = (acc[key] || 0) + value;
+        return acc;
+      }, {});
+
+      const sumData = Object.values(data).reduce((a, b) => a + b, 0);
+
+      const percentageData = Object.entries(data).reduce(
+        (acc, [key, value]) => {
+          acc[key] =
+            sumData > 0 ? ((value / sumData) * 100).toFixed(2) + "%" : "0%";
+          return acc;
+        },
+        {}
+      );
+
+      // console.log("data", data);
+      // console.log("sumData", sumData);
+      // console.log("percentageData", percentageData);
+
+      return {
+        title,
+        data,
+        percentageData,
+        chartBy,
+      };
+    });
+
+    return chartData;
+  };
+
+  const { chartData } = useMemo(() => {
+    if (!demographicData || !Array.isArray(demographicData)) {
+      return { chartData: [] };
     }
 
-    const genderPercentages = Object.entries(sumClicksByGender).reduce(
-      (acc, [gender, clicks]) => {
-        acc[gender] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
+    const chartsData = chartDataProcess(
+      demographicData,
+      demographicChart,
+      dataSource
     );
 
-    const sumClicksByDevice = SEMDemographicData.reduce((acc, item) => {
-      if (item.Device) {
-        acc[item.Device] = (acc[item.Device] || 0) + item.Conversions;
-      }
-      return acc;
-    }, {});
+    return { chartData: chartsData };
+  }, [demographicData, demographicChart, dataSource]);
 
-    const devicePercentages = Object.entries(sumClicksByDevice).reduce(
-      (acc, [device, clicks]) => {
-        acc[device] = ((clicks / totalClicks) * 100).toFixed(2) + "%";
-        return acc;
-      },
-      {}
-    );
-
-    return {
-      clicksByGender: genderPercentages,
-      clicksByDevice: devicePercentages,
-    };
-  }, [demographicData]);
-
-  const summarizeData = () => {
+  const summarizeData = useCallback(() => {
     // Handle "No Data" case
     if (
       totals?.Conversions === "No Data" ||
@@ -181,11 +313,11 @@ function GoogleSlideCustom(props) {
       summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
     }
     setSummaryText(summaryTextTemp);
-  };
+  }, [totals, data]);
 
   useEffect(() => {
     summarizeData();
-  }, [totals, data]);
+  }, [totals, data, summarizeData]);
 
   const renderFormattedText = (text) => {
     return text
@@ -204,11 +336,6 @@ function GoogleSlideCustom(props) {
         '<span class="text-xs text-gray-600">$1</span>'
       );
   };
-
-  console.log("🎯 data:", data);
-  // console.log("🎯 totals:", totals);
-  // console.log("🎯 comparison:", comparison);
-  console.log("🎯 demographicData:", demographicData);
 
   const formattedMetrics = useMemo(() => {
     if (!totals || !comparison) {
@@ -301,10 +428,10 @@ function GoogleSlideCustom(props) {
           <div>
             <h4 className="text-lg font-semibold">Performance by Keywords</h4>
             <AdvancedDataTable
-              firstMetric={"Keyword"}
+              firstMetric={dataGroupBy === "default" ? "Keyword" : dataGroupBy}
               channelData={data}
               totalData={totals}
-              metrics={table}
+              metrics={displayTable}
               formatValue={formatTableValue}
               maxRows={maxTableRows[0]}
               defaultSortBy="Conversions"
@@ -313,7 +440,7 @@ function GoogleSlideCustom(props) {
             />
           </div>
           {/* Summary */}
-          {summaryPosition === "bottom" && (
+          {(summaryPosition === "bottom" || chartData.length === 0) && (
             <div className="p-4">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
@@ -327,9 +454,24 @@ function GoogleSlideCustom(props) {
             </div>
           )}
         </div>
-        {extraContentType !== "none" && (
+        {extraContentType !== "none" && chartData.length > 0 && (
           <div className="col-span-4 flex flex-col">
-            {clicksByGender && Object.keys(clicksByGender).length > 0 && (
+            {chartData.map(
+              (chart, index) =>
+                chart.chartBy !== "None" && (
+                  <DonutChart
+                    key={index}
+                    data={chart.percentageData}
+                    title={chart.title}
+                    width={200}
+                    height={160}
+                    innerRadius={30}
+                    outerRadius={60}
+                    isPercentage={true}
+                  />
+                )
+            )}
+            {/* {clicksByGender && Object.keys(clicksByGender).length > 0 && (
               <DonutChart
                 data={clicksByGender}
                 title="Conversions by Gender"
@@ -350,7 +492,7 @@ function GoogleSlideCustom(props) {
                 outerRadius={60}
                 isPercentage={true}
               />
-            )}
+            )} */}
 
             {/* Summary */}
             {summaryPosition === "right" && (

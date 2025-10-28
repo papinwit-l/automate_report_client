@@ -27,6 +27,7 @@ export const INITIAL_NEW_SLIDE = {
   metricData: [],
   metricConvLength: 2,
   dataSource: "",
+  dataGroupBy: "default",
   extraContentType: "none",
   summaryPosition: "bottom",
   demographicChart: [
@@ -183,6 +184,16 @@ export const CREATE_SLIDE_LIST = [
       },
     ],
   },
+];
+
+export const GROUP_BY_LIST = [
+  { label: "Keyword", value: "Keyword" },
+  { label: "Ad group name", value: "Ad group name" },
+  { label: "Ad name", value: "Ad name" },
+  { label: "Ad set name", value: "Ad set name" },
+  { label: "Campaign name", value: "Campaign name" },
+  { label: "Campaign objective", value: "Campaign objective" },
+  { label: "Campaign Type", value: "Campaign Type" },
 ];
 
 export const DEMOGRAPHIC_DATA_LIST = [
