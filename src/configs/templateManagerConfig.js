@@ -27,7 +27,8 @@ export const INITIAL_NEW_SLIDE = {
   metricData: [],
   metricConvLength: 2,
   dataSource: "",
-  dataGroupBy: "default",
+  dataChannel: "",
+  dataGroupBy: "",
   extraContentType: "none",
   summaryPosition: "bottom",
   demographicChart: [
@@ -129,7 +130,6 @@ export const CREATE_SLIDE_LIST = [
     name: "google-slide",
     Component: GoogleSlideCustom,
     table: [
-      "Keyword",
       "Impressions",
       "Clicks",
       "ctr",
@@ -196,6 +196,13 @@ export const GROUP_BY_LIST = [
   { label: "Campaign Type", value: "Campaign Type" },
 ];
 
+export const DEMOGRAPHIC_CHART_BY_LIST = [
+  "Gender",
+  "Device",
+  "Age",
+  "Campaign",
+];
+
 export const DEMOGRAPHIC_DATA_LIST = [
   { label: "Conversion", value: "Conversion" },
   { label: "Clicks", value: "Clicks" },
@@ -242,16 +249,54 @@ export const OVERALL_TABLE = [
   { label: "CPC", value: "cpc" },
 ];
 
-export const GOOGLE_TABLE = [
-  { label: "Keyword", value: "Keyword" },
+export const CUSTOM_TABLE = [
+  // // Dimensions
+  // { label: "Keyword", value: "Keyword" },
+  // { label: "Campaign", value: "Campaign" },
+  // { label: "Ad Group", value: "Ad Group" },
+  // { label: "Audience", value: "audience" },
+  // { label: "Creative", value: "creative" },
+  // { label: "Ad Name", value: "Ad Name" },
+
+  // Basic Metrics
   { label: "Impressions", value: "Impressions" },
   { label: "Clicks", value: "Clicks" },
-  { label: "%CTR", value: "ctr" },
-  { label: "Conversions", value: "Conversions" },
-  { label: "%Conv rate", value: "conRate" },
-  { label: "Engagements", value: "Post Engagement" },
+  { label: "Reach", value: "Reach" },
   { label: "Spent", value: "Spent" },
-  { label: "CPL", value: "cpl" },
-  { label: "CPA", value: "cpa" },
+
+  // Engagement Metrics
+  { label: "Engagements", value: "Engagements" },
+  // { label: "Post Engagement", value: "Post Engagement" },
+  { label: "Follows", value: "Follows" },
+
+  // Conversion Metrics
+  { label: "Conversions", value: "Conversions" },
+  { label: "Conversion Value", value: "Conversion value" },
+
+  // Video Metrics
+  { label: "Video Views", value: "Video views" },
+  { label: "VideoViews", value: "VideoViews" },
+  { label: "6sec Views", value: "View6sec" },
+
+  // Calculated Metrics - Rates
+  { label: "%CTR", value: "ctr" },
+  { label: "%Conv Rate", value: "conRate" }, // Advertising naming (preferred over cvr)
+  { label: "%View Rate", value: "viewRate" },
+  { label: "%View Rate 6sec", value: "viewRate6sec" },
+  { label: "%Engagement Rate", value: "engagementRate" },
+  { label: "Frequency", value: "frequency" },
+
+  // Calculated Metrics - Cost Per Action
   { label: "CPC", value: "cpc" },
+  { label: "CPM", value: "cpm" },
+  { label: "CPL", value: "cpl" }, // Advertising naming (same as CPA in this context)
+  { label: "CPA", value: "cpa" },
+  { label: "CPE", value: "cpe" },
+  { label: "CPV", value: "cpv" },
+  { label: "CPV 6sec", value: "cpv6sec" },
+  { label: "CPF", value: "cpf" },
+  { label: "CPR", value: "cpr" },
+
+  // Return on Ad Spend
+  { label: "ROAS", value: "roas" },
 ];

@@ -26,6 +26,11 @@ import {
   FACEBOOK_CALCULATED_FIELDS,
   FACEBOOK_FIELDS,
 } from "@/configs/facebookDataConfigs";
+import {
+  TIKTOK_CALCULATED_FIELDS,
+  TIKTOK_FIELDS,
+} from "@/configs/tiktokDataConfigs";
+import { tableUtilsMapping } from "@/utils/templateDataProcessors";
 
 function GoogleSlideCustom(props) {
   const {
@@ -36,6 +41,7 @@ function GoogleSlideCustom(props) {
     metricConvLength,
     dataSource,
     dataGroupBy,
+    dataChannel,
     summaryPosition,
     extraContentType,
     demographicChart,
@@ -75,14 +81,26 @@ function GoogleSlideCustom(props) {
 
       if (dataGroupBy !== "default") {
         const allFields = Object.keys(rawData[0]);
-        console.log("🎯 allFields:", allFields);
-        const cleanedData = cleanObjectData(rawData, metrics);
-        console.log("🎯 cleanedData:", cleanedData);
+        // console.log("🎯 allFields:", allFields);
+        let cleanedData = cleanObjectData(rawData, metrics);
+        // console.log("🎯 cleanedData:", cleanedData);
 
-        // Apply date range filtering
-        let currentPeriodData = [];
+        if (dataChannel !== "All") {
+          cleanedData = cleanedData.filter(
+            (item) => item["Channel"] === dataChannel
+          );
+        }
+
+        // Declare variables outside the conditions
+        let currentPeriodData = cleanedData; // Default to all cleaned data
         let previousPeriodData = [];
-        let comparison = {};
+        let comparisonResult = {};
+        let currentPeriodResults;
+        let previousPeriodResults;
+
+        const platform = dataSource === "Youtube" ? "Youtube" : "default";
+
+        // Case 1: Date range is enabled
         if (enableDateRange && dateRange.from && dateRange.to) {
           currentPeriodData = filterDataByDateRange(
             cleanedData,
@@ -101,11 +119,7 @@ function GoogleSlideCustom(props) {
             previousPeriodDates.to
           );
 
-          let currentPeriodResults;
-          let previousPeriodResults;
-
-          const platform = dataSource === "Youtube" ? "Youtube" : "default";
-
+          // Process current period
           currentPeriodResults = processAdvertisingData(
             currentPeriodData,
             allFields,
@@ -114,6 +128,7 @@ function GoogleSlideCustom(props) {
             platform
           );
 
+          // Process previous period
           previousPeriodResults = processAdvertisingData(
             previousPeriodData,
             allFields,
@@ -121,23 +136,33 @@ function GoogleSlideCustom(props) {
             dataGroupBy,
             platform
           );
-          comparison = calculateComparison(
+
+          // Calculate comparison
+          comparisonResult = calculateComparison(
             currentPeriodResults.enhancedTotals,
             previousPeriodResults.enhancedTotals
           );
 
-          if (dataSource.trim().toLowerCase().includes("facebook")) {
+          // Handle Facebook/TikTok
+          if (
+            dataSource.trim().toLowerCase().includes("facebook") ||
+            dataSource.trim().toLowerCase().includes("tiktok")
+          ) {
             const config = {
               audienceGroupBy: dataGroupBy,
               creativeGroupBy: dataGroupBy,
-              fields: FACEBOOK_FIELDS,
-              calculatedFields: FACEBOOK_CALCULATED_FIELDS,
+              fields: dataSource.trim().toLowerCase().includes("facebook")
+                ? FACEBOOK_FIELDS
+                : TIKTOK_FIELDS,
+              calculatedFields: dataSource
+                .trim()
+                .toLowerCase()
+                .includes("facebook")
+                ? FACEBOOK_CALCULATED_FIELDS
+                : TIKTOK_CALCULATED_FIELDS,
             };
 
-            disTable = table.map((item) => {
-              if (item.trim().toLowerCase() === "conrate") return "cvr";
-              return item.trim().toLowerCase();
-            });
+            disTable = table.map((item) => tableUtilsMapping(item));
 
             currentPeriodResults = processSocialMediaData(
               currentPeriodData,
@@ -151,23 +176,66 @@ function GoogleSlideCustom(props) {
               metrics,
               config
             );
-            comparison = calculateComparison(
+            comparisonResult = calculateComparison(
               currentPeriodResults.enhancedTotals,
               previousPeriodResults.enhancedTotals
             );
           }
-
-          console.log("🎯 currentPeriodResults:", currentPeriodResults);
-
-          return {
-            data: currentPeriodResults.enhancedFieldData,
-            totals: currentPeriodResults.enhancedTotals,
-            metrics,
-            comparison,
-            demographicData,
-            displayTable: disTable,
-          };
         }
+        // Case 2: No date range - process all data
+        else {
+          // Process all cleaned data
+          currentPeriodResults = processAdvertisingData(
+            currentPeriodData, // This is cleanedData
+            allFields,
+            metrics,
+            dataGroupBy,
+            platform
+          );
+
+          // No comparison when date range is disabled
+          comparisonResult = {};
+
+          // Handle Facebook/TikTok
+          if (
+            dataSource.trim().toLowerCase().includes("facebook") ||
+            dataSource.trim().toLowerCase().includes("tiktok")
+          ) {
+            const config = {
+              audienceGroupBy: dataGroupBy,
+              creativeGroupBy: dataGroupBy,
+              fields: dataSource.trim().toLowerCase().includes("facebook")
+                ? FACEBOOK_FIELDS
+                : TIKTOK_FIELDS,
+              calculatedFields: dataSource
+                .trim()
+                .toLowerCase()
+                .includes("facebook")
+                ? FACEBOOK_CALCULATED_FIELDS
+                : TIKTOK_CALCULATED_FIELDS,
+            };
+
+            disTable = table.map((item) => tableUtilsMapping(item));
+
+            currentPeriodResults = processSocialMediaData(
+              currentPeriodData, // This is cleanedData
+              allFields,
+              metrics,
+              config
+            );
+          }
+        }
+
+        console.log("🎯 currentPeriodResults:", currentPeriodResults);
+
+        return {
+          data: currentPeriodResults.enhancedFieldData,
+          totals: currentPeriodResults.enhancedTotals,
+          metrics,
+          comparison: comparisonResult,
+          demographicData,
+          displayTable: disTable,
+        };
       }
 
       return { data, totals, metrics, comparison, demographicData, rawData };
@@ -175,6 +243,7 @@ function GoogleSlideCustom(props) {
       dataSource,
       getDataList,
       dataGroupBy,
+      dataChannel,
       enableDateRange,
       dateRange,
       table,
@@ -192,6 +261,9 @@ function GoogleSlideCustom(props) {
 
   const chartDataProcess = (demoData, chartTemplate, source) => {
     const channelFilterd = demoData.filter((item) => {
+      if (source === "All") {
+        return true;
+      }
       return item.Channel.trim().toLowerCase() === source.trim().toLowerCase();
     });
 
@@ -240,6 +312,7 @@ function GoogleSlideCustom(props) {
   };
 
   const { chartData } = useMemo(() => {
+    console.log("demographicData", demographicData);
     if (!demographicData || !Array.isArray(demographicData)) {
       return { chartData: [] };
     }
@@ -247,11 +320,12 @@ function GoogleSlideCustom(props) {
     const chartsData = chartDataProcess(
       demographicData,
       demographicChart,
-      dataSource
+      dataChannel
     );
 
+    console.log("🎯 chartsData:", chartsData);
     return { chartData: chartsData };
-  }, [demographicData, demographicChart, dataSource]);
+  }, [demographicData, demographicChart, dataChannel]);
 
   const summarizeData = useCallback(() => {
     // Handle "No Data" case
@@ -371,6 +445,9 @@ function GoogleSlideCustom(props) {
     );
   }
 
+  console.log("data", data);
+  console.log("displayTable", displayTable);
+
   return (
     <div
       id={id}
@@ -428,7 +505,7 @@ function GoogleSlideCustom(props) {
           <div>
             <h4 className="text-lg font-semibold">Performance by Keywords</h4>
             <AdvancedDataTable
-              firstMetric={dataGroupBy === "default" ? "Keyword" : dataGroupBy}
+              firstMetric={dataGroupBy}
               channelData={data}
               totalData={totals}
               metrics={displayTable}

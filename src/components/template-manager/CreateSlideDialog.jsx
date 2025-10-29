@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,11 @@ import {
   CREATE_SLIDE_LIST,
   OVERALL_TABLE,
   METRIC_DATA_LIST,
-  GOOGLE_TABLE,
+  CUSTOM_TABLE,
   DEMOGRAPHIC_DATA_LIST,
   INITIAL_NEW_SLIDE,
   GROUP_BY_LIST,
+  DEMOGRAPHIC_CHART_BY_LIST,
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
@@ -38,13 +39,16 @@ import {
   SearchableSelectItem,
   SearchableSelectTrigger,
 } from "../custom-ui/searchable-select";
+import { cleanObjectData } from "@/utils/dataProcessors";
+import { filterDataByDateRange } from "@/utils/dataUtils";
+import { NON_NUMERIC_COLUMNS } from "@/configs/dataConfigs";
 
 function CreateSlideDialog({
   isAddDialogOpen,
   setIsAddDialogOpen,
   onAddSlide,
 }) {
-  const { getDataList, rawSEMData } = useData();
+  const { getDataList, enableDateRange, dateRange } = useData();
   // console.log("🎯 CreateSlideDialog getDataList:", getDataList());
 
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
@@ -155,7 +159,7 @@ function CreateSlideDialog({
       return OVERALL_TABLE;
     }
     if (newSlideType === "google-slide") {
-      return GOOGLE_TABLE;
+      return CUSTOM_TABLE;
     }
     return [];
   };
@@ -262,11 +266,93 @@ function CreateSlideDialog({
   };
 
   const handleDataSourceChange = (value) => {
-    setNewSlide((prev) => ({ ...prev, dataSource: value }));
+    setNewSlide((prev) => {
+      const allData = getDataList();
+      const selectedData = allData.find((d) => d.label === value);
+
+      const rawData = selectedData.value.rawData;
+      // const dataMetric = selectedData.value.metrics;
+      const firstRowKeys = Object.keys(rawData[0]);
+      // const cleanedData = cleanObjectData(rawData, dataMetric);
+      // console.log("cleanedData", cleanedData);
+
+      // const channelList = cleanedData.reduce((acc, item) => {
+      //   const channel = item["Channel"];
+      //   if (!acc.includes(channel)) {
+      //     acc.push(channel);
+      //   }
+      //   return acc;
+      // }, []);
+
+      // console.log("channelList", channelList);
+
+      const groupBy = firstRowKeys.filter((key) =>
+        GROUP_BY_LIST.some(
+          (item) => item.value.includes(key) || key.includes(item.value)
+        )
+      );
+      setExtraContentType("none");
+      const chartData = selectedData.value.demographicData;
+      if (!chartData) {
+        return {
+          ...prev,
+          dataSource: value,
+          dataGroupBy: groupBy[0],
+          dataChannel: "All",
+          extraContentType: "none",
+          demographicChart: [
+            {
+              title: "Chart 1",
+              chartBy: chartDataList[0],
+              dataBy: "",
+            },
+            {
+              title: "Chart 2",
+              chartBy: "None",
+              dataBy: "",
+            },
+          ],
+        };
+      }
+      const chartDataList = Object.keys(chartData[0] || {}).filter((key) =>
+        DEMOGRAPHIC_CHART_BY_LIST.some((item) => {
+          return item === key || item.includes(key) || key.includes(item);
+        })
+      );
+
+      const chartDataAllKeys = Object.keys(chartData[0] || {});
+      const chartDataOnlyNumeric = chartDataAllKeys.filter((key) => {
+        return ![...NON_NUMERIC_COLUMNS, "Cost"].includes(key);
+      });
+
+      return {
+        ...prev,
+        dataSource: value,
+        dataGroupBy: groupBy[0],
+        dataChannel: "All",
+        extraContentType: "none",
+        demographicChart: [
+          {
+            title: "Chart 1",
+            chartBy: chartDataList[0],
+            dataBy: chartDataOnlyNumeric[0],
+          },
+          {
+            title: "Chart 2",
+            chartBy: "None",
+            dataBy: chartDataOnlyNumeric[0],
+          },
+        ],
+      };
+    });
   };
 
   const handleDataGroupByChange = (value) => {
     setNewSlide((prev) => ({ ...prev, dataGroupBy: value }));
+  };
+
+  const handleDataChannelChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, dataChannel: value }));
   };
 
   const handleChartByChange = (value, chartIndex) => {
@@ -320,33 +406,125 @@ function CreateSlideDialog({
     };
   }, [newSlideType]);
 
-  const { dataGroupByList } = useMemo(() => {
-    const data = getDataList().filter(
-      (data) => data.label === newSlide.dataSource
-    );
+  const {
+    dataGroupByList,
+    dataSourceList,
+    dataChannelList,
+    chartDataList,
+    chartDataByList,
+  } = useMemo(() => {
+    const allData = getDataList();
 
-    // Safety checks
-    if (!data || data.length === 0 || !data[0].value?.rawData) {
-      return { dataGroupByList: [] };
+    // Helper to validate data structure
+    const isValidDataSource = (dataItem) => {
+      if (!dataItem?.value?.rawData) return false;
+
+      const rawData = dataItem.value.rawData;
+      const metrics = dataItem.value.metrics;
+
+      // Must be array with at least one item
+      if (!Array.isArray(rawData) || rawData.length === 0) return false;
+
+      // Optional: Check if first item has keys (not empty object)
+      if (Object.keys(rawData[0]).length === 0) return false;
+
+      let cleanedData = cleanObjectData(rawData, metrics);
+
+      if (enableDateRange && dateRange.from && dateRange.to) {
+        cleanedData = filterDataByDateRange(
+          cleanedData,
+          dateRange.from,
+          dateRange.to
+        );
+      }
+      if (cleanedData.length === 0) return false;
+
+      return true;
+    };
+
+    // Get list of valid data sources
+    const dataSourceList = allData
+      .filter(isValidDataSource)
+      .map((dataItem) => ({
+        label: dataItem.label,
+        value: dataItem.label,
+        // Optional: include count for debugging
+        // count: dataItem.value.rawData.length
+      }));
+
+    // Find current selected data source
+    const selectedData = allData.find((d) => d.label === newSlide.dataSource);
+
+    // If selected data is invalid, return empty groupByList
+    if (!isValidDataSource(selectedData)) {
+      return {
+        dataGroupByList: [],
+        dataSourceList,
+        dataChannelList: [],
+        chartDataList: [],
+        chartDataByList: [],
+      };
     }
 
-    const rawData = data[0].value.rawData;
+    // Generate groupByList from valid data
+    const rawData = selectedData.value.rawData;
+    const metrics = selectedData.value.metrics;
+    const firstRowKeys = Object.keys(rawData[0]);
 
-    // Check if rawData has items
-    if (!Array.isArray(rawData) || rawData.length === 0) {
-      return { dataGroupByList: [] };
+    let cleanedData = cleanObjectData(rawData, metrics);
+
+    if (enableDateRange && dateRange.from && dateRange.to) {
+      cleanedData = filterDataByDateRange(
+        cleanedData,
+        dateRange.from,
+        dateRange.to
+      );
     }
 
-    const groupByList = Object.keys(rawData[0]).filter((key) =>
-      GROUP_BY_LIST.find(
+    const channelList = cleanedData.reduce((acc, item) => {
+      const channel = item["Channel"];
+      if (!acc.includes(channel)) {
+        acc.push(channel);
+      }
+      return acc;
+    }, []);
+
+    const groupByList = firstRowKeys.filter((key) =>
+      GROUP_BY_LIST.some(
         (item) => item.value.includes(key) || key.includes(item.value)
       )
     );
 
-    return { dataGroupByList: groupByList };
-  }, [newSlide.dataSource, getDataList]);
+    const chartData = selectedData.value.demographicData;
+    if (!chartData) {
+      return {
+        dataGroupByList: groupByList,
+        dataSourceList,
+        dataChannelList: channelList,
+        chartDataList: [],
+        chartDataByList: [],
+      };
+    }
+    const chartDataAllKeys = Object.keys(chartData[0] || {});
+    const chartDataOnlyNumeric = chartDataAllKeys.filter((key) => {
+      return ![...NON_NUMERIC_COLUMNS, "Cost"].includes(key);
+    });
+    console.log("🎯 chartDataOnlyNumeric:", chartDataOnlyNumeric);
+    const chartDataList = Object.keys(chartData[0] || {}).filter((key) =>
+      DEMOGRAPHIC_CHART_BY_LIST.some((item) => {
+        return item === key || item.includes(key) || key.includes(item);
+      })
+    );
+    console.log("🎯 chartDataKey:", chartDataList);
 
-  console.log("🎯 dataGroupByList:", dataGroupByList);
+    return {
+      dataGroupByList: groupByList,
+      dataSourceList,
+      dataChannelList: channelList,
+      chartDataList,
+      chartDataByList: chartDataOnlyNumeric,
+    };
+  }, [newSlide.dataSource, getDataList, enableDateRange, dateRange]);
 
   return (
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -402,7 +580,7 @@ function CreateSlideDialog({
                         <SelectValue placeholder="Select data source" />
                       </SelectTrigger>
                       <SelectContent position="popper">
-                        {getDataList().map((data, index) => (
+                        {dataSourceList.map((data, index) => (
                           <SelectItem key={index} value={data.label}>
                             {data.label}
                           </SelectItem>
@@ -410,30 +588,56 @@ function CreateSlideDialog({
                       </SelectContent>
                     </Select>
                     {newSlide?.dataSource !== "" && (
-                      <div className="flex gap-2 items-center">
-                        <Label
-                          htmlFor="data-group-by"
-                          className="text-sm font-medium"
-                        >
-                          Group By:
-                        </Label>
-                        <Select
-                          value={newSlide.dataGroupBy}
-                          onValueChange={handleDataGroupByChange}
-                        >
-                          <SelectTrigger id="data-group-by">
-                            <SelectValue placeholder="Select group by" />
-                          </SelectTrigger>
-                          <SelectContent position="popper">
-                            <SelectItem value="default">Default</SelectItem>
-                            {dataGroupByList.map((groupBy, index) => (
-                              <SelectItem key={index} value={groupBy}>
-                                {groupBy}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      <>
+                        <div className="flex gap-2 items-center">
+                          <Label
+                            htmlFor="data-group-by"
+                            className="text-sm font-medium"
+                          >
+                            Channel:
+                          </Label>
+                          <Select
+                            value={newSlide.dataChannel}
+                            onValueChange={handleDataChannelChange}
+                          >
+                            <SelectTrigger id="data-group-by">
+                              <SelectValue placeholder="Select channel" />
+                            </SelectTrigger>
+                            <SelectContent position="popper">
+                              <SelectItem value="All">All</SelectItem>
+                              {dataChannelList.map((item, index) => (
+                                <SelectItem key={index} value={item}>
+                                  {item}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="flex gap-2 items-center">
+                          <Label
+                            htmlFor="data-group-by"
+                            className="text-sm font-medium"
+                          >
+                            Group By:
+                          </Label>
+                          <Select
+                            value={newSlide.dataGroupBy}
+                            onValueChange={handleDataGroupByChange}
+                          >
+                            <SelectTrigger id="data-group-by">
+                              <SelectValue placeholder="Select group by" />
+                            </SelectTrigger>
+                            <SelectContent position="popper">
+                              {dataGroupByList.map((groupBy, index) => (
+                                <SelectItem key={index} value={groupBy}>
+                                  {groupBy}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -840,30 +1044,23 @@ function CreateSlideDialog({
                                   handleChartByChange(value, 0)
                                 }
                               >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="Gender"
-                                    id="chart1-by-gender"
-                                  />
-                                  <Label
-                                    htmlFor="chart1-by-gender"
-                                    className="text-sm cursor-pointer"
+                                {chartDataList.map((chart, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center space-x-2"
                                   >
-                                    Gender
-                                  </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="Device"
-                                    id="chart1-by-device"
-                                  />
-                                  <Label
-                                    htmlFor="chart1-by-device"
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    Device
-                                  </Label>
-                                </div>
+                                    <RadioGroupItem
+                                      value={chart}
+                                      id={`chart1-by-${chart}`}
+                                    />
+                                    <Label
+                                      htmlFor={`chart1-by-${chart}`}
+                                      className="text-sm cursor-pointer"
+                                    >
+                                      {chart}
+                                    </Label>
+                                  </div>
+                                ))}
                               </RadioGroup>
                             </div>
 
@@ -888,7 +1085,7 @@ function CreateSlideDialog({
                               <Select
                                 value={
                                   newSlide.demographicChart?.[0]?.dataBy ||
-                                  "Clicks"
+                                  "Impressions"
                                 }
                                 onValueChange={(value) =>
                                   handleChartDataByChange(value, 0)
@@ -898,9 +1095,14 @@ function CreateSlideDialog({
                                   <SelectValue placeholder="Select data by" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
+                                  {/* {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
                                     <SelectItem key={index} value={data.value}>
                                       {data.label}
+                                    </SelectItem>
+                                  ))} */}
+                                  {chartDataByList.map((data, index) => (
+                                    <SelectItem key={index} value={data}>
+                                      {data}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -940,30 +1142,26 @@ function CreateSlideDialog({
                                     None
                                   </Label>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="Gender"
-                                    id="chart2-by-gender"
-                                  />
-                                  <Label
-                                    htmlFor="chart2-by-gender"
-                                    className="text-sm cursor-pointer"
+                                {chartDataList.map((chart, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center space-x-2"
+                                    onClick={() =>
+                                      handleChartByChange(chart, 1)
+                                    }
                                   >
-                                    Gender
-                                  </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="Device"
-                                    id="chart2-by-device"
-                                  />
-                                  <Label
-                                    htmlFor="chart2-by-device"
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    Device
-                                  </Label>
-                                </div>
+                                    <RadioGroupItem
+                                      value={chart}
+                                      id={`chart2-by-${chart}`}
+                                    />
+                                    <Label
+                                      htmlFor={`chart2-by-${chart}`}
+                                      className="text-sm cursor-pointer"
+                                    >
+                                      {chart}
+                                    </Label>
+                                  </div>
+                                ))}
                               </RadioGroup>
                             </div>
 
@@ -1006,9 +1204,14 @@ function CreateSlideDialog({
                                   <SelectValue placeholder="Select data by" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
+                                  {/* {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
                                     <SelectItem key={index} value={data.value}>
                                       {data.label}
+                                    </SelectItem>
+                                  ))} */}
+                                  {chartDataByList.map((data, index) => (
+                                    <SelectItem key={index} value={data}>
+                                      {data}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>

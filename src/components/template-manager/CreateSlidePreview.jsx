@@ -1,7 +1,6 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useData } from "@/contexts/DataContext";
 
 const CreateSlidePreview = memo(({ slide }) => {
   const {
@@ -13,7 +12,8 @@ const CreateSlidePreview = memo(({ slide }) => {
     summaryPosition = "bottom",
     extraContentType = "none",
     demographicChart = [],
-    dataGroupBy = "default",
+    dataGroupBy = "",
+    dataChannel = "All",
   } = slide;
 
   const dataSource = slide.dataSource;
@@ -22,7 +22,7 @@ const CreateSlidePreview = memo(({ slide }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          disabled={!Component}
+          disabled={!Component || dataSource === ""}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
         >
           Preview
@@ -43,6 +43,7 @@ const CreateSlidePreview = memo(({ slide }) => {
                   extraContentType={extraContentType}
                   demographicChart={demographicChart}
                   dataGroupBy={dataGroupBy}
+                  dataChannel={dataChannel}
                 />
               ) : (
                 <Component

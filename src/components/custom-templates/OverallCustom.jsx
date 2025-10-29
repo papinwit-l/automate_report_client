@@ -173,8 +173,6 @@ function OverallCustom({
       return {};
     }
 
-    // console.log("🎯 overallTotals:", overallTotals);
-
     return metricDataProcess(overallTotals, overallComparison);
   }, [overallTotals, overallComparison]);
 

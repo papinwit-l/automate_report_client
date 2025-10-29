@@ -113,9 +113,9 @@ export const createStateSettersMap = (stateSetter) => {
   return {
     overall: {
       setData: stateSetter.setOverallData,
-      setTotals: stateSetter.settotalsData,
+      setTotals: stateSetter.setOverallTotals,
       setMetrics: stateSetter.setOverallMetrics,
-      setComparison: stateSetter.setcomparisonData,
+      setComparison: stateSetter.setOverallComparison,
     },
     SEM: {
       setData: stateSetter.setSEMData,
