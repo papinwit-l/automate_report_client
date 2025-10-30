@@ -303,7 +303,7 @@ function CreateSlideDialog({
           demographicChart: [
             {
               title: "Chart 1",
-              chartBy: chartDataList[0],
+              chartBy: "",
               dataBy: "",
             },
             {
@@ -415,6 +415,8 @@ function CreateSlideDialog({
   } = useMemo(() => {
     const allData = getDataList();
 
+    // console.log("dataSource", newSlide.dataSource);
+
     // Helper to validate data structure
     const isValidDataSource = (dataItem) => {
       if (!dataItem?.value?.rawData) return false;
@@ -509,13 +511,13 @@ function CreateSlideDialog({
     const chartDataOnlyNumeric = chartDataAllKeys.filter((key) => {
       return ![...NON_NUMERIC_COLUMNS, "Cost"].includes(key);
     });
-    console.log("🎯 chartDataOnlyNumeric:", chartDataOnlyNumeric);
+    // console.log("🎯 chartDataOnlyNumeric:", chartDataOnlyNumeric);
     const chartDataList = Object.keys(chartData[0] || {}).filter((key) =>
       DEMOGRAPHIC_CHART_BY_LIST.some((item) => {
         return item === key || item.includes(key) || key.includes(item);
       })
     );
-    console.log("🎯 chartDataKey:", chartDataList);
+    // console.log("🎯 chartDataKey:", chartDataList);
 
     return {
       dataGroupByList: groupByList,
@@ -987,10 +989,14 @@ function CreateSlideDialog({
                         <RadioGroupItem
                           value="demographic"
                           id="extra-demographic"
+                          disabled={!newSlide.dataSource}
                         />
                         <Label
                           htmlFor="extra-demographic"
-                          className="cursor-pointer font-normal"
+                          className={`cursor-pointer font-normal ${
+                            !newSlide.dataSource &&
+                            "text-muted-foreground cursor-not-allowed"
+                          }`}
                         >
                           Demographic
                         </Label>

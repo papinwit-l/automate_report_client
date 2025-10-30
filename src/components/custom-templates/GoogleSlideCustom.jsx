@@ -226,7 +226,7 @@ function GoogleSlideCustom(props) {
           }
         }
 
-        console.log("🎯 currentPeriodResults:", currentPeriodResults);
+        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
 
         return {
           data: currentPeriodResults.enhancedFieldData,
@@ -312,7 +312,7 @@ function GoogleSlideCustom(props) {
   };
 
   const { chartData } = useMemo(() => {
-    console.log("demographicData", demographicData);
+    // console.log("demographicData", demographicData);
     if (!demographicData || !Array.isArray(demographicData)) {
       return { chartData: [] };
     }
@@ -323,7 +323,7 @@ function GoogleSlideCustom(props) {
       dataChannel
     );
 
-    console.log("🎯 chartsData:", chartsData);
+    // console.log("🎯 chartsData:", chartsData);
     return { chartData: chartsData };
   }, [demographicData, demographicChart, dataChannel]);
 
@@ -445,8 +445,8 @@ function GoogleSlideCustom(props) {
     );
   }
 
-  console.log("data", data);
-  console.log("displayTable", displayTable);
+  // console.log("data", data);
+  // console.log("displayTable", displayTable);
 
   return (
     <div

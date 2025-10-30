@@ -1,25 +1,54 @@
 import React from "react";
 
 function TemplateContent({ slides = [] }) {
+  console.log("🎯 slides:", slides);
   return (
     <main className="flex-1 overflow-y-auto bg-slate-200">
       <div className="flex flex-col gap-8 items-center py-4">
         {slides.map((slide, index) => {
           // console.log("slide", slide);
+          const {
+            title,
+            Component,
+            table = [],
+            metricConvLength = 2,
+            metricData = [],
+            summaryPosition = "bottom",
+            extraContentType = "none",
+            demographicChart = [],
+            dataGroupBy = "",
+            dataChannel = "All",
+          } = slide;
+
           const id = `slide-${index}`;
-          const Component = slide.Component;
-          const table = slide.table || [];
-          const metricData = slide.metricData || [];
-          const metricConvLength = slide.metricConvLength || 2;
+
+          const dataSource = slide.dataSource;
+
           if (!Component) return null;
-          return (
+
+          return dataSource ? (
             <Component
-              key={index}
               id={id}
-              title={slide.title}
+              key={id}
+              title={title}
               table={table}
-              metricData={metricData}
               metricConvLength={metricConvLength}
+              metricData={metricData}
+              dataSource={dataSource}
+              summaryPosition={summaryPosition}
+              extraContentType={extraContentType}
+              demographicChart={demographicChart}
+              dataGroupBy={dataGroupBy}
+              dataChannel={dataChannel}
+            />
+          ) : (
+            <Component
+              id={id}
+              key={id}
+              title={title}
+              table={table}
+              metricConvLength={metricConvLength}
+              metricData={metricData}
             />
           );
         })}

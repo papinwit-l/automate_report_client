@@ -200,8 +200,8 @@ export const fetchDataSheet = async (
 
         //for debugging
         if (config.endpoint == "overall-data") {
-          console.log("currentPeriodResults", currentPeriodResults);
-          console.log("previousPeriodResults", previousPeriodResults);
+          // console.log("currentPeriodResults", currentPeriodResults);
+          // console.log("previousPeriodResults", previousPeriodResults);
         }
 
         // Update state

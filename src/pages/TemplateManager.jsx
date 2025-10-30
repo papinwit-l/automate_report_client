@@ -9,7 +9,10 @@ function TemplateManager() {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <TemplateManagerHeader />
+      <TemplateManagerHeader
+        slideTemplates={slideTemplates}
+        setSlideTemplates={setSlideTemplates}
+      />
       <div className="flex-1 flex min-h-0">
         <TemplateManagerToolbar
           slideTemplates={slideTemplates}

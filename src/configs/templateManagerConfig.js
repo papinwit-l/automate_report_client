@@ -8,14 +8,17 @@ import TitleSlideCustom from "@/components/custom-templates/TitleSlideCustom";
 export const START_TEMPLATES = [
   {
     title: "Title",
+    name: "title-slide",
     Component: TitleSlideCustom,
   },
   {
     title: "Media Plan",
+    name: "media-plan",
     Component: BlankMediaPlan,
   },
   {
     title: "End Slide",
+    name: "end-slide",
     Component: EndSlideCustom,
   },
 ];
