@@ -18,6 +18,7 @@ function TemplateContent({ slides = [] }) {
             demographicChart = [],
             dataGroupBy = "",
             dataChannel = "All",
+            summaryContent = [],
           } = slide;
 
           const id = `slide-${index}`;
@@ -40,6 +41,7 @@ function TemplateContent({ slides = [] }) {
               demographicChart={demographicChart}
               dataGroupBy={dataGroupBy}
               dataChannel={dataChannel}
+              summaryContent={summaryContent}
             />
           ) : (
             <Component

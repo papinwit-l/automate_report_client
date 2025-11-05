@@ -14,6 +14,7 @@ const CreateSlidePreview = memo(({ slide }) => {
     demographicChart = [],
     dataGroupBy = "",
     dataChannel = "All",
+    summaryContent = [],
   } = slide;
 
   const dataSource = slide.dataSource;
@@ -44,6 +45,7 @@ const CreateSlidePreview = memo(({ slide }) => {
                   demographicChart={demographicChart}
                   dataGroupBy={dataGroupBy}
                   dataChannel={dataChannel}
+                  summaryContent={summaryContent}
                 />
               ) : (
                 <Component

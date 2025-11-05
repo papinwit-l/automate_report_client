@@ -361,6 +361,11 @@ export const metricDataProcess = (totalsData, comparisonData) => {
       comparisonData?.conversions || comparisonData?.Conversions,
       "number"
     ),
+    conversionValueData: formatDisplayData(
+      totalsData["Conversion value"] || totalsData?.conversionValue,
+      comparisonData["Conversion value"] || comparisonData?.conversionValue,
+      "compact"
+    ),
     cplData: formatDisplayData(totalsData?.cpl, comparisonData?.cpl, "compact"),
     cpaData: formatDisplayData(totalsData?.cpa, comparisonData?.cpa, "compact"),
     spentData: formatDisplayData(

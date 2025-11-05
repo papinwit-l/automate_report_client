@@ -30,7 +30,11 @@ import {
   TIKTOK_CALCULATED_FIELDS,
   TIKTOK_FIELDS,
 } from "@/configs/tiktokDataConfigs";
-import { tableUtilsMapping } from "@/utils/templateDataProcessors";
+import {
+  formatMetricName,
+  tableUtilsMapping,
+} from "@/utils/templateDataProcessors";
+import TextEditorModalCustom from "../template-manager/TextEditorModalCustom";
 
 function GoogleSlideCustom(props) {
   const {
@@ -45,6 +49,7 @@ function GoogleSlideCustom(props) {
     summaryPosition,
     extraContentType,
     demographicChart,
+    summaryContent,
   } = props;
 
   const { getDataList, enableDateRange, dateRange } = useData();
@@ -327,71 +332,100 @@ function GoogleSlideCustom(props) {
     return { chartData: chartsData };
   }, [demographicData, demographicChart, dataChannel]);
 
+  // console.log("displayTable", displayTable);
+
+  const { summaryData } = useMemo(() => {
+    if (!summaryContent || !dataGroupBy) {
+      return {
+        summaryData: [],
+      };
+    }
+
+    const summaryData = summaryContent.reduce((acc, item) => {
+      const contentType = item.contentType;
+      const dataBy = item.dataBy;
+
+      if (!contentType || !dataBy) return acc;
+
+      const key = tableUtilsMapping(dataBy);
+      // console.log("🎯 key:", key);
+
+      if (contentType === "overall") {
+        const overallText = `Overall ${key.toLowerCase()}: ** ${parseFloat(
+          totals[key]?.toFixed(2) || 0
+        )?.toLocaleString()} ${formatMetricName(key)} **`;
+        acc.push(overallText);
+      }
+
+      if (contentType === "average-cpx") {
+        const averageCPXText = `Average ${key.toUpperCase()}: ** ${parseFloat(
+          totals[key]
+        ).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} THB **`;
+        acc.push(averageCPXText);
+      }
+
+      const dataEntries = Object.entries(data || {});
+
+      // console.log("🎯 dataEntries:", dataEntries);
+
+      if (dataEntries.length === 0) {
+        return acc;
+      }
+
+      const topKeyData = dataEntries.reduce((max, current) =>
+        current[1][key] > max[1][key] ? current : max
+      );
+
+      // console.log("🎯 topKeyData:", topKeyData);
+
+      const topKey = topKeyData[0];
+      if (contentType === "best-perform") {
+        const topKeyText = `Best perform ${dataGroupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
+          key
+        ]?.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} ${formatMetricName(key)})**`;
+        acc.push(topKeyText);
+      }
+
+      if (contentType === "best-potential") {
+        // console.log("topKeyData", topKeyData[1][key]);
+        const topKeyText = `Potential ${dataGroupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
+          key
+        ]?.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} ${formatMetricName(key)})**`;
+        acc.push(topKeyText);
+      }
+
+      return acc;
+    }, []);
+
+    return { summaryData };
+  }, [summaryContent, dataGroupBy, data, totals]);
+
+  // console.log("🎯 summaryData:", summaryData);
+
   const summarizeData = useCallback(() => {
-    // Handle "No Data" case
-    if (
-      totals?.Conversions === "No Data" ||
-      !totals ||
-      Object.keys(totals).length === 0
-    ) {
+    if (!summaryData || summaryData.length === 0) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
-
-    let summaryTextTemp = "";
-    const overallText = `Overall conversions: ** ${parseFloat(
-      totals?.Conversions?.toFixed(2) || 0
-    )?.toLocaleString()} conversions**`;
-    summaryTextTemp = `<li>${overallText}</li>`;
-
-    const averageCPL = totals?.cpl;
-
-    summaryTextTemp += `<li>Average CPL: **${averageCPL?.toLocaleString(
-      undefined,
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-    )} THB**</li>`;
-
-    let highestConversionChannelText = ``;
-    let highestConversionRateChannelText = ``;
-
-    const channelEntries = Object.entries(data || {});
-    if (channelEntries.length === 0) {
-      setSummaryText(summaryTextTemp);
-      return;
-    }
-
-    const topConversionChannel = channelEntries.reduce((max, current) =>
-      current[1].Conversions > max[1].Conversions ? current : max
+    setSummaryText(
+      summaryData.reduce((acc, item) => {
+        return acc + `<li>${item}</li>`;
+      }, "")
     );
-
-    const topConversionRateChannel = channelEntries.reduce((max, current) =>
-      current[1].conRate > max[1].conRate ? current : max
-    );
-
-    if (channelEntries.length > 1) {
-      highestConversionChannelText = `Best perform keywords: **${
-        topConversionChannel[0]
-      } with ${topConversionChannel[1].Conversions?.toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })} conversions**`;
-      summaryTextTemp += `<li>${highestConversionChannelText}</li>`;
-    }
-
-    if (topConversionChannel[0] != topConversionRateChannel[0]) {
-      highestConversionRateChannelText = `Potential keywords: **${
-        topConversionRateChannel[0]
-      } with ${topConversionRateChannel[1].conRate.toFixed(
-        2
-      )}% conversion rate**`;
-      summaryTextTemp += `<li>${highestConversionRateChannelText}</li>`;
-    }
-    setSummaryText(summaryTextTemp);
-  }, [totals, data]);
+  }, [summaryData]);
 
   useEffect(() => {
     summarizeData();
-  }, [totals, data, summarizeData]);
+  }, [summaryData, summarizeData]);
 
   const renderFormattedText = (text) => {
     return text
@@ -417,6 +451,8 @@ function GoogleSlideCustom(props) {
     }
 
     // console.log("🎯 overallTotals:", overallTotals);
+    // console.log("🎯 totals:", totals);
+    // console.log("🎯 comparison:", comparison);
 
     return metricDataProcess(totals, comparison);
   }, [totals, comparison]);
@@ -548,28 +584,6 @@ function GoogleSlideCustom(props) {
                   />
                 )
             )}
-            {/* {clicksByGender && Object.keys(clicksByGender).length > 0 && (
-              <DonutChart
-                data={clicksByGender}
-                title="Conversions by Gender"
-                width={200}
-                height={160}
-                innerRadius={30}
-                outerRadius={60}
-                isPercentage={true}
-              />
-            )}
-            {clicksByDevice && Object.keys(clicksByDevice).length > 0 && (
-              <DonutChart
-                data={clicksByDevice}
-                title="Conversions by Device"
-                width={200}
-                height={140}
-                innerRadius={30}
-                outerRadius={60}
-                isPercentage={true}
-              />
-            )} */}
 
             {/* Summary */}
             {summaryPosition === "right" && (
@@ -589,7 +603,7 @@ function GoogleSlideCustom(props) {
         )}
       </div>
 
-      <TextEditorModal
+      <TextEditorModalCustom
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={(newText) => setSummaryText(newText)}
@@ -599,7 +613,6 @@ function GoogleSlideCustom(props) {
         placeholder="Enter your summary text..."
         maxTableRows={maxTableRows}
         setMaxTableRows={setMaxTableRows}
-        CPASetting={{ isCPA, setIsCPA }}
       />
     </div>
   );

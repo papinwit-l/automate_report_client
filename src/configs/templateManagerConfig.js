@@ -46,6 +46,20 @@ export const INITIAL_NEW_SLIDE = {
       dataBy: "Clicks",
     },
   ],
+  summaryContent: [
+    {
+      contentType: "overall",
+      dataBy: "Conversions",
+    },
+    {
+      contentType: "average-cpx",
+      dataBy: "cpl",
+    },
+    {
+      contentType: "best-perform",
+      dataBy: "Conversions",
+    },
+  ],
 };
 
 export const CREATE_SLIDE_LIST = [
@@ -215,12 +229,24 @@ export const DEMOGRAPHIC_DATA_LIST = [
   { label: "Video views", value: "Video views" },
 ];
 
+export const SUMMARRY_CONTENT_LIST = [
+  { label: "Overall", value: "overall" },
+  { label: "Average CPX", value: "average-cpx" },
+  { label: "Best perform", value: "best-perform" },
+  { label: "Best potential", value: "best-potential" },
+];
+
 export const METRIC_DATA_LIST = [
   { label: "Impressions", value: "impressionData", invertCompare: false },
   { label: "Clicks", value: "clicksData", invertCompare: false },
   { label: "%CTR", value: "ctrData", invertCompare: false },
   { label: "Conversions", value: "conversionsData", invertCompare: false },
   { label: "%Conv rate", value: "conRateData", invertCompare: false },
+  {
+    label: "Conversion Value",
+    value: "conversionValueData",
+    invertCompare: false,
+  },
   { label: "Reach", value: "reachData", invertCompare: false },
   { label: "Frequency", value: "frequencyData", invertCompare: false },
   { label: "Engagements", value: "engagementData", invertCompare: false },

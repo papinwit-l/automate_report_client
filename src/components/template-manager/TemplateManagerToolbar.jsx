@@ -2,6 +2,7 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
+  Edit2,
   FileSpreadsheet,
   Loader2,
   Plus,
@@ -18,6 +19,7 @@ import DateRangePicker from "../slides/utils/DateRangePicker";
 import { useData } from "@/contexts/DataContext";
 
 import CreateSlideDialog from "./CreateSlideDialog";
+import EditSlideDialog from "./EditSlideDialog";
 
 function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   const { fetchData, enableDateRange, setEnableDateRange } = useData();
@@ -36,6 +38,11 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
 
   // Add slide dialog state
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  //Edit Slide Section
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [slideToEdit, setSlideToEdit] = useState(null);
+  const [editingSlideIndex, setEditingSlideIndex] = useState(null);
 
   // Remove mode state
   const [isRemoveMode, setIsRemoveMode] = useState(false);
@@ -110,6 +117,23 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   const handleAddSlide = (newSlide) => {
     setSlideTemplates([...slideTemplates, newSlide]);
     setIsAddDialogOpen(false);
+  };
+
+  const handleEditSlide = (slide, index) => {
+    setSlideToEdit(slide);
+    setEditingSlideIndex(index);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateSlide = (updatedSlide) => {
+    setSlideTemplates((prev) => {
+      const newSlides = [...prev];
+      newSlides[editingSlideIndex] = updatedSlide;
+      return newSlides;
+    });
+    setIsEditDialogOpen(false);
+    setSlideToEdit(null);
+    setEditingSlideIndex(null);
   };
 
   return (
@@ -293,25 +317,42 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
                   {isRemoveMode ? (
                     <X className="h-4 w-4 text-red-500" />
                   ) : (
-                    <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                      {index > 0 && (
-                        <button
-                          onClick={() => handleSlideSwap(index, "up")}
-                          className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                          aria-label="Move slide up"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </button>
-                      )}
-                      {index < slideTemplates.length - 1 && (
-                        <button
-                          onClick={() => handleSlideSwap(index, "down")}
-                          className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                          aria-label="Move slide down"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </button>
-                      )}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditSlide(slide, index);
+                        }}
+                        className="p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                      <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                        {index > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSlideSwap(index, "up");
+                            }}
+                            className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                            aria-label="Move slide up"
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </button>
+                        )}
+                        {index < slideTemplates.length - 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSlideSwap(index, "down");
+                            }}
+                            className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                            aria-label="Move slide down"
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -326,6 +367,12 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
         isAddDialogOpen={isAddDialogOpen}
         setIsAddDialogOpen={setIsAddDialogOpen}
         onAddSlide={handleAddSlide}
+      />
+      <EditSlideDialog
+        isEditDialogOpen={isEditDialogOpen}
+        setIsEditDialogOpen={setIsEditDialogOpen}
+        slideToEdit={slideToEdit}
+        onUpdateSlide={handleUpdateSlide}
       />
     </div>
   );

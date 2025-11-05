@@ -27,9 +27,18 @@ import {
   INITIAL_NEW_SLIDE,
   GROUP_BY_LIST,
   DEMOGRAPHIC_CHART_BY_LIST,
+  SUMMARRY_CONTENT_LIST,
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
-import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Minus,
+  Plus,
+  X,
+} from "lucide-react";
 import { useData } from "@/contexts/DataContext";
 import { Checkbox } from "../ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -73,6 +82,10 @@ function CreateSlideDialog({
   // Extra Content Section
   const [extraContentType, setExtraContentType] = useState("none");
   const [summaryPosition, setSummaryPosition] = useState("bottom");
+
+  // Summary Content Section
+  const [isSummaryContentRemoveMode, setIsSummaryContentRemoveMode] =
+    useState(false);
 
   const handleAddSlide = () => {
     const slideToAdd = { ...newSlide };
@@ -124,6 +137,8 @@ function CreateSlideDialog({
         title: newSlideTitle,
         table: selectedSlide.table || [],
         metricData: selectedSlide.metricData || [],
+        extraContentType: "none",
+        summaryPosition: "bottom",
         demographicChart:
           selectedSlide.demographicChart || INITIAL_NEW_SLIDE.demographicChart,
       });
@@ -267,6 +282,10 @@ function CreateSlideDialog({
 
   const handleDataSourceChange = (value) => {
     setNewSlide((prev) => {
+      let returnData = {
+        ...prev,
+        summaryContent: INITIAL_NEW_SLIDE.summaryContent,
+      };
       const allData = getDataList();
       const selectedData = allData.find((d) => d.label === value);
 
@@ -294,8 +313,8 @@ function CreateSlideDialog({
       setExtraContentType("none");
       const chartData = selectedData.value.demographicData;
       if (!chartData) {
-        return {
-          ...prev,
+        returnData = {
+          ...returnData,
           dataSource: value,
           dataGroupBy: groupBy[0],
           dataChannel: "All",
@@ -313,6 +332,7 @@ function CreateSlideDialog({
             },
           ],
         };
+        return returnData;
       }
       const chartDataList = Object.keys(chartData[0] || {}).filter((key) =>
         DEMOGRAPHIC_CHART_BY_LIST.some((item) => {
@@ -325,8 +345,8 @@ function CreateSlideDialog({
         return ![...NON_NUMERIC_COLUMNS, "Cost"].includes(key);
       });
 
-      return {
-        ...prev,
+      returnData = {
+        ...returnData,
         dataSource: value,
         dataGroupBy: groupBy[0],
         dataChannel: "All",
@@ -344,6 +364,7 @@ function CreateSlideDialog({
           },
         ],
       };
+      return returnData;
     });
   };
 
@@ -386,6 +407,70 @@ function CreateSlideDialog({
       };
       return { ...prev, demographicChart: newCharts };
     });
+  };
+
+  const handleSummaryContentAdd = () => {
+    setNewSlide((prev) => {
+      const newSummaryContent = [...(prev.summaryContent || [])];
+      newSummaryContent.push({
+        contentType: "overall",
+        dataBy: "Conversions",
+      });
+      return { ...prev, summaryContent: newSummaryContent };
+    });
+  };
+
+  const handleSummaryContentTypeChange = (value, summaryContentIndex) => {
+    setNewSlide((prev) => {
+      const newSummaryContent = [...(prev.summaryContent || [])];
+      newSummaryContent[summaryContentIndex] = {
+        ...newSummaryContent[summaryContentIndex],
+        contentType: value, // value is already a string, not event.target.value
+      };
+      return { ...prev, summaryContent: newSummaryContent };
+    });
+  };
+
+  const handleSummaryContentDataByChange = (value, summaryContentIndex) => {
+    setNewSlide((prev) => {
+      const newSummaryContent = [...(prev.summaryContent || [])];
+      newSummaryContent[summaryContentIndex] = {
+        ...newSummaryContent[summaryContentIndex],
+        dataBy: value,
+      };
+      return { ...prev, summaryContent: newSummaryContent };
+    });
+  };
+
+  const handleSummaryContentRemove = (index) => {
+    setNewSlide((prev) => {
+      const newSummaryContent = [...(prev.summaryContent || [])];
+      newSummaryContent.splice(index, 1);
+      return { ...prev, summaryContent: newSummaryContent };
+    });
+  };
+
+  const handleSummaryContentPositionChange = (value, index) => {
+    if (value === "up" && index > 0) {
+      setNewSlide((prev) => {
+        const newSummaryContent = [...(prev.summaryContent || [])];
+        [newSummaryContent[index], newSummaryContent[index - 1]] = [
+          newSummaryContent[index - 1],
+          newSummaryContent[index],
+        ];
+        return { ...prev, summaryContent: newSummaryContent };
+      });
+    }
+    if (value === "down" && index < newSlide.summaryContent.length - 1) {
+      setNewSlide((prev) => {
+        const newSummaryContent = [...(prev.summaryContent || [])];
+        [newSummaryContent[index], newSummaryContent[index + 1]] = [
+          newSummaryContent[index + 1],
+          newSummaryContent[index],
+        ];
+        return { ...prev, summaryContent: newSummaryContent };
+      });
+    }
   };
 
   const { enableAdvancedSlideInfo } = useMemo(() => {
@@ -1242,9 +1327,12 @@ function CreateSlideDialog({
                   </div>
                 </div>
 
-                {/* Summary Position - Only show when content type is not "none" */}
-                {extraContentType !== "none" && (
-                  <div className="space-y-3 pt-4 border-t border-slate-200">
+                {/* Summary Section */}
+                <div className="space-y-3 pt-4 border-t border-slate-200">
+                  <h2 className="text-lg font-medium">Summary</h2>
+
+                  {/* Summary Position */}
+                  <div>
                     <Label className="text-sm font-medium">
                       Summary Position
                     </Label>
@@ -1269,17 +1357,173 @@ function CreateSlideDialog({
                         <RadioGroupItem
                           value="right"
                           id="summary-position-right"
+                          disabled={newSlide.extraContentType === "none"}
                         />
                         <Label
                           htmlFor="summary-position-right"
-                          className="cursor-pointer font-normal"
+                          className={`cursor-pointer font-normal ${
+                            newSlide.extraContentType === "none" &&
+                            "text-muted-foreground cursor-not-allowed"
+                          }`}
                         >
                           Right (Under Extra Content)
                         </Label>
                       </div>
                     </RadioGroup>
                   </div>
-                )}
+
+                  {/* Summary Content */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">Summary Content</h3>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleSummaryContentAdd()}
+                          className="hover:bg-slate-100 rounded p-0.5 flex items-center gap-1"
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span className="text-sm">Add</span>
+                        </button>
+                        <button
+                          onClick={() =>
+                            setIsSummaryContentRemoveMode(
+                              !isSummaryContentRemoveMode
+                            )
+                          }
+                          className={`text-sm font-medium transition-colors ${
+                            isSummaryContentRemoveMode
+                              ? "text-red-700 bg-red-50 px-2 py-1 rounded"
+                              : "text-red-600 hover:text-red-700"
+                          }`}
+                        >
+                          {isSummaryContentRemoveMode
+                            ? "Cancel Remove"
+                            : "Remove"}
+                        </button>
+                      </div>
+                      <div className="flex flex-col">
+                        {newSlide.dataSource &&
+                          newSlide.summaryContent.map((item, index) => {
+                            return (
+                              <div
+                                key={index}
+                                className={`flex items-center gap-2 border border-slate-200 p-1 px-2 rounded-sm bg-white 
+                                  ${
+                                    isSummaryContentRemoveMode
+                                      ? " hover:bg-red-50 hover:border-red-300 "
+                                      : " hover:bg-slate-50 "
+                                  }`}
+                                onClick={() => {
+                                  if (isSummaryContentRemoveMode) {
+                                    handleSummaryContentRemove(index);
+                                  }
+                                }}
+                              >
+                                <div>
+                                  <Select
+                                    value={item.contentType}
+                                    onValueChange={(value) =>
+                                      handleSummaryContentTypeChange(
+                                        value,
+                                        index
+                                      )
+                                    }
+                                    disabled={isSummaryContentRemoveMode}
+                                  >
+                                    <SelectTrigger
+                                      id={`summary-content-type-${index}`}
+                                      className={"bg-white"}
+                                    >
+                                      <SelectValue placeholder="Select content type" />
+                                    </SelectTrigger>
+                                    <SelectContent position="popper">
+                                      {SUMMARRY_CONTENT_LIST.map(
+                                        (content, index) => (
+                                          <SelectItem
+                                            key={index}
+                                            value={content.value}
+                                          >
+                                            {content.label}
+                                          </SelectItem>
+                                        )
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Select
+                                    value={item.dataBy}
+                                    onValueChange={(value) =>
+                                      handleSummaryContentDataByChange(
+                                        value,
+                                        index
+                                      )
+                                    }
+                                    disabled={isSummaryContentRemoveMode}
+                                  >
+                                    <SelectTrigger
+                                      id={`summary-content-data-by-${index}`}
+                                      className={"bg-white"}
+                                    >
+                                      <SelectValue placeholder="Select data by" />
+                                    </SelectTrigger>
+                                    <SelectContent position="popper">
+                                      {CUSTOM_TABLE.map((content, index) => (
+                                        <SelectItem
+                                          key={index}
+                                          value={content.value}
+                                        >
+                                          {content.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                {isSummaryContentRemoveMode ? (
+                                  <div>
+                                    <X className="h-3 w-3 text-red-500" />
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col gap-1">
+                                    <button
+                                      className={`hover:bg-slate-100 rounded p-0.5 ${
+                                        index === 0 && "hidden"
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSummaryContentPositionChange(
+                                          "up",
+                                          index
+                                        );
+                                      }}
+                                    >
+                                      <ChevronUp className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                      className={`hover:bg-slate-100 rounded p-0.5 ${
+                                        index ===
+                                          newSlide.summaryContent.length - 1 &&
+                                        "hidden"
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSummaryContentPositionChange(
+                                          "down",
+                                          index
+                                        );
+                                      }}
+                                    >
+                                      <ChevronDown className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
