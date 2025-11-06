@@ -15,6 +15,7 @@ const CreateSlidePreview = memo(({ slide }) => {
     dataGroupBy = "",
     dataChannel = "All",
     summaryContent = [],
+    FBPicturePerformBy = "",
   } = slide;
 
   const dataSource = slide.dataSource;
@@ -46,6 +47,7 @@ const CreateSlidePreview = memo(({ slide }) => {
                   dataGroupBy={dataGroupBy}
                   dataChannel={dataChannel}
                   summaryContent={summaryContent}
+                  FBPicturePerformBy={FBPicturePerformBy}
                 />
               ) : (
                 <Component

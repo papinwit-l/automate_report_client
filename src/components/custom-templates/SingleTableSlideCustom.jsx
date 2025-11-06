@@ -35,8 +35,9 @@ import {
   tableUtilsMapping,
 } from "@/utils/templateDataProcessors";
 import TextEditorModalCustom from "../template-manager/TextEditorModalCustom";
+import ImageFallback from "../slides/utils/ImageFallback";
 
-function GoogleSlideCustom(props) {
+function SingleTableSlideCustom(props) {
   const {
     id,
     title,
@@ -50,9 +51,16 @@ function GoogleSlideCustom(props) {
     extraContentType,
     demographicChart,
     summaryContent,
+    FBPicturePerformBy,
   } = props;
 
-  const { getDataList, enableDateRange, dateRange } = useData();
+  const { getDataList, enableDateRange, dateRange, FacebookAdsPicture } =
+    useData();
+  const { loading, error, refetch } = useData();
+
+  const [summaryText, setSummaryText] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [maxTableRows, setMaxTableRows] = useState([14]);
 
   const { data, totals, comparison, demographicData, displayTable } =
     useMemo(() => {
@@ -254,15 +262,200 @@ function GoogleSlideCustom(props) {
       table,
     ]);
 
+  const { displayPicture } = useMemo(() => {
+    const DATA_GROUP_BY = "Ad name";
+
+    const dataList = getDataList();
+    const selectedData = dataList.find((data) => data.label === dataSource);
+
+    if (!selectedData) return { displayPicture: { name: null, url: null } };
+
+    const { rawData, metrics } = selectedData.value;
+
+    if (!rawData) return { displayPicture: { name: null, url: null } };
+
+    const allFields = Object.keys(rawData[0]);
+    // console.log("🎯 allFields:", allFields);
+    let cleanedData = cleanObjectData(rawData, metrics);
+    // console.log("🎯 cleanedData:", cleanedData);
+
+    if (dataChannel !== "All") {
+      cleanedData = cleanedData.filter(
+        (item) => item["Channel"] === dataChannel
+      );
+    }
+
+    // Declare variables outside the conditions
+    let currentPeriodData = cleanedData; // Default to all cleaned data
+    let previousPeriodData = [];
+    let comparisonResult = {};
+    let currentPeriodResults;
+    let previousPeriodResults;
+
+    const platform = dataSource === "Youtube" ? "Youtube" : "default";
+
+    if (enableDateRange && dateRange.from && dateRange.to) {
+      currentPeriodData = filterDataByDateRange(
+        cleanedData,
+        dateRange.from,
+        dateRange.to
+      );
+
+      const previousPeriodDates = getPreviousPeriodDates(
+        dateRange.from,
+        dateRange.to
+      );
+
+      previousPeriodData = filterDataByDateRange(
+        cleanedData,
+        previousPeriodDates.from,
+        previousPeriodDates.to
+      );
+
+      // Process current period
+      currentPeriodResults = processAdvertisingData(
+        currentPeriodData,
+        allFields,
+        metrics,
+        DATA_GROUP_BY,
+        platform
+      );
+
+      // Process previous period
+      previousPeriodResults = processAdvertisingData(
+        previousPeriodData,
+        allFields,
+        metrics,
+        DATA_GROUP_BY,
+        platform
+      );
+
+      // Calculate comparison
+      comparisonResult = calculateComparison(
+        currentPeriodResults.enhancedTotals,
+        previousPeriodResults.enhancedTotals
+      );
+
+      // Handle Facebook/TikTok
+      if (
+        dataSource.trim().toLowerCase().includes("facebook") ||
+        dataSource.trim().toLowerCase().includes("tiktok")
+      ) {
+        const config = {
+          audienceGroupBy: DATA_GROUP_BY,
+          creativeGroupBy: DATA_GROUP_BY,
+          fields: dataSource.trim().toLowerCase().includes("facebook")
+            ? FACEBOOK_FIELDS
+            : TIKTOK_FIELDS,
+          calculatedFields: dataSource.trim().toLowerCase().includes("facebook")
+            ? FACEBOOK_CALCULATED_FIELDS
+            : TIKTOK_CALCULATED_FIELDS,
+        };
+
+        currentPeriodResults = processSocialMediaData(
+          currentPeriodData,
+          allFields,
+          metrics,
+          config
+        );
+        previousPeriodResults = processSocialMediaData(
+          previousPeriodData,
+          allFields,
+          metrics,
+          config
+        );
+        comparisonResult = calculateComparison(
+          currentPeriodResults.enhancedTotals,
+          previousPeriodResults.enhancedTotals
+        );
+      }
+    }
+    // Case 2: No date range - process all data
+    else {
+      // Process all cleaned data
+      currentPeriodResults = processAdvertisingData(
+        currentPeriodData, // This is cleanedData
+        allFields,
+        metrics,
+        DATA_GROUP_BY,
+        platform
+      );
+
+      // No comparison when date range is disabled
+      comparisonResult = {};
+
+      // Handle Facebook/TikTok
+      if (
+        dataSource.trim().toLowerCase().includes("facebook") ||
+        dataSource.trim().toLowerCase().includes("tiktok")
+      ) {
+        const config = {
+          audienceGroupBy: DATA_GROUP_BY,
+          creativeGroupBy: DATA_GROUP_BY,
+          fields: dataSource.trim().toLowerCase().includes("facebook")
+            ? FACEBOOK_FIELDS
+            : TIKTOK_FIELDS,
+          calculatedFields: dataSource.trim().toLowerCase().includes("facebook")
+            ? FACEBOOK_CALCULATED_FIELDS
+            : TIKTOK_CALCULATED_FIELDS,
+        };
+
+        currentPeriodResults = processSocialMediaData(
+          currentPeriodData, // This is cleanedData
+          allFields,
+          metrics,
+          config
+        );
+      }
+    }
+
+    const { enhancedFieldData } = currentPeriodResults;
+
+    // find picture part
+
+    if (!FBPicturePerformBy)
+      return { displayPicture: { name: null, url: null } };
+
+    const key = dataSource.trim().toLowerCase().includes("facebook")
+      ? tableUtilsMapping(FBPicturePerformBy)
+      : FBPicturePerformBy;
+
+    const dataEntries = Object.entries(enhancedFieldData || {});
+    if (dataEntries.length === 0) {
+      return { displayPicture: { name: null, url: null } };
+    }
+
+    const topKeyData = dataEntries.reduce((max, current) =>
+      current[1][key] > max[1][key] ? current : max
+    );
+
+    const topKey = topKeyData[0];
+    const topKeyValue = topKeyData[1][key];
+    if (!topKeyValue || topKeyValue === undefined || isNaN(topKeyValue)) {
+      return { displayPicture: { name: null, url: null } };
+    }
+
+    const topKeyItem = FacebookAdsPicture.find(
+      (item) => item["Ad name"] === topKey
+    );
+
+    if (!topKeyItem) {
+      return { displayPicture: { name: null, url: null } };
+    }
+
+    return { displayPicture: { name: topKey, url: topKeyItem.Ads } };
+  }, [
+    FBPicturePerformBy,
+    dataSource,
+    FacebookAdsPicture,
+    dataChannel,
+    enableDateRange,
+    dateRange.from,
+    dateRange.to,
+    getDataList,
+  ]);
+
   // console.log("data--", rawData);
-
-  const { loading, error, refetch } = useData();
-
-  const [summaryText, setSummaryText] = useState("");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [maxTableRows, setMaxTableRows] = useState([14]);
-
-  const [isCPA, setIsCPA] = useState(false);
 
   const chartDataProcess = (demoData, chartTemplate, source) => {
     const channelFilterd = demoData.filter((item) => {
@@ -539,7 +732,9 @@ function GoogleSlideCustom(props) {
             })}
           </div>
           <div>
-            <h4 className="text-lg font-semibold">Performance by Keywords</h4>
+            <h4 className="text-lg font-semibold">
+              Performance by {dataGroupBy || "Keywords"}
+            </h4>
             <AdvancedDataTable
               firstMetric={dataGroupBy}
               channelData={data}
@@ -569,22 +764,38 @@ function GoogleSlideCustom(props) {
         </div>
         {extraContentType !== "none" && chartData.length > 0 && (
           <div className="col-span-4 flex flex-col">
-            {chartData.map(
-              (chart, index) =>
-                chart.chartBy !== "None" && (
-                  <DonutChart
-                    key={index}
-                    data={chart.percentageData}
-                    title={chart.title}
-                    width={200}
-                    height={160}
-                    innerRadius={30}
-                    outerRadius={60}
-                    isPercentage={true}
-                  />
-                )
+            {extraContentType === "demographic" &&
+              chartData.map(
+                (chart, index) =>
+                  chart.chartBy !== "None" && (
+                    <DonutChart
+                      key={index}
+                      data={chart.percentageData}
+                      title={chart.title}
+                      width={200}
+                      height={160}
+                      innerRadius={30}
+                      outerRadius={60}
+                      isPercentage={true}
+                    />
+                  )
+              )}
+            {extraContentType === "picture" && displayPicture.url && (
+              <div className="flex flex-col gap-2 pl-4">
+                <ImageFallback
+                  src={displayPicture.url}
+                  alt={displayPicture.name}
+                  width={100}
+                  height={100}
+                  className="rounded-lg"
+                />
+                <div>
+                  <h4 className="text-md font-semibold text-center">
+                    {displayPicture.name}
+                  </h4>
+                </div>
+              </div>
             )}
-
             {/* Summary */}
             {summaryPosition === "right" && (
               <div className="mt-4 p-4">
@@ -618,4 +829,4 @@ function GoogleSlideCustom(props) {
   );
 }
 
-export default GoogleSlideCustom;
+export default SingleTableSlideCustom;

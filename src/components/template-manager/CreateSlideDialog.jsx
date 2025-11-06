@@ -173,7 +173,7 @@ function CreateSlideDialog({
     if (newSlideType === "overall-slide") {
       return OVERALL_TABLE;
     }
-    if (newSlideType === "google-slide") {
+    if (newSlideType === "single-table-slide") {
       return CUSTOM_TABLE;
     }
     return [];
@@ -225,7 +225,10 @@ function CreateSlideDialog({
   };
 
   const getMetricList = () => {
-    if (newSlideType === "overall-slide" || newSlideType === "google-slide") {
+    if (
+      newSlideType === "overall-slide" ||
+      newSlideType === "single-table-slidee"
+    ) {
       return METRIC_DATA_LIST;
     }
     return [];
@@ -408,6 +411,12 @@ function CreateSlideDialog({
       return { ...prev, demographicChart: newCharts };
     });
   };
+
+  const handleFBPicturePerformByChange = (value) => {
+    setNewSlide((prev) => ({ ...prev, FBPicturePerformBy: value }));
+  };
+
+  // Summary Content
 
   const handleSummaryContentAdd = () => {
     setNewSlide((prev) => {
@@ -612,6 +621,8 @@ function CreateSlideDialog({
       chartDataByList: chartDataOnlyNumeric,
     };
   }, [newSlide.dataSource, getDataList, enableDateRange, dateRange]);
+
+  // console.log("🎯 newSlide:", newSlide);
 
   return (
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -1056,7 +1067,7 @@ function CreateSlideDialog({
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Content Type</Label>
                     <RadioGroup
-                      value={extraContentType}
+                      value={newSlide.extraContentType}
                       onValueChange={handleExtraContentTypeChange}
                       className="space-y-2"
                     >
@@ -1091,12 +1102,12 @@ function CreateSlideDialog({
                         <RadioGroupItem
                           value="picture"
                           id="extra-picture"
-                          disabled={newSlideType !== "facebook-slide"}
+                          disabled={newSlide.dataSource !== "Facebook"}
                         />
                         <Label
                           htmlFor="extra-picture"
                           className={`cursor-pointer font-normal ${
-                            newSlideType !== "facebook-slide" &&
+                            newSlide.dataSource !== "Facebook" &&
                             "text-muted-foreground cursor-not-allowed"
                           }`}
                         >
@@ -1108,7 +1119,7 @@ function CreateSlideDialog({
 
                   {/* Right Column - Content Configuration */}
                   <div className="flex-1">
-                    {extraContentType === "demographic" ? (
+                    {newSlide.extraContentType === "demographic" ? (
                       <div className="space-y-4 p-4 border border-slate-200 rounded-md bg-slate-50">
                         <h4 className="text-md font-semibold">
                           Demographic Charts
@@ -1311,11 +1322,31 @@ function CreateSlideDialog({
                           </div>
                         </div>
                       </div>
-                    ) : extraContentType === "picture" ? (
-                      <div className="p-4 border border-slate-200 rounded-md bg-slate-50">
-                        <p className="text-sm text-muted-foreground">
-                          Picture configuration will appear here
-                        </p>
+                    ) : newSlide.extraContentType === "picture" ? (
+                      <div className="p-4 border border-slate-200 rounded-md bg-slate-50 flex flex-col gap-2">
+                        <Label className="text-sm font-medium">
+                          Best Performance by:
+                        </Label>
+                        <Select
+                          value={newSlide.FBPicturePerformBy}
+                          onValueChange={handleFBPicturePerformByChange}
+                        >
+                          <SelectTrigger
+                            id="data-group-by"
+                            className={"bg-white"}
+                          >
+                            <SelectValue placeholder="Select group by" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {CUSTOM_TABLE.filter(
+                              (item) => !item.value.startsWith("cp")
+                            ).map((item, index) => (
+                              <SelectItem key={index} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     ) : (
                       <div className="p-4 border border-dashed border-slate-300 rounded-md bg-slate-50/50">
@@ -1468,7 +1499,11 @@ function CreateSlideDialog({
                                       <SelectValue placeholder="Select data by" />
                                     </SelectTrigger>
                                     <SelectContent position="popper">
-                                      {CUSTOM_TABLE.map((content, index) => (
+                                      {CUSTOM_TABLE.filter((itemf) =>
+                                        item.contentType === "average-cpx"
+                                          ? itemf.value.startsWith("cp")
+                                          : !itemf.value.startsWith("cp")
+                                      ).map((content, index) => (
                                         <SelectItem
                                           key={index}
                                           value={content.value}

@@ -1,7 +1,7 @@
 import React from "react";
 
 function TemplateContent({ slides = [] }) {
-  console.log("🎯 slides:", slides);
+  // console.log("🎯 slides:", slides);
   return (
     <main className="flex-1 overflow-y-auto bg-slate-200">
       <div className="flex flex-col gap-8 items-center py-4">

@@ -189,7 +189,7 @@ function EditSlideDialog({
     if (editSlideType === "overall-slide") {
       return OVERALL_TABLE;
     }
-    if (editSlideType === "google-slide") {
+    if (editSlideType === "single-table-slide") {
       return CUSTOM_TABLE;
     }
     return [];
@@ -241,7 +241,10 @@ function EditSlideDialog({
   };
 
   const getMetricList = () => {
-    if (editSlideType === "overall-slide" || editSlideType === "google-slide") {
+    if (
+      editSlideType === "overall-slide" ||
+      editSlideType === "single-table-slide"
+    ) {
       return METRIC_DATA_LIST;
     }
     return [];
@@ -410,6 +413,10 @@ function EditSlideDialog({
       };
       return { ...prev, demographicChart: newCharts };
     });
+  };
+
+  const handleFBPicturePerformByChange = (value) => {
+    setEditSlide((prev) => ({ ...prev, FBPicturePerformBy: value }));
   };
 
   const handleSummaryContentAdd = () => {
@@ -1079,12 +1086,12 @@ function EditSlideDialog({
                         <RadioGroupItem
                           value="picture"
                           id="extra-picture"
-                          disabled={editSlideType !== "facebook-slide"}
+                          disabled={editSlide.dataSource !== "Facebook"}
                         />
                         <Label
                           htmlFor="extra-picture"
                           className={`cursor-pointer font-normal ${
-                            editSlideType !== "facebook-slide" &&
+                            editSlide.dataSource !== "Facebook" &&
                             "text-muted-foreground cursor-not-allowed"
                           }`}
                         >
@@ -1095,7 +1102,7 @@ function EditSlideDialog({
                   </div>
 
                   <div className="flex-1">
-                    {extraContentType === "demographic" ? (
+                    {editSlide.extraContentType === "demographic" ? (
                       <div className="space-y-4 p-4 border border-slate-200 rounded-md bg-slate-50">
                         <h4 className="text-md font-semibold">
                           Demographic Charts
@@ -1285,11 +1292,31 @@ function EditSlideDialog({
                           </div>
                         </div>
                       </div>
-                    ) : extraContentType === "picture" ? (
-                      <div className="p-4 border border-slate-200 rounded-md bg-slate-50">
-                        <p className="text-sm text-muted-foreground">
-                          Picture configuration will appear here
-                        </p>
+                    ) : editSlide.extraContentType === "picture" ? (
+                      <div className="p-4 border border-slate-200 rounded-md bg-slate-50 flex flex-col gap-2">
+                        <Label className="text-sm font-medium">
+                          Best Performance by:
+                        </Label>
+                        <Select
+                          value={editSlide.FBPicturePerformBy || "conversions"}
+                          onValueChange={handleFBPicturePerformByChange}
+                        >
+                          <SelectTrigger
+                            id="fb-picture-perform-by"
+                            className={"bg-white"}
+                          >
+                            <SelectValue placeholder="Select performance metric" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {CUSTOM_TABLE.filter(
+                              (item) => !item.value.startsWith("cp")
+                            ).map((item, index) => (
+                              <SelectItem key={index} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     ) : (
                       <div className="p-4 border border-dashed border-slate-300 rounded-md bg-slate-50/50">

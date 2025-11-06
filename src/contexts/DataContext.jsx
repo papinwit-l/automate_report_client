@@ -913,6 +913,29 @@ export const DataProvider = ({ children }) => {
     });
   };
 
+  function convertSheetsDate(value) {
+    // If it's already a string (formatted date), return it
+    if (typeof value === "string") {
+      return value;
+    }
+
+    // If it's a Google Sheets serial number
+    if (typeof value === "number" && value > 1) {
+      const SHEETS_EPOCH = new Date(1899, 11, 30, 0, 0, 0);
+      const date = new Date(
+        SHEETS_EPOCH.getTime() + value * 24 * 60 * 60 * 1000
+      );
+
+      // Convert to UTC+7 (Bangkok timezone)
+      const utc7Date = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+
+      // Return as YYYY-MM-DD string for comparison
+      return utc7Date.toISOString().split("T")[0];
+    }
+
+    return value;
+  }
+
   function filterDataByDate(data, dateRange) {
     const { from, to } = dateRange;
     // console.log("🎯 filterDataByDate", from, to);
@@ -932,8 +955,16 @@ export const DataProvider = ({ children }) => {
     const fromDateStr = fromDateUTC7.toISOString().split("T")[0];
     const toDateStr = toDateUTC7.toISOString().split("T")[0];
 
+    // skip filter if there is no key "Updated Date" or "Date"
+    if (!data.some((item) => item["Updated Date"] || item["Date"])) {
+      return data;
+    }
+
     const result = data.filter((item) => {
-      const itemDate = item["Updated Date"] || item["Date"];
+      const itemDateValue = item["Updated Date"] || item["Date"];
+
+      const itemDate = convertSheetsDate(itemDateValue);
+
       return itemDate >= fromDateStr && itemDate <= toDateStr;
     });
 
@@ -941,7 +972,14 @@ export const DataProvider = ({ children }) => {
       return data;
     }
 
-    return result;
+    // SORTING - Latest first
+    return result.sort((a, b) => {
+      const dateA = convertSheetsDate(a["Updated Date"] || a["Date"]);
+      const dateB = convertSheetsDate(b["Updated Date"] || b["Date"]);
+
+      // Descending order (latest first)
+      return dateB.localeCompare(dateA);
+    });
   }
 
   const removeDuplicateByColumn = (data, column) => {

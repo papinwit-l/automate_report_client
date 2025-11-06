@@ -1,8 +1,8 @@
 import BlankMediaPlan from "@/components/custom-templates/BlankMediaPlan";
 import EndSlideCustom from "@/components/custom-templates/EndSlideCustom";
-import GoogleSlideCustom from "@/components/custom-templates/GoogleSlideCustom";
 import OverallCustom from "@/components/custom-templates/OverallCustom";
 import SectionSlideCustom from "@/components/custom-templates/SectionSlideCustom";
+import SingleTableSlideCustom from "@/components/custom-templates/SingleTableSlideCustom";
 import TitleSlideCustom from "@/components/custom-templates/TitleSlideCustom";
 
 export const START_TEMPLATES = [
@@ -34,6 +34,7 @@ export const INITIAL_NEW_SLIDE = {
   dataGroupBy: "",
   extraContentType: "none",
   summaryPosition: "bottom",
+  FBPicturePerformBy: "Impressions",
   demographicChart: [
     {
       title: "Chart 1",
@@ -143,9 +144,9 @@ export const CREATE_SLIDE_LIST = [
   },
   {
     ...INITIAL_NEW_SLIDE,
-    title: "Google Slide",
-    name: "google-slide",
-    Component: GoogleSlideCustom,
+    title: "Single Table Slide",
+    name: "single-table-slide",
+    Component: SingleTableSlideCustom,
     table: [
       "Impressions",
       "Clicks",
