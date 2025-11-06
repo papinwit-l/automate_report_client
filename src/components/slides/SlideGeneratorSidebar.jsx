@@ -490,7 +490,7 @@ const SlideGeneratorSidebar = ({
                 </TooltipProvider>
 
                 {/* Custom Template */}
-                <Card className="shadow-sm py-1">
+                {/* <Card className="shadow-sm py-1">
                   <CardContent className="p-4 space-y-1 py-2 flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <input
@@ -520,7 +520,7 @@ const SlideGeneratorSidebar = ({
                       </div>
                     )}
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Template Selection */}
                 <div className="flex gap-2">

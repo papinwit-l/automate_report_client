@@ -411,6 +411,76 @@ function SlideReport() {
     console.log("All images processed");
   };
 
+  // Add this helper function BEFORE handleExportAllSlides
+  const sendSlidesInBatches = async (
+    axiosInstance,
+    slides,
+    presentationTitle,
+    batchSize = 4
+  ) => {
+    const batches = [];
+    for (let i = 0; i < slides.length; i += batchSize) {
+      batches.push(slides.slice(i, i + batchSize));
+    }
+
+    console.log(
+      `Sending ${slides.length} slides in ${batches.length} batches of ${batchSize}...`
+    );
+
+    const sessionId = `session_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+    let finalPresentationUrl = null;
+
+    for (let i = 0; i < batches.length; i++) {
+      console.log(
+        `Sending batch ${i + 1}/${batches.length} (${
+          batches[i].length
+        } slides)...`
+      );
+
+      try {
+        const response = await axiosInstance.post(
+          "/data-sheets/create-multi-slide-presentation",
+          {
+            slides: batches[i],
+            presentationTitle: presentationTitle,
+            sessionId: sessionId,
+            batchIndex: i,
+            totalBatches: batches.length,
+            isFirstBatch: i === 0,
+            isLastBatch: i === batches.length - 1,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
+            timeout: 180000, // 3 minutes per batch
+          }
+        );
+
+        console.log(`✓ Batch ${i + 1} sent successfully`);
+
+        // Store the presentation URL from the last batch
+        if (response.data.presentationUrl) {
+          finalPresentationUrl = response.data.presentationUrl;
+        }
+      } catch (error) {
+        console.error(`Failed to send batch ${i + 1}:`, error);
+        throw new Error(
+          `Batch ${i + 1} failed: ${
+            error.response?.data?.message || error.message
+          }`
+        );
+      }
+    }
+
+    return finalPresentationUrl;
+  };
+
+  // Modified handleExportAllSlides function
   const handleExportAllSlides = async () => {
     setIsExporting(true);
     setError(null);
@@ -423,7 +493,6 @@ function SlideReport() {
       await ensureImagesLoaded();
 
       // CRITICAL: Wait for table components to initialize their width detection
-      // The AdvancedDataTable has delays up to 500ms for width detection
       console.log("Waiting for tables to initialize...");
       await new Promise((resolve) => setTimeout(resolve, 600));
 
@@ -435,11 +504,9 @@ function SlideReport() {
         allTables.forEach((table) => {
           const container = table.closest(".overflow-x-auto");
           if (container) {
-            // Get computed styles to preserve spacing
             const computedContainerStyle = window.getComputedStyle(container);
             const computedTableStyle = window.getComputedStyle(table);
 
-            // Store original dimensions and styles
             const tableRect = table.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
 
@@ -453,9 +520,7 @@ function SlideReport() {
               tableMargin: table.style.margin,
             };
 
-            // Lock the table layout
             if (table.style.tableLayout === "fixed") {
-              // If already fixed, lock all column widths
               const cells = table.querySelectorAll("th, td");
               cells.forEach((cell) => {
                 const cellRect = cell.getBoundingClientRect();
@@ -467,7 +532,6 @@ function SlideReport() {
               });
             }
 
-            // Lock container and table widths
             container.style.width = `${containerRect.width}px`;
             container.style.minWidth = `${containerRect.width}px`;
             container.style.padding = computedContainerStyle.padding;
@@ -502,7 +566,6 @@ function SlideReport() {
           table.style.tableLayout = originalStyles.tableTableLayout;
           table.style.margin = originalStyles.tableMargin;
 
-          // Remove locked cell widths
           const cells = table.querySelectorAll("th, td");
           cells.forEach((cell) => {
             if (
@@ -545,7 +608,7 @@ function SlideReport() {
             bgcolor: "#ffffff",
             width: element.offsetWidth,
             height: element.offsetHeight,
-            cacheBust: true, // Changed to true to avoid caching issues
+            cacheBust: true,
             useCORS: true,
             allowTaint: true,
             filter: (node) => {
@@ -624,26 +687,31 @@ function SlideReport() {
         throw new Error("No slides were captured successfully.");
       }
 
-      console.log(`Captured ${slideData.length} slides, sending to backend...`);
+      console.log(`Captured ${slideData.length} slides, sending in batches...`);
 
-      // Send to backend
-      const response = await axiosInstance.post(
-        "/data-sheets/create-multi-slide-presentation",
-        {
-          slides: slideData,
-          presentationTitle:
-            projectName.length > 0 ? projectName : "Monthly Performance Report",
-        }
+      // CHANGED: Send slides in batches instead of all at once
+      const presentationUrl = await sendSlidesInBatches(
+        axiosInstance,
+        slideData,
+        projectName.length > 0 ? projectName : "Monthly Performance Report",
+        4 // Send 4 slides per batch (adjust based on your needs)
       );
 
-      const result = response.data;
-      console.log("Backend response:", result);
+      if (!presentationUrl) {
+        throw new Error("No presentation URL received from server");
+      }
 
-      setPresentationUrl(result.presentationUrl);
-      window.open(result.presentationUrl, "_blank");
+      console.log("Presentation created successfully:", presentationUrl);
+
+      setPresentationUrl(presentationUrl);
+      window.open(presentationUrl, "_blank");
     } catch (error) {
       console.error("Multi-slide export failed:", error);
-      setError(error.response?.data?.error || error.message);
+      setError(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message
+      );
     } finally {
       setIsExporting(false);
     }
