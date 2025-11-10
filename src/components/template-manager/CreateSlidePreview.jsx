@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 
@@ -14,17 +14,24 @@ const CreateSlidePreview = memo(({ slide }) => {
     demographicChart = [],
     dataGroupBy = "",
     dataChannel = "All",
+    advancedFilter = "",
+    advancedFilterBy = "",
     summaryContent = [],
     FBPicturePerformBy = "",
   } = slide;
 
   const dataSource = slide.dataSource;
 
+  const buttonStatus = useMemo(() => {
+    if (!Component || dataSource === "" || dataGroupBy === "") return true;
+    return false;
+  }, [Component, dataSource, dataGroupBy]);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          disabled={!Component || dataSource === ""}
+          disabled={buttonStatus}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
         >
           Preview
