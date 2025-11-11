@@ -47,6 +47,9 @@ function SingleTableSlideCustom(props) {
     dataSource,
     dataGroupBy,
     dataChannel,
+    advancedFilter,
+    advancedFilterBy,
+    advancedGroupBy,
     summaryPosition,
     extraContentType,
     demographicChart,
@@ -104,6 +107,15 @@ function SingleTableSlideCustom(props) {
           );
         }
 
+        // grouping logic
+        let groupBy = dataGroupBy;
+        if (dataGroupBy === "") {
+          cleanedData = cleanedData.filter(
+            (item) => item[advancedFilter] === advancedFilterBy
+          );
+          groupBy = advancedGroupBy;
+        }
+
         // Declare variables outside the conditions
         let currentPeriodData = cleanedData; // Default to all cleaned data
         let previousPeriodData = [];
@@ -137,7 +149,7 @@ function SingleTableSlideCustom(props) {
             currentPeriodData,
             allFields,
             metrics,
-            dataGroupBy,
+            groupBy,
             platform
           );
 
@@ -146,7 +158,7 @@ function SingleTableSlideCustom(props) {
             previousPeriodData,
             allFields,
             metrics,
-            dataGroupBy,
+            groupBy,
             platform
           );
 
@@ -162,8 +174,8 @@ function SingleTableSlideCustom(props) {
             dataSource.trim().toLowerCase().includes("tiktok")
           ) {
             const config = {
-              audienceGroupBy: dataGroupBy,
-              creativeGroupBy: dataGroupBy,
+              audienceGroupBy: groupBy,
+              creativeGroupBy: groupBy,
               fields: dataSource.trim().toLowerCase().includes("facebook")
                 ? FACEBOOK_FIELDS
                 : TIKTOK_FIELDS,
@@ -202,7 +214,7 @@ function SingleTableSlideCustom(props) {
             currentPeriodData, // This is cleanedData
             allFields,
             metrics,
-            dataGroupBy,
+            groupBy,
             platform
           );
 
@@ -215,8 +227,8 @@ function SingleTableSlideCustom(props) {
             dataSource.trim().toLowerCase().includes("tiktok")
           ) {
             const config = {
-              audienceGroupBy: dataGroupBy,
-              creativeGroupBy: dataGroupBy,
+              audienceGroupBy: groupBy,
+              creativeGroupBy: groupBy,
               fields: dataSource.trim().toLowerCase().includes("facebook")
                 ? FACEBOOK_FIELDS
                 : TIKTOK_FIELDS,
@@ -257,6 +269,9 @@ function SingleTableSlideCustom(props) {
       getDataList,
       dataGroupBy,
       dataChannel,
+      advancedFilter,
+      advancedFilterBy,
+      advancedGroupBy,
       enableDateRange,
       dateRange,
       table,
@@ -528,7 +543,8 @@ function SingleTableSlideCustom(props) {
   // console.log("displayTable", displayTable);
 
   const { summaryData } = useMemo(() => {
-    if (!summaryContent || !dataGroupBy) {
+    const groupBy = !dataGroupBy ? advancedGroupBy : dataGroupBy;
+    if (!summaryContent || !groupBy) {
       return {
         summaryData: [],
       };
@@ -576,7 +592,7 @@ function SingleTableSlideCustom(props) {
 
       const topKey = topKeyData[0];
       if (contentType === "best-perform") {
-        const topKeyText = `Best perform ${dataGroupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
+        const topKeyText = `Best perform ${groupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
           key
         ]?.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -587,7 +603,7 @@ function SingleTableSlideCustom(props) {
 
       if (contentType === "best-potential") {
         // console.log("topKeyData", topKeyData[1][key]);
-        const topKeyText = `Potential ${dataGroupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
+        const topKeyText = `Potential ${groupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
           key
         ]?.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -600,7 +616,7 @@ function SingleTableSlideCustom(props) {
     }, []);
 
     return { summaryData };
-  }, [summaryContent, dataGroupBy, data, totals]);
+  }, [summaryContent, dataGroupBy, data, totals, advancedGroupBy]);
 
   // console.log("🎯 summaryData:", summaryData);
 
@@ -733,10 +749,10 @@ function SingleTableSlideCustom(props) {
           </div>
           <div>
             <h4 className="text-lg font-semibold">
-              Performance by {dataGroupBy || "Keywords"}
+              Performance by {dataGroupBy || advancedGroupBy || "Keywords"}
             </h4>
             <AdvancedDataTable
-              firstMetric={dataGroupBy}
+              firstMetric={dataGroupBy || advancedGroupBy}
               channelData={data}
               totalData={totals}
               metrics={displayTable}

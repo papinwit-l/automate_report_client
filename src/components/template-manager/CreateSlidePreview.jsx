@@ -16,6 +16,7 @@ const CreateSlidePreview = memo(({ slide }) => {
     dataChannel = "All",
     advancedFilter = "",
     advancedFilterBy = "",
+    advancedGroupBy = "",
     summaryContent = [],
     FBPicturePerformBy = "",
   } = slide;
@@ -23,9 +24,18 @@ const CreateSlidePreview = memo(({ slide }) => {
   const dataSource = slide.dataSource;
 
   const buttonStatus = useMemo(() => {
-    if (!Component || dataSource === "" || dataGroupBy === "") return true;
+    if (!Component || dataSource === "") return true;
+    if (!dataGroupBy && !advancedFilter) return true;
+    if (advancedFilter && (!advancedFilterBy || !advancedGroupBy)) return true;
     return false;
-  }, [Component, dataSource, dataGroupBy]);
+  }, [
+    Component,
+    dataSource,
+    dataGroupBy,
+    advancedFilter,
+    advancedFilterBy,
+    advancedGroupBy,
+  ]);
 
   return (
     <Dialog>
@@ -53,6 +63,9 @@ const CreateSlidePreview = memo(({ slide }) => {
                   demographicChart={demographicChart}
                   dataGroupBy={dataGroupBy}
                   dataChannel={dataChannel}
+                  advancedFilter={advancedFilter}
+                  advancedFilterBy={advancedFilterBy}
+                  advancedGroupBy={advancedGroupBy}
                   summaryContent={summaryContent}
                   FBPicturePerformBy={FBPicturePerformBy}
                 />
