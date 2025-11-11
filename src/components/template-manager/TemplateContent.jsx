@@ -18,7 +18,11 @@ function TemplateContent({ slides = [] }) {
             demographicChart = [],
             dataGroupBy = "",
             dataChannel = "All",
+            advancedFilter = "",
+            advancedFilterBy = "",
+            advancedGroupBy = "",
             summaryContent = [],
+            FBPicturePerformBy = "",
           } = slide;
 
           const id = `slide-${index}`;
@@ -41,7 +45,11 @@ function TemplateContent({ slides = [] }) {
               demographicChart={demographicChart}
               dataGroupBy={dataGroupBy}
               dataChannel={dataChannel}
+              advancedFilter={advancedFilter}
+              advancedFilterBy={advancedFilterBy}
+              advancedGroupBy={advancedGroupBy}
               summaryContent={summaryContent}
+              FBPicturePerformBy={FBPicturePerformBy}
             />
           ) : (
             <Component

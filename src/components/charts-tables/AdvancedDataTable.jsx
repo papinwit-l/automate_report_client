@@ -21,7 +21,7 @@ export const AdvancedDataTable = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const tableRef = useRef(null);
 
-  const formatMetricName = (metric) => {
+  const formatMetricName = (metric = "") => {
     switch (metric.toLowerCase()) {
       case "ad group name":
         return "Ad group name";

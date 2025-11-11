@@ -106,18 +106,14 @@ function CreateSlideDialog({
 
   // Advanced Filter Section
   const handleIsAdvancedFilterEnabledChange = (value) => {
-    setIsAdvancedFilterEnabled((prev) => {
-      if (value) {
-        setNewSlide((prev) => ({
-          ...prev,
-          advancedFilterBy: "",
-          advancedFilter: "",
-          advancedGroupBy: "",
-        }));
-      }
-      setNewSlide((prev) => ({ ...prev, dataGroupBy: "" }));
-      return value;
-    });
+    setNewSlide((prev) => ({
+      ...prev,
+      advancedFilterBy: "",
+      advancedFilter: "",
+      advancedGroupBy: "",
+      dataGroupBy: "",
+    }));
+    setIsAdvancedFilterEnabled(value);
   };
 
   const handleAdvancedFilterChange = (value) => {

@@ -64,6 +64,9 @@ function EditSlideDialog({
   const [editSlideType, setEditSlideType] = useState("");
   const [editSlide, setEditSlide] = useState({ ...INITIAL_NEW_SLIDE });
 
+  // Advanced Filter Section
+  const [isAdvancedFilterEnabled, setIsAdvancedFilterEnabled] = useState(false);
+
   // Table Section
   const [isTableRemoveMode, setIsTableRemoveMode] = useState(false);
   const [showTableList, setShowTableList] = useState(false);
@@ -102,6 +105,11 @@ function EditSlideDialog({
       setMetricConvLength(slideToEdit.metricConvLength || 2);
       setExtraContentType(slideToEdit.extraContentType || "none");
       setSummaryPosition(slideToEdit.summaryPosition || "bottom");
+
+      // Initialize advanced filter state
+      setIsAdvancedFilterEnabled(
+        !!(slideToEdit.advancedFilter && slideToEdit.advancedFilter !== "")
+      );
     }
   }, [slideToEdit, isEditDialogOpen]);
 
@@ -116,6 +124,43 @@ function EditSlideDialog({
     // Reset dialog
     setIsEditDialogOpen(false);
   };
+
+  // Advanced Filter Section
+  const handleIsAdvancedFilterEnabledChange = (value) => {
+    setEditSlide((prev) => ({
+      ...prev,
+      advancedFilterBy: "",
+      advancedFilter: "",
+      advancedGroupBy: "",
+    }));
+    setIsAdvancedFilterEnabled(value);
+  };
+
+  const handleAdvancedFilterChange = (value) => {
+    console.log("🎯 handleAdvancedFilterChange:", value);
+    setEditSlide((prev) => ({
+      ...prev,
+      advancedFilter: value,
+      advancedFilterBy: "",
+      advancedGroupBy: "",
+    }));
+  };
+
+  const handleAdvancedFilterByChange = (value) => {
+    console.log("🎯 handleAdvancedFilterByChange:", value);
+    setEditSlide((prev) => ({
+      ...prev,
+      advancedFilterBy: value,
+      advancedGroupBy: "",
+    }));
+  };
+
+  const handleAdvancedGroupByChange = (value) => {
+    console.log("🎯 handleAdvancedGroupByChange:", value);
+    setEditSlide((prev) => ({ ...prev, advancedGroupBy: value }));
+  };
+
+  ////////////////////////////
 
   const handleExtraContentTypeChange = (value) => {
     setEditSlide((prev) => {
@@ -317,6 +362,7 @@ function EditSlideDialog({
         )
       );
       setExtraContentType("none");
+      setIsAdvancedFilterEnabled(false);
       const chartData = selectedData.value.demographicData;
       if (!chartData) {
         returnData = {
@@ -325,6 +371,9 @@ function EditSlideDialog({
           dataGroupBy: groupBy[0],
           dataChannel: "All",
           extraContentType: "none",
+          advancedFilter: "",
+          advancedFilterBy: "",
+          advancedGroupBy: "",
           demographicChart: [
             {
               title: "Chart 1",
@@ -357,6 +406,9 @@ function EditSlideDialog({
         dataGroupBy: groupBy[0],
         dataChannel: "All",
         extraContentType: "none",
+        advancedFilter: "",
+        advancedFilterBy: "",
+        advancedGroupBy: "",
         demographicChart: [
           {
             title: "Chart 1",
@@ -501,61 +553,18 @@ function EditSlideDialog({
     };
   }, [editSlideType]);
 
-  const {
-    dataGroupByList,
-    dataSourceList,
-    dataChannelList,
-    chartDataList,
-    chartDataByList,
-  } = useMemo(() => {
+  // Hook 1: Extract and clean raw data
+  const rawData = useMemo(() => {
     const allData = getDataList();
-
-    const isValidDataSource = (dataItem) => {
-      if (!dataItem?.value?.rawData) return false;
-
-      const rawData = dataItem.value.rawData;
-      const metrics = dataItem.value.metrics;
-
-      if (!Array.isArray(rawData) || rawData.length === 0) return false;
-
-      if (Object.keys(rawData[0]).length === 0) return false;
-
-      let cleanedData = cleanObjectData(rawData, metrics);
-
-      if (enableDateRange && dateRange.from && dateRange.to) {
-        cleanedData = filterDataByDateRange(
-          cleanedData,
-          dateRange.from,
-          dateRange.to
-        );
-      }
-      if (cleanedData.length === 0) return false;
-
-      return true;
-    };
-
-    const dataSourceList = allData
-      .filter(isValidDataSource)
-      .map((dataItem) => ({
-        label: dataItem.label,
-        value: dataItem.label,
-      }));
-
     const selectedData = allData.find((d) => d.label === editSlide.dataSource);
 
-    if (!isValidDataSource(selectedData)) {
-      return {
-        dataGroupByList: [],
-        dataSourceList,
-        dataChannelList: [],
-        chartDataList: [],
-        chartDataByList: [],
-      };
-    }
+    if (!selectedData?.value?.rawData) return [];
 
     const rawData = selectedData.value.rawData;
     const metrics = selectedData.value.metrics;
-    const firstRowKeys = Object.keys(rawData[0]);
+
+    if (!Array.isArray(rawData) || rawData.length === 0) return [];
+    if (Object.keys(rawData[0]).length === 0) return [];
 
     let cleanedData = cleanObjectData(rawData, metrics);
 
@@ -567,49 +576,128 @@ function EditSlideDialog({
       );
     }
 
-    const channelList = cleanedData.reduce((acc, item) => {
-      const channel = item["Channel"];
-      if (!acc.includes(channel)) {
-        acc.push(channel);
-      }
-      return acc;
-    }, []);
+    return cleanedData;
+  }, [editSlide.dataSource, getDataList, enableDateRange, dateRange]);
 
-    const groupByList = firstRowKeys.filter((key) =>
+  // Hook 2: Get data source list
+  const dataSourceList = useMemo(() => {
+    const allData = getDataList();
+
+    const isValidDataSource = (dataItem) => {
+      if (!dataItem?.value?.rawData) return false;
+
+      const rawData = dataItem.value.rawData;
+      const metrics = dataItem.value.metrics;
+
+      if (!Array.isArray(rawData) || rawData.length === 0) return false;
+      if (Object.keys(rawData[0]).length === 0) return false;
+
+      let cleanedData = cleanObjectData(rawData, metrics);
+
+      if (enableDateRange && dateRange.from && dateRange.to) {
+        cleanedData = filterDataByDateRange(
+          cleanedData,
+          dateRange.from,
+          dateRange.to
+        );
+      }
+
+      return cleanedData.length > 0;
+    };
+
+    return allData.filter(isValidDataSource).map((dataItem) => ({
+      label: dataItem.label,
+      value: dataItem.label,
+    }));
+  }, [getDataList, enableDateRange, dateRange]);
+
+  // Hook 3: Get group by list
+  const dataGroupByList = useMemo(() => {
+    if (rawData.length === 0) return [];
+
+    const firstRowKeys = Object.keys(rawData[0]);
+
+    return firstRowKeys.filter((key) =>
       GROUP_BY_LIST.some(
         (item) => item.value.includes(key) || key.includes(item.value)
       )
     );
+  }, [rawData]);
 
-    const chartData = selectedData.value.demographicData;
-    if (!chartData) {
+  // Hook 4: Get channel list
+  const dataChannelList = useMemo(() => {
+    if (rawData.length === 0) return [];
+
+    return rawData.reduce((acc, item) => {
+      const channel = item["Channel"];
+      if (channel && !acc.includes(channel)) {
+        acc.push(channel);
+      }
+      return acc;
+    }, []);
+  }, [rawData]);
+
+  // Hook 5: Get chart data lists
+  const { chartDataList, chartDataByList } = useMemo(() => {
+    const allData = getDataList();
+    const selectedData = allData.find((d) => d.label === editSlide.dataSource);
+
+    const chartData = selectedData?.value?.demographicData;
+
+    if (!chartData || chartData.length === 0) {
       return {
-        dataGroupByList: groupByList,
-        dataSourceList,
-        dataChannelList: channelList,
         chartDataList: [],
         chartDataByList: [],
       };
     }
+
     const chartDataAllKeys = Object.keys(chartData[0] || {});
+
     const chartDataOnlyNumeric = chartDataAllKeys.filter((key) => {
       return ![...NON_NUMERIC_COLUMNS, "Cost"].includes(key);
     });
 
-    const chartDataList = Object.keys(chartData[0] || {}).filter((key) =>
+    const chartDataList = chartDataAllKeys.filter((key) =>
       DEMOGRAPHIC_CHART_BY_LIST.some((item) => {
         return item === key || item.includes(key) || key.includes(item);
       })
     );
 
     return {
-      dataGroupByList: groupByList,
-      dataSourceList,
-      dataChannelList: channelList,
       chartDataList,
       chartDataByList: chartDataOnlyNumeric,
     };
-  }, [editSlide.dataSource, getDataList, enableDateRange, dateRange]);
+  }, [editSlide.dataSource, getDataList]);
+
+  // Hook 6: Get advanced filter list
+  const advancedFilterList = useMemo(() => {
+    return dataGroupByList.filter((item) => item.toLowerCase() !== "ad name");
+  }, [dataGroupByList]);
+
+  // Hook 7: Get advanced filter by list
+  const advancedFilterByList = useMemo(() => {
+    if (rawData.length === 0 || editSlide.advancedFilter === "") return [];
+
+    const keyList = rawData.reduce((acc, item) => {
+      const key = item[editSlide.advancedFilter];
+      if (key && !acc.includes(key)) {
+        acc.push(key);
+      }
+      return acc;
+    }, []);
+
+    return keyList;
+  }, [editSlide.advancedFilter, rawData]);
+
+  // Hook 8: Get advanced group by list
+  const advancedGroupByList = useMemo(() => {
+    if (editSlide.advancedFilter === "" || dataGroupByList.length === 0)
+      return [];
+
+    return dataGroupByList.filter(
+      (item) => item.toLowerCase() !== editSlide.advancedFilter.toLowerCase()
+    );
+  }, [editSlide.advancedFilter, dataGroupByList]);
 
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -699,29 +787,119 @@ function EditSlideDialog({
                           </Select>
                         </div>
 
-                        <div className="flex gap-2 items-center">
-                          <Label
-                            htmlFor="data-group-by"
-                            className="text-sm font-medium"
-                          >
-                            Group By:
+                        <div>
+                          <Label className="text-sm font-medium">
+                            <Checkbox
+                              checked={isAdvancedFilterEnabled}
+                              onCheckedChange={
+                                handleIsAdvancedFilterEnabledChange
+                              }
+                            />
+                            Advanced Filter
                           </Label>
-                          <Select
-                            value={editSlide.dataGroupBy}
-                            onValueChange={handleDataGroupByChange}
-                          >
-                            <SelectTrigger id="data-group-by">
-                              <SelectValue placeholder="Select group by" />
-                            </SelectTrigger>
-                            <SelectContent position="popper">
-                              {dataGroupByList.map((groupBy, index) => (
-                                <SelectItem key={index} value={groupBy}>
-                                  {groupBy}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
                         </div>
+
+                        {isAdvancedFilterEnabled ? (
+                          <>
+                            <div className="flex gap-2 items-center">
+                              <Label
+                                htmlFor="group-filter"
+                                className="text-sm font-medium"
+                              >
+                                Group Filter:
+                              </Label>
+                              <Select
+                                value={editSlide.advancedFilter}
+                                onValueChange={handleAdvancedFilterChange}
+                              >
+                                <SelectTrigger id="group-filter">
+                                  <SelectValue placeholder="Select group filter" />
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                  {advancedFilterList.map((groupBy, index) => (
+                                    <SelectItem key={index} value={groupBy}>
+                                      {groupBy}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="flex gap-2 items-center">
+                              <Label
+                                htmlFor="group-filter-by"
+                                className="text-sm font-medium"
+                              >
+                                Group Filter By:
+                              </Label>
+                              <Select
+                                value={editSlide.advancedFilterBy}
+                                onValueChange={handleAdvancedFilterByChange}
+                              >
+                                <SelectTrigger id="group-filter-by">
+                                  <SelectValue placeholder="Select group filter by" />
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                  {advancedFilterByList.map(
+                                    (groupBy, index) => (
+                                      <SelectItem key={index} value={groupBy}>
+                                        {groupBy}
+                                      </SelectItem>
+                                    )
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="flex gap-2 items-center">
+                              <Label
+                                htmlFor="advanced-group-by"
+                                className="text-sm font-medium"
+                              >
+                                Group By:
+                              </Label>
+                              <Select
+                                value={editSlide.advancedGroupBy}
+                                onValueChange={handleAdvancedGroupByChange}
+                              >
+                                <SelectTrigger id="advanced-group-by">
+                                  <SelectValue placeholder="Select group filter by" />
+                                </SelectTrigger>
+                                <SelectContent position="popper">
+                                  {advancedGroupByList.map((groupBy, index) => (
+                                    <SelectItem key={index} value={groupBy}>
+                                      {groupBy}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex gap-2 items-center">
+                            <Label
+                              htmlFor="data-group-by"
+                              className="text-sm font-medium"
+                            >
+                              Group By:
+                            </Label>
+                            <Select
+                              value={editSlide.dataGroupBy}
+                              onValueChange={handleDataGroupByChange}
+                            >
+                              <SelectTrigger id="data-group-by">
+                                <SelectValue placeholder="Select group by" />
+                              </SelectTrigger>
+                              <SelectContent position="popper">
+                                {dataGroupByList.map((groupBy, index) => (
+                                  <SelectItem key={index} value={groupBy}>
+                                    {groupBy}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
