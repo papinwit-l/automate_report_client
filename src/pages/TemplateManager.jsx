@@ -10,7 +10,7 @@ import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
 function TemplateManager() {
   const [slideTemplates, setSlideTemplates] = useState(START_TEMPLATES);
 
-  const [projectName, setProjectName] = useState("");
+  const [projectName, setProjectName] = useState("V2_TEST");
 
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
@@ -358,6 +358,7 @@ function TemplateManager() {
       <TemplateManagerHeader
         slideTemplates={slideTemplates}
         setSlideTemplates={setSlideTemplates}
+        onExport={handleExportAllSlides}
       />
       <div className="flex-1 flex min-h-0">
         <TemplateManagerToolbar

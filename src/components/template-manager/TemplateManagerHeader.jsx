@@ -3,10 +3,15 @@ import React from "react";
 import TemplateSaveAndLoad from "./TemplateSaveAndLoad";
 import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
 
-function TemplateManagerHeader({ slideTemplates, setSlideTemplates, test }) {
+function TemplateManagerHeader({
+  slideTemplates,
+  setSlideTemplates,
+  onExport,
+}) {
   const testHandler = async () => {
     console.log("test");
     const slideComponents = getExportableSlidesV2();
+    await onExport();
   };
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-white/80 backdrop-blur-sm px-6">
