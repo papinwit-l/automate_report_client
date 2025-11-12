@@ -556,7 +556,7 @@ function SingleTableSlideCustom(props) {
 
       if (!contentType || !dataBy) return acc;
 
-      const key = tableUtilsMapping(dataBy);
+      const key = totals[dataBy] ? dataBy : tableUtilsMapping(dataBy);
       // console.log("🎯 key:", key);
 
       if (contentType === "overall") {
