@@ -2,11 +2,9 @@ import { useData } from "@/contexts/DataContext";
 import React from "react";
 import TYN_LOGO from "@/assets/images/TYN_LOGO-white.png";
 
-function TitleSlideCustom({
-  id = "title-slide",
-  projectName = "",
-  reportType = "",
-}) {
+function TitleSlideCustom({ id = "title-slide", projectDetails }) {
+  const { projectName = "", reportType = "" } = projectDetails;
+
   const { dateRange } = useData();
 
   const formattedDate = (date) => {

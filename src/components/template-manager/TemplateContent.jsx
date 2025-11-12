@@ -1,6 +1,6 @@
 import React from "react";
 
-function TemplateContent({ slides = [] }) {
+function TemplateContent({ slides = [], projectDetails }) {
   // console.log("🎯 slides:", slides);
   return (
     <main className="flex-1 overflow-y-auto bg-slate-200">
@@ -59,6 +59,7 @@ function TemplateContent({ slides = [] }) {
               table={table}
               metricConvLength={metricConvLength}
               metricData={metricData}
+              projectDetails={projectDetails}
             />
           );
         })}

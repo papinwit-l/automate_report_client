@@ -560,7 +560,7 @@ function SingleTableSlideCustom(props) {
       // console.log("🎯 key:", key);
 
       if (contentType === "overall") {
-        const overallText = `Overall ${key.toLowerCase()}: ** ${parseFloat(
+        const overallText = `Overall ${formatMetricName(key)}: ** ${parseFloat(
           totals[key]?.toFixed(2) || 0
         )?.toLocaleString()} ${formatMetricName(key)} **`;
         acc.push(overallText);

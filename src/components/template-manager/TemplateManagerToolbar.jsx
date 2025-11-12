@@ -21,13 +21,24 @@ import { useData } from "@/contexts/DataContext";
 import CreateSlideDialog from "./CreateSlideDialog";
 import EditSlideDialog from "./EditSlideDialog";
 
-function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
+function TemplateManagerToolbar({
+  slideTemplates,
+  setSlideTemplates,
+  projectName,
+  setProjectName,
+  reportType,
+  setReportType,
+  handleExport,
+}) {
   const { fetchData, enableDateRange, setEnableDateRange } = useData();
 
   const [error, setError] = useState(null);
 
   const [showSlideSection, setShowSlideSection] = useState(true);
   const [slideGenerated, setSlideGenerated] = useState(false);
+
+  // details section
+  const [showDetailsSection, setShowDetailsSection] = useState(true);
 
   // data section
   const [showDataSection, setShowDataSection] = useState(true);
@@ -43,6 +54,16 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [slideToEdit, setSlideToEdit] = useState(null);
   const [editingSlideIndex, setEditingSlideIndex] = useState(null);
+
+  const handleProjectNameChange = (event) => {
+    const value = event.target.value;
+    setProjectName(value);
+  };
+
+  const handleReportTypeChange = (event) => {
+    const value = event.target.value;
+    setReportType(value);
+  };
 
   // Remove mode state
   const [isRemoveMode, setIsRemoveMode] = useState(false);
@@ -138,6 +159,56 @@ function TemplateManagerToolbar({ slideTemplates, setSlideTemplates }) {
 
   return (
     <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 p-4 flex flex-col gap-4 overflow-y-auto">
+      {/* Details Section */}
+      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
+        {/* Details Section Title */}
+        <div
+          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+            !showDetailsSection && "rounded-lg"
+          }`}
+        >
+          <h2 className="text-sm font-semibold text-slate-700">Details</h2>
+          <button
+            onClick={() => setShowDetailsSection(!showDetailsSection)}
+            className="text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            {showDetailsSection ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronUp className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {/* Details Section Content*/}
+        {showDetailsSection && (
+          <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
+            <Label htmlFor="project-name" className="text-sm font-medium">
+              Project Name
+            </Label>
+            <Input
+              id="project-name"
+              type="text"
+              placeholder="Project Name"
+              value={projectName}
+              onChange={handleProjectNameChange}
+              className="font-mono text-sm"
+            />
+            <Label htmlFor="report-type" className="text-sm font-medium">
+              Report Type
+            </Label>
+            <Input
+              id="report-type"
+              type="text"
+              placeholder="Report Type"
+              value={reportType}
+              onChange={handleReportTypeChange}
+              className="font-mono text-sm"
+            />
+          </div>
+        )}
+      </div>
+
       {/* Data Section */}
       <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
         {/* Data Section Title */}

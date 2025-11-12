@@ -10,7 +10,8 @@ import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
 function TemplateManager() {
   const [slideTemplates, setSlideTemplates] = useState(START_TEMPLATES);
 
-  const [projectName, setProjectName] = useState("V2_TEST");
+  const [projectName, setProjectName] = useState("");
+  const [reportType, setReportType] = useState("Monthly Report");
 
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
@@ -364,8 +365,16 @@ function TemplateManager() {
         <TemplateManagerToolbar
           slideTemplates={slideTemplates}
           setSlideTemplates={setSlideTemplates}
+          projectName={projectName}
+          setProjectName={setProjectName}
+          reportType={reportType}
+          setReportType={setReportType}
+          handleExport={handleExportAllSlides}
         />
-        <TemplateContent slides={slideTemplates} />
+        <TemplateContent
+          slides={slideTemplates}
+          projectDetails={{ projectName, reportType }}
+        />
       </div>
     </div>
   );
