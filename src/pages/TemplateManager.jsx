@@ -6,6 +6,8 @@ import { START_TEMPLATES } from "@/configs/templateManagerConfig";
 import React, { useState } from "react";
 import domtoimage from "dom-to-image";
 import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
+import { toast } from "sonner";
+import { ExternalLink } from "lucide-react";
 
 function TemplateManager() {
   const [slideTemplates, setSlideTemplates] = useState(START_TEMPLATES);
@@ -341,6 +343,23 @@ function TemplateManager() {
       console.log("Presentation created successfully:", presentationUrl);
 
       setPresentationUrl(presentationUrl);
+      toast.success(
+        <div className="flex flex-col gap-1 pr-8">
+          <span>Presentation created successfully!</span>
+          <a
+            href={presentationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline font-medium hover:text-green-700 flex items-center gap-1"
+          >
+            Open presentation <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>,
+        {
+          duration: 5000,
+          closeButton: true,
+        }
+      );
       window.open(presentationUrl, "_blank");
     } catch (error) {
       console.error("Multi-slide export failed:", error);
@@ -370,6 +389,10 @@ function TemplateManager() {
           reportType={reportType}
           setReportType={setReportType}
           handleExport={handleExportAllSlides}
+          slideURL={presentationUrl}
+          isExporting={isExporting}
+          error={error}
+          setError={setError}
         />
         <TemplateContent
           slides={slideTemplates}

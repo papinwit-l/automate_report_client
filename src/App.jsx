@@ -5,12 +5,7 @@ import { Toaster } from "sonner";
 function App() {
   return (
     <Fragment>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
+      <Toaster closeButton position="top-right" richColors expand={true} />
       <AppRoute />
     </Fragment>
   );

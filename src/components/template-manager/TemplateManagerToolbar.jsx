@@ -4,11 +4,12 @@ import {
   ChevronUp,
   Edit2,
   FileSpreadsheet,
+  Loader,
   Loader2,
   Plus,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -20,6 +21,7 @@ import { useData } from "@/contexts/DataContext";
 
 import CreateSlideDialog from "./CreateSlideDialog";
 import EditSlideDialog from "./EditSlideDialog";
+import { toast } from "sonner";
 
 function TemplateManagerToolbar({
   slideTemplates,
@@ -29,11 +31,13 @@ function TemplateManagerToolbar({
   reportType,
   setReportType,
   handleExport,
+  slideURL,
+  isExporting,
+  error,
+  setError,
 }) {
   const { fetchData, enableDateRange, setEnableDateRange, isNoData } =
     useData();
-
-  const [error, setError] = useState(null);
 
   const [showSlideSection, setShowSlideSection] = useState(true);
   const [slideGenerated, setSlideGenerated] = useState(false);
@@ -158,292 +162,343 @@ function TemplateManagerToolbar({
     setEditingSlideIndex(null);
   };
 
+  const handleOpenSlideURL = () => {
+    window.open(slideURL, "_blank");
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(
+        <div className="flex flex-col gap-1 pr-8">
+          <span>Error occurred!</span>
+          <p className="text-sm text-gray-600 break-all">{error}</p>
+        </div>,
+        {
+          duration: Infinity,
+          closeButton: true,
+        }
+      );
+    }
+  }, [error]);
+
   return (
-    <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 p-4 flex flex-col gap-4 overflow-y-auto">
-      {/* Details Section */}
-      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
-        {/* Details Section Title */}
-        <div
-          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
-            !showDetailsSection && "rounded-lg"
-          }`}
-          onClick={() => setShowDetailsSection(!showDetailsSection)}
-        >
-          <h2 className="text-sm font-semibold text-slate-700">Details</h2>
-          <button
-            onClick={() => setShowDetailsSection(!showDetailsSection)}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showDetailsSection ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-
-        {/* Details Section Content*/}
-        {showDetailsSection && (
-          <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
-            <Label htmlFor="project-name" className="text-sm font-medium">
-              Project Name
-            </Label>
-            <Input
-              id="project-name"
-              type="text"
-              placeholder="Project Name"
-              value={projectName}
-              onChange={handleProjectNameChange}
-              className="font-mono text-sm"
-            />
-            <Label htmlFor="report-type" className="text-sm font-medium">
-              Report Type
-            </Label>
-            <Input
-              id="report-type"
-              type="text"
-              placeholder="Report Type"
-              value={reportType}
-              onChange={handleReportTypeChange}
-              className="font-mono text-sm"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Data Section */}
-      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
-        {/* Data Section Title */}
-        <div
-          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
-            !showDataSection && "rounded-lg"
-          }`}
-          onClick={() => setShowDataSection(!showDataSection)}
-        >
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-slate-700">Data</h2>
-            {isNoData && (
-              <Badge className={"text-xs"} variant={"destructive"}>
-                No Data
-              </Badge>
-            )}
-          </div>
-          <button
-            onClick={() => setShowDataSection(!showDataSection)}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showDataSection ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {/* Data Section Content*/}
-        {showDataSection && (
-          <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
-            <Label htmlFor="sheet-link" className="text-sm font-medium">
-              Raw Dashboard
-            </Label>
-            <Input
-              id="sheet-link"
-              type="text"
-              placeholder="https://docs.google.com/spreadsheets/d/..."
-              value={sheetsLink}
-              onChange={handleSheetsLinkChange}
-              className="font-mono text-sm"
-            />
-            {sheetsID && (
-              <>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-sm text-muted-foreground">
-                      Sheet ID
-                    </Label>
-                    <Badge
-                      variant={ableToGenerate ? "default" : "destructive"}
-                      className={`text-xs ${
-                        ableToGenerate ? "bg-green-200 text-green-700" : ""
-                      }`}
-                    >
-                      {ableToGenerate ? "Valid" : "Invalid"}
-                    </Badge>
-                  </div>
-                  <div className="p-3 bg-muted rounded-md text-sm font-mono break-all border-1">
-                    {sheetsID}
-                  </div>
-                </div>
-                {/* Project Filter Section */}
-                <SidebarProjectFilterSection sheetsID={sheetsID} />
-              </>
-            )}
-
-            {/* Date Range Section */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 mb-3">
-                <Calendar className="h-4 w-4 text-blue-600" />
-                <h3 className="font-medium text-sm">Date Range</h3>
-              </div>
-
-              <Card className="shadow-sm py-1">
-                <CardContent className="p-4 space-y-1 py-2">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="date-range-enable"
-                      checked={enableDateRange}
-                      onChange={handleEnableDateRangeChange}
-                      className="rounded border-gray-300"
-                    />
-                    <Label
-                      htmlFor="date-range-enable"
-                      className="text-sm font-medium"
-                    >
-                      Enable date filtering
-                    </Label>
-                  </div>
-
-                  {enableDateRange && (
-                    <div className="pt-2 flex flex-col gap-2">
-                      <DateRangePicker />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || !ableToGenerate}
-              className="w-full"
-              size="sm"
+    <div className="h-full w-xs bg-gradient-to-b from-slate-50 to-slate-100 border-r border-slate-200 flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col p-4 gap-4">
+          {/* Details Section */}
+          <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
+            {/* Details Section Title */}
+            <div
+              className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+                !showDetailsSection && "rounded-lg"
+              }`}
+              onClick={() => setShowDetailsSection(!showDetailsSection)}
             >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading Data...
-                </>
-              ) : (
-                <>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  Load Data
-                </>
-              )}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Slide Section */}
-      <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
-        {/* Slide Section Title */}
-        <div
-          className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
-            !showSlideSection && "rounded-lg"
-          }`}
-          onClick={() => setShowSlideSection(!showSlideSection)}
-        >
-          <h2 className="text-sm font-semibold text-slate-700">Slides</h2>
-          <button
-            onClick={() => setShowSlideSection(!showSlideSection)}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
-            {showSlideSection ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-
-        {/* Slide Section Content */}
-        {showSlideSection && (
-          <>
-            <div className="flex justify-between items-center p-1 px-2 bg-white border-t border-b border-slate-200">
+              <h2 className="text-sm font-semibold text-slate-700">Details</h2>
               <button
-                onClick={() => setIsAddDialogOpen(true)}
-                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                onClick={() => setShowDetailsSection(!showDetailsSection)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
               >
-                <Plus className="h-4 w-4" />
-                Add
-              </button>
-              <button
-                onClick={() => setIsRemoveMode(!isRemoveMode)}
-                className={`text-sm font-medium transition-colors ${
-                  isRemoveMode
-                    ? "text-red-700 bg-red-50 px-2 py-1 rounded"
-                    : "text-red-600 hover:text-red-700"
-                }`}
-              >
-                {isRemoveMode ? "Cancel Remove" : "Remove"}
+                {showDetailsSection ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronUp className="h-4 w-4" />
+                )}
               </button>
             </div>
-            <div className="flex flex-col gap-1.5 p-2 bg-slate-50/50">
-              {slideTemplates.map((slide, index) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    if (isRemoveMode) {
-                      handleRemoveSlide(index);
-                    }
-                  }}
-                  className={`flex items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-md transition-all group ${
-                    isRemoveMode
-                      ? "cursor-pointer hover:bg-red-50 hover:border-red-300 hover:shadow-sm"
-                      : "hover:border-slate-300 hover:shadow-sm"
-                  }`}
-                >
-                  <span className="text-sm text-slate-700 font-medium truncate flex-1">
-                    {slide.title}
-                  </span>
-                  {isRemoveMode ? (
-                    <X className="h-4 w-4 text-red-500" />
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditSlide(slide, index);
-                        }}
-                        className="p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
-                      <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                        {index > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSlideSwap(index, "up");
-                            }}
-                            className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                            aria-label="Move slide up"
-                          >
-                            <ChevronUp className="h-4 w-4" />
-                          </button>
-                        )}
-                        {index < slideTemplates.length - 1 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSlideSwap(index, "down");
-                            }}
-                            className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
-                            aria-label="Move slide down"
-                          >
-                            <ChevronDown className="h-4 w-4" />
-                          </button>
-                        )}
+
+            {/* Details Section Content*/}
+            {showDetailsSection && (
+              <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
+                <Label htmlFor="project-name" className="text-sm font-medium">
+                  Project Name
+                </Label>
+                <Input
+                  id="project-name"
+                  type="text"
+                  placeholder="Project Name"
+                  value={projectName}
+                  onChange={handleProjectNameChange}
+                  className="font-mono text-sm"
+                />
+                <Label htmlFor="report-type" className="text-sm font-medium">
+                  Report Type
+                </Label>
+                <Input
+                  id="report-type"
+                  type="text"
+                  placeholder="Report Type"
+                  value={reportType}
+                  onChange={handleReportTypeChange}
+                  className="font-mono text-sm"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Data Section */}
+          <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
+            {/* Data Section Title */}
+            <div
+              className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+                !showDataSection && "rounded-lg"
+              }`}
+              onClick={() => setShowDataSection(!showDataSection)}
+            >
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-slate-700">Data</h2>
+                {isNoData && (
+                  <Badge className={"text-xs"} variant={"destructive"}>
+                    No Data
+                  </Badge>
+                )}
+              </div>
+              <button
+                onClick={() => setShowDataSection(!showDataSection)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                {showDataSection ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronUp className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            {/* Data Section Content*/}
+            {showDataSection && (
+              <div className="flex flex-col gap-1.5 p-2 px-3 bg-slate-50/50">
+                <Label htmlFor="sheet-link" className="text-sm font-medium">
+                  Raw Dashboard
+                </Label>
+                <Input
+                  id="sheet-link"
+                  type="text"
+                  placeholder="https://docs.google.com/spreadsheets/d/..."
+                  value={sheetsLink}
+                  onChange={handleSheetsLinkChange}
+                  className="font-mono text-sm"
+                />
+                {sheetsID && (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm text-muted-foreground">
+                          Sheet ID
+                        </Label>
+                        <Badge
+                          variant={ableToGenerate ? "default" : "destructive"}
+                          className={`text-xs ${
+                            ableToGenerate ? "bg-green-200 text-green-700" : ""
+                          }`}
+                        >
+                          {ableToGenerate ? "Valid" : "Invalid"}
+                        </Badge>
+                      </div>
+                      <div className="p-3 bg-muted rounded-md text-sm font-mono break-all border-1">
+                        {sheetsID}
                       </div>
                     </div>
-                  )}
+                    {/* Project Filter Section */}
+                    <SidebarProjectFilterSection sheetsID={sheetsID} />
+                  </>
+                )}
+
+                {/* Date Range Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Calendar className="h-4 w-4 text-blue-600" />
+                    <h3 className="font-medium text-sm">Date Range</h3>
+                  </div>
+
+                  <Card className="shadow-sm py-1">
+                    <CardContent className="p-4 space-y-1 py-2">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="date-range-enable"
+                          checked={enableDateRange}
+                          onChange={handleEnableDateRangeChange}
+                          className="rounded border-gray-300"
+                        />
+                        <Label
+                          htmlFor="date-range-enable"
+                          className="text-sm font-medium"
+                        >
+                          Enable date filtering
+                        </Label>
+                      </div>
+
+                      {enableDateRange && (
+                        <div className="pt-2 flex flex-col gap-2">
+                          <DateRangePicker />
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-              ))}
+
+                <Button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !ableToGenerate}
+                  className="w-full"
+                  size="sm"
+                >
+                  {isGenerating ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading Data...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <FileSpreadsheet className="h-4 w-4" />
+                      Load Data
+                    </div>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Slide Section */}
+          <div className="flex flex-col rounded-lg shadow-sm border border-slate-200">
+            {/* Slide Section Title */}
+            <div
+              className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
+                !showSlideSection && "rounded-lg"
+              }`}
+              onClick={() => setShowSlideSection(!showSlideSection)}
+            >
+              <h2 className="text-sm font-semibold text-slate-700">Slides</h2>
+              <button
+                onClick={() => setShowSlideSection(!showSlideSection)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                {showSlideSection ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronUp className="h-4 w-4" />
+                )}
+              </button>
             </div>
-          </>
-        )}
+
+            {/* Slide Section Content */}
+            {showSlideSection && (
+              <>
+                <div className="flex justify-between items-center p-1 px-2 bg-white border-t border-b border-slate-200">
+                  <button
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add
+                  </button>
+                  <button
+                    onClick={() => setIsRemoveMode(!isRemoveMode)}
+                    className={`text-sm font-medium transition-colors ${
+                      isRemoveMode
+                        ? "text-red-700 bg-red-50 px-2 py-1 rounded"
+                        : "text-red-600 hover:text-red-700"
+                    }`}
+                  >
+                    {isRemoveMode ? "Cancel Remove" : "Remove"}
+                  </button>
+                </div>
+                <div className="flex flex-col gap-1.5 p-2 bg-slate-50/50">
+                  {slideTemplates.map((slide, index) => (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        if (isRemoveMode) {
+                          handleRemoveSlide(index);
+                        }
+                      }}
+                      className={`flex items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-md transition-all group ${
+                        isRemoveMode
+                          ? "cursor-pointer hover:bg-red-50 hover:border-red-300 hover:shadow-sm"
+                          : "hover:border-slate-300 hover:shadow-sm"
+                      }`}
+                    >
+                      <span className="text-sm text-slate-700 font-medium truncate flex-1">
+                        {slide.title}
+                      </span>
+                      {isRemoveMode ? (
+                        <X className="h-4 w-4 text-red-500" />
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditSlide(slide, index);
+                            }}
+                            className="p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <div className="flex flex-col gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            {index > 0 && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSlideSwap(index, "up");
+                                }}
+                                className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                                aria-label="Move slide up"
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </button>
+                            )}
+                            {index < slideTemplates.length - 1 && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSlideSwap(index, "down");
+                                }}
+                                className="flex items-center justify-center p-1 text-slate-600 bg-slate-100 rounded hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                                aria-label="Move slide down"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
+      {/* Export Section */}
+      <div className="bg-white p-3 flex gap-2 border-t border-slate-200">
+        <Button
+          className="flex-1 flex items-center gap-2 bg-green-600 hover:bg-green-600/80 active:bg-green-600/90 cursor-pointer"
+          onClick={handleExport}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-pulse">
+                <Loader className="animate-spin" />
+              </div>
+              Exporting...
+            </div>
+          ) : (
+            <span>Export Slide</span>
+          )}
+        </Button>
+        <div className={!slideURL || isExporting ? "cursor-not-allowed" : ""}>
+          <Button
+            className="bg-green-600 hover:bg-green-600/80 active:bg-green-600/90"
+            disabled={!slideURL || isExporting}
+            onClick={handleOpenSlideURL}
+          >
+            GO
+          </Button>
+        </div>
+      </div>
       {/* Add Slide Dialog - Separate from trigger */}
       <CreateSlideDialog
         isAddDialogOpen={isAddDialogOpen}
