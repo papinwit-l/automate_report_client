@@ -55,7 +55,10 @@ import TiktokConversionSlide01 from "@/components/slides/TiktokConversionSlide01
 import LineReachSlide01 from "@/components/slides/LineReachSlide01";
 import LineGainFriendsSlide01 from "@/components/slides/LineGainFriendsSlide01";
 import TaboolaSlide from "@/components/slides/TaboolaSlide";
-import { EXPORT_SLIDE_COMPONENT_LISTS } from "@/configs/exportSlideConfigs";
+import {
+  EXPORT_CONFIG,
+  EXPORT_SLIDE_COMPONENT_LISTS,
+} from "@/configs/exportSlideConfigs";
 import MediaPlan from "@/components/slides/MediaPlan";
 import { tableProcessing } from "@/utils/mediaPlanProcessing";
 import ShoppingAdsSlide from "@/components/slides/ShoppingAdsSlide";
@@ -694,7 +697,7 @@ function SlideReport() {
         axiosInstance,
         slideData,
         projectName.length > 0 ? projectName : "Monthly Performance Report",
-        4 // Send 4 slides per batch (adjust based on your needs)
+        EXPORT_CONFIG.batchSize
       );
 
       if (!presentationUrl) {

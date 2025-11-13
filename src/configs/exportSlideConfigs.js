@@ -106,3 +106,7 @@ export const EXPORT_SLIDE_COMPONENT_LISTS = [
   { id: "taboola-component", title: "Taboola" },
   { id: "end-slide-component", title: "End" },
 ];
+
+export const EXPORT_CONFIG = {
+  batchSize: 1,
+};

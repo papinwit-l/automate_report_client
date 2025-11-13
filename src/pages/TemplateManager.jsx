@@ -8,6 +8,7 @@ import domtoimage from "dom-to-image";
 import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
 import { toast } from "sonner";
 import { ExternalLink } from "lucide-react";
+import { EXPORT_CONFIG } from "@/configs/exportSlideConfigs";
 
 function TemplateManager() {
   const [slideTemplates, setSlideTemplates] = useState(START_TEMPLATES);
@@ -333,7 +334,7 @@ function TemplateManager() {
         axiosInstance,
         slideData,
         projectName.length > 0 ? projectName : "Monthly Performance Report",
-        4 // Send 4 slides per batch (adjust based on your needs)
+        EXPORT_CONFIG.batchSize
       );
 
       if (!presentationUrl) {
