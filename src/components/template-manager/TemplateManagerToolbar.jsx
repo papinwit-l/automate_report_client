@@ -166,6 +166,7 @@ function TemplateManagerToolbar({
           className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
             !showDetailsSection && "rounded-lg"
           }`}
+          onClick={() => setShowDetailsSection(!showDetailsSection)}
         >
           <h2 className="text-sm font-semibold text-slate-700">Details</h2>
           <button
@@ -216,6 +217,7 @@ function TemplateManagerToolbar({
           className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
             !showDataSection && "rounded-lg"
           }`}
+          onClick={() => setShowDataSection(!showDataSection)}
         >
           <h2 className="text-sm font-semibold text-slate-700">Data</h2>
           <button
@@ -331,6 +333,7 @@ function TemplateManagerToolbar({
           className={`flex items-center justify-between bg-white p-3 cursor-pointer transition-colors rounded-t-lg ${
             !showSlideSection && "rounded-lg"
           }`}
+          onClick={() => setShowSlideSection(!showSlideSection)}
         >
           <h2 className="text-sm font-semibold text-slate-700">Slides</h2>
           <button
