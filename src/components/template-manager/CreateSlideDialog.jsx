@@ -57,7 +57,7 @@ function CreateSlideDialog({
   setIsAddDialogOpen,
   onAddSlide,
 }) {
-  const { getDataList, enableDateRange, dateRange } = useData();
+  const { getDataList, enableDateRange, dateRange, setIsNoData } = useData();
   // console.log("🎯 CreateSlideDialog getDataList:", getDataList());
 
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
@@ -597,11 +597,15 @@ function CreateSlideDialog({
       return cleanedData.length > 0;
     };
 
-    return allData.filter(isValidDataSource).map((dataItem) => ({
+    const result = allData.filter(isValidDataSource).map((dataItem) => ({
       label: dataItem.label,
       value: dataItem.label,
     }));
-  }, [getDataList, enableDateRange, dateRange]);
+
+    setIsNoData(result.length === 0);
+
+    return result;
+  }, [getDataList, enableDateRange, dateRange, setIsNoData]);
 
   // Hook 3: Get group by list
   const dataGroupByList = useMemo(() => {

@@ -36,6 +36,8 @@ export const DataProvider = ({ children }) => {
   //template
   const [template, setTemplate] = useState("default");
 
+  const [isNoData, setIsNoData] = useState(true);
+
   const [notFoundSheetList, setNotFoundSheetList] = useState([]);
 
   // Smart Slide Detection
@@ -1548,6 +1550,8 @@ export const DataProvider = ({ children }) => {
     template,
     setTemplate,
     getDataList,
+    isNoData,
+    setIsNoData,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

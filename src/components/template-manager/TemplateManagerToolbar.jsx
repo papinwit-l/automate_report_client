@@ -30,7 +30,8 @@ function TemplateManagerToolbar({
   setReportType,
   handleExport,
 }) {
-  const { fetchData, enableDateRange, setEnableDateRange } = useData();
+  const { fetchData, enableDateRange, setEnableDateRange, isNoData } =
+    useData();
 
   const [error, setError] = useState(null);
 
@@ -219,7 +220,14 @@ function TemplateManagerToolbar({
           }`}
           onClick={() => setShowDataSection(!showDataSection)}
         >
-          <h2 className="text-sm font-semibold text-slate-700">Data</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-slate-700">Data</h2>
+            {isNoData && (
+              <Badge className={"text-xs"} variant={"destructive"}>
+                No Data
+              </Badge>
+            )}
+          </div>
           <button
             onClick={() => setShowDataSection(!showDataSection)}
             className="text-slate-400 hover:text-slate-600 transition-colors"
