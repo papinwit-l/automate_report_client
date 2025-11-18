@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 
 function ExportLoadingDialog({ open, inputLogs }) {
@@ -44,6 +50,7 @@ function ExportLoadingDialog({ open, inputLogs }) {
               </span>
             </div>
           </DialogTitle>
+          <DialogDescription className="hidden"></DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -95,10 +102,10 @@ function ExportLoadingDialog({ open, inputLogs }) {
         </div>
 
         {/* <div className="flex items-center justify-center gap-1.5 pt-2 border-t border-gray-200/60">
-          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></div>
-        </div> */}
+            <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></div>
+            </div> */}
       </DialogContent>
     </Dialog>
   );
