@@ -9,6 +9,7 @@ import { getExportableSlidesV2 } from "@/utils/exportSlideUtils";
 import { toast } from "sonner";
 import { ExternalLink } from "lucide-react";
 import { EXPORT_CONFIG } from "@/configs/exportSlideConfigs";
+import ExportLoadingDialog from "@/components/template-manager/ExportLoadingDialog";
 
 function TemplateManager() {
   const [slideTemplates, setSlideTemplates] = useState(START_TEMPLATES);
@@ -19,6 +20,9 @@ function TemplateManager() {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
   const [presentationUrl, setPresentationUrl] = useState(null);
+
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportLogs, setExportLogs] = useState("");
 
   const ensureImagesLoaded = async () => {
     console.log("Ensuring all images are fully loaded...");
@@ -374,12 +378,40 @@ function TemplateManager() {
     }
   };
 
+  // Helper function at the top of your file
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleTestExportDialog = async () => {
+    setExportDialogOpen(true);
+
+    setExportLogs("Starting export...");
+    await delay(1000);
+
+    setExportLogs("Sending batch 1/1...");
+    await delay(1000);
+
+    setExportLogs("✓ Batch 1 sent successfully");
+    await delay(1000);
+
+    setExportLogs("Sending batch 2/2...");
+    await delay(1000);
+
+    setExportLogs("✓ Batch 2 sent successfully");
+    await delay(1000);
+
+    setExportLogs("Export complete!");
+    await delay(1500);
+
+    setExportDialogOpen(false);
+  };
+
   return (
     <div className="w-screen h-screen flex flex-col">
       <TemplateManagerHeader
         slideTemplates={slideTemplates}
         setSlideTemplates={setSlideTemplates}
         onExport={handleExportAllSlides}
+        test={handleTestExportDialog}
       />
       <div className="flex-1 flex min-h-0">
         <TemplateManagerToolbar
@@ -398,6 +430,11 @@ function TemplateManager() {
         <TemplateContent
           slides={slideTemplates}
           projectDetails={{ projectName, reportType }}
+        />
+        <ExportLoadingDialog
+          open={exportDialogOpen}
+          onClose={() => setExportDialogOpen(false)}
+          inputLogs={exportLogs}
         />
       </div>
     </div>
