@@ -466,33 +466,45 @@ function TemplateManager() {
     }
   };
 
-  // Helper function at the top of your file
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // // Helper function at the top of your file
+  // const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const handleTestExportDialog = async () => {
-    setExportDialogOpen(true);
-    setExportLogs([]); // Clear previous logs
+  // const handleTestExportDialog = async () => {
+  //   setExportDialogOpen(true);
+  //   setExportLogs([]); // Clear previous logs
 
-    setExportLogs((prev) => [...prev, "Starting export..."]);
-    await delay(1000);
+  //   setExportLogs((prev) => [...prev, "Starting export..."]);
+  //   await delay(1000);
 
-    setExportLogs((prev) => [...prev, "Sending batch 1/2..."]);
-    await delay(1000);
+  //   setExportLogs((prev) => [...prev, "Sending batch 1/2..."]);
+  //   await delay(1000);
 
-    setExportLogs((prev) => [...prev, "✓ Batch 1 sent successfully"]);
-    await delay(1000);
+  //   setExportLogs((prev) => [...prev, "✓ Batch 1 sent successfully"]);
+  //   await delay(1000);
 
-    setExportLogs((prev) => [...prev, "Sending batch 2/2..."]);
-    await delay(1000);
+  //   setExportLogs((prev) => [...prev, "Sending batch 2/2..."]);
+  //   await delay(1000);
 
-    setExportLogs((prev) => [...prev, "✓ Batch 2 sent successfully"]);
-    await delay(1000);
+  //   setExportLogs((prev) => [...prev, "✓ Batch 2 sent successfully"]);
+  //   await delay(1000);
 
-    setExportLogs((prev) => [...prev, "✅ Export complete!"]);
-    await delay(1500);
+  //   setExportLogs((prev) => [...prev, "✓ Batch 3 sent successfully"]);
+  //   await delay(1000);
 
-    setExportDialogOpen(false);
-  };
+  //   setExportLogs((prev) => [...prev, "✓ Batch 4 sent successfully"]);
+  //   await delay(1000);
+
+  //   setExportLogs((prev) => [...prev, "✓ Batch 5 sent successfully"]);
+  //   await delay(1000);
+
+  //   setExportLogs((prev) => [...prev, "✓ Batch 6 sent successfully"]);
+  //   await delay(1000);
+
+  //   setExportLogs((prev) => [...prev, "✅ Export complete!"]);
+  //   await delay(1500);
+
+  //   setExportDialogOpen(false);
+  // };
 
   return (
     <div className="w-screen h-screen flex flex-col">
@@ -500,7 +512,6 @@ function TemplateManager() {
         slideTemplates={slideTemplates}
         setSlideTemplates={setSlideTemplates}
         onExport={handleExportAllSlides}
-        test={handleTestExportDialog}
       />
       <div className="flex-1 flex min-h-0">
         <TemplateManagerToolbar
