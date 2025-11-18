@@ -9,7 +9,7 @@ function ExportLoadingDialog({ open, inputLogs }) {
 
   useEffect(() => {
     if (inputLogs) {
-      setLogs((prev) => [...prev, inputLogs]);
+      setLogs(inputLogs);
     }
   }, [inputLogs]);
 
@@ -73,7 +73,8 @@ function ExportLoadingDialog({ open, inputLogs }) {
                 ) : (
                   <div className="text-sm font-mono text-gray-700 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
-                    {logs[logs.length - 1] || "Initializing export..."}
+                    {inputLogs[inputLogs.length - 1] ||
+                      "Initializing export..."}
                   </div>
                 )}
               </div>

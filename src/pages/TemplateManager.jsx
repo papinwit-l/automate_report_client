@@ -22,10 +22,14 @@ function TemplateManager() {
   const [presentationUrl, setPresentationUrl] = useState(null);
 
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
-  const [exportLogs, setExportLogs] = useState("");
+  const [exportLogs, setExportLogs] = useState([]); // Changed to array
 
   const ensureImagesLoaded = async () => {
     console.log("Ensuring all images are fully loaded...");
+    setExportLogs((prev) => [
+      ...prev,
+      "Ensuring all images are fully loaded...",
+    ]);
 
     const allImages = document.querySelectorAll("img");
 
@@ -36,6 +40,10 @@ function TemplateManager() {
         } else {
           const timeout = setTimeout(() => {
             console.warn(`Image load timeout: ${img.src}`);
+            setExportLogs((prev) => [
+              ...prev,
+              `Image load timeout: ${img.src}`,
+            ]);
             resolve(); // Don't block on timeout
           }, 10000); // 10 second timeout
 
@@ -47,6 +55,10 @@ function TemplateManager() {
           img.onerror = () => {
             clearTimeout(timeout);
             console.warn(`Image failed to load: ${img.src}`);
+            setExportLogs((prev) => [
+              ...prev,
+              `Image failed to load: ${img.src}`,
+            ]);
             resolve(); // Don't block on errors
           };
         }
@@ -55,6 +67,7 @@ function TemplateManager() {
 
     await Promise.all(imagePromises);
     console.log("All images processed");
+    setExportLogs((prev) => [...prev, "All images processed"]);
   };
 
   const sendSlidesInBatches = async (
@@ -71,6 +84,10 @@ function TemplateManager() {
     console.log(
       `Sending ${slides.length} slides in ${batches.length} batches of ${batchSize}...`
     );
+    setExportLogs((prev) => [
+      ...prev,
+      `Sending ${slides.length} slides in ${batches.length} batches of ${batchSize}...`,
+    ]);
 
     const sessionId = `session_${Date.now()}_${Math.random()
       .toString(36)
@@ -83,6 +100,12 @@ function TemplateManager() {
           batches[i].length
         } slides)...`
       );
+      setExportLogs((prev) => [
+        ...prev,
+        `Sending batch ${i + 1}/${batches.length} (${
+          batches[i].length
+        } slides)...`,
+      ]);
 
       try {
         const response = await axiosInstance.post(
@@ -107,6 +130,10 @@ function TemplateManager() {
         );
 
         console.log(`✓ Batch ${i + 1} sent successfully`);
+        setExportLogs((prev) => [
+          ...prev,
+          `✓ Batch ${i + 1} sent successfully`,
+        ]);
 
         // Store the presentation URL from the last batch
         if (response.data.presentationUrl) {
@@ -114,6 +141,12 @@ function TemplateManager() {
         }
       } catch (error) {
         console.error(`Failed to send batch ${i + 1}:`, error);
+        setExportLogs((prev) => [
+          ...prev,
+          `❌ Batch ${i + 1} failed: ${
+            error.response?.data?.message || error.message
+          }`,
+        ]);
         throw new Error(
           `Batch ${i + 1} failed: ${
             error.response?.data?.message || error.message
@@ -128,16 +161,20 @@ function TemplateManager() {
   const handleExportAllSlides = async () => {
     setIsExporting(true);
     setError(null);
+    setExportDialogOpen(true); // Open dialog at start
+    setExportLogs([]); // Clear previous logs
 
     try {
       const axiosInstance = await createAxiosInstance();
       console.log("Starting export...");
+      setExportLogs((prev) => [...prev, "Starting export..."]);
 
       // Ensure all images are fully loaded
       await ensureImagesLoaded();
 
       // CRITICAL: Wait for table components to initialize their width detection
       console.log("Waiting for tables to initialize...");
+      setExportLogs((prev) => [...prev, "Waiting for tables to initialize..."]);
       await new Promise((resolve) => setTimeout(resolve, 600));
 
       // Lock all table dimensions BEFORE capture
@@ -191,6 +228,10 @@ function TemplateManager() {
             console.log(
               `Locked table: ${tableRect.width}px x ${tableRect.height}px`
             );
+            setExportLogs((prev) => [
+              ...prev,
+              `Locked table: ${tableRect.width}px x ${tableRect.height}px`,
+            ]);
           }
         });
 
@@ -238,10 +279,15 @@ function TemplateManager() {
         const element = document.getElementById(slide.id);
         if (!element) {
           console.warn(`Component ${slide.id} not found, skipping...`);
+          setExportLogs((prev) => [
+            ...prev,
+            `Component ${slide.id} not found, skipping...`,
+          ]);
           continue;
         }
 
         console.log(`Capturing ${slide.title}...`);
+        setExportLogs((prev) => [...prev, `Capturing ${slide.title}...`]);
 
         // Force a reflow before capture
         element.offsetHeight;
@@ -273,12 +319,24 @@ function TemplateManager() {
           });
 
           console.log(`✓ Successfully captured ${slide.title}`);
+          setExportLogs((prev) => [
+            ...prev,
+            `✓ Successfully captured ${slide.title}`,
+          ]);
         } catch (captureError) {
           console.error(`Failed to capture ${slide.title}:`, captureError);
+          setExportLogs((prev) => [
+            ...prev,
+            `Failed to capture ${slide.title}`,
+          ]);
 
           // Fallback: Try JPEG format
           try {
             console.log(`Retrying ${slide.title} with JPEG...`);
+            setExportLogs((prev) => [
+              ...prev,
+              `Retrying ${slide.title} with JPEG...`,
+            ]);
 
             const fallbackImageData = await domtoimage.toJpeg(element, {
               quality: 0.9,
@@ -296,11 +354,19 @@ function TemplateManager() {
             });
 
             console.log(`✓ Captured ${slide.title} with JPEG fallback`);
+            setExportLogs((prev) => [
+              ...prev,
+              `✓ Captured ${slide.title} with JPEG fallback`,
+            ]);
           } catch (fallbackError) {
             console.error(
               `Both methods failed for ${slide.title}`,
               fallbackError
             );
+            setExportLogs((prev) => [
+              ...prev,
+              `Both methods failed for ${slide.title}`,
+            ]);
 
             const errorCanvas = document.createElement("canvas");
             const errorCtx = errorCanvas.getContext("2d");
@@ -320,6 +386,10 @@ function TemplateManager() {
             });
 
             console.log(`Created error slide for ${slide.title}`);
+            setExportLogs((prev) => [
+              ...prev,
+              `Created error slide for ${slide.title}`,
+            ]);
           }
         }
       }
@@ -332,6 +402,10 @@ function TemplateManager() {
       }
 
       console.log(`Captured ${slideData.length} slides, sending in batches...`);
+      setExportLogs((prev) => [
+        ...prev,
+        `Captured ${slideData.length} slides, sending in batches...`,
+      ]);
 
       // CHANGED: Send slides in batches instead of all at once
       const presentationUrl = await sendSlidesInBatches(
@@ -346,8 +420,17 @@ function TemplateManager() {
       }
 
       console.log("Presentation created successfully:", presentationUrl);
+      setExportLogs((prev) => [
+        ...prev,
+        "✅ Presentation created successfully!",
+      ]);
 
       setPresentationUrl(presentationUrl);
+
+      // Wait a bit to show success message
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setExportDialogOpen(false); // Close dialog on success
+
       toast.success(
         <div className="flex flex-col gap-1 pr-8">
           <span>Presentation created successfully!</span>
@@ -368,11 +451,16 @@ function TemplateManager() {
       window.open(presentationUrl, "_blank");
     } catch (error) {
       console.error("Multi-slide export failed:", error);
+      setExportLogs((prev) => [...prev, `❌ Error: ${error.message}`]);
       setError(
         error.response?.data?.message ||
           error.response?.data?.error ||
           error.message
       );
+
+      // Wait a bit to show error message
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      setExportDialogOpen(false); // Close dialog on error
     } finally {
       setIsExporting(false);
     }
@@ -383,23 +471,24 @@ function TemplateManager() {
 
   const handleTestExportDialog = async () => {
     setExportDialogOpen(true);
+    setExportLogs([]); // Clear previous logs
 
-    setExportLogs("Starting export...");
+    setExportLogs((prev) => [...prev, "Starting export..."]);
     await delay(1000);
 
-    setExportLogs("Sending batch 1/1...");
+    setExportLogs((prev) => [...prev, "Sending batch 1/2..."]);
     await delay(1000);
 
-    setExportLogs("✓ Batch 1 sent successfully");
+    setExportLogs((prev) => [...prev, "✓ Batch 1 sent successfully"]);
     await delay(1000);
 
-    setExportLogs("Sending batch 2/2...");
+    setExportLogs((prev) => [...prev, "Sending batch 2/2..."]);
     await delay(1000);
 
-    setExportLogs("✓ Batch 2 sent successfully");
+    setExportLogs((prev) => [...prev, "✓ Batch 2 sent successfully"]);
     await delay(1000);
 
-    setExportLogs("Export complete!");
+    setExportLogs((prev) => [...prev, "✅ Export complete!"]);
     await delay(1500);
 
     setExportDialogOpen(false);
