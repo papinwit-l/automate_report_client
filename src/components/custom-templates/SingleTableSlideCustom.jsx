@@ -80,7 +80,7 @@ function SingleTableSlideCustom(props) {
       const dataList = getDataList();
       const selectedData = dataList.find((data) => data.label === dataSource);
 
-      console.log("selectedData", selectedData);
+      // console.log("selectedData", selectedData);
 
       if (!selectedData)
         return {
@@ -95,7 +95,7 @@ function SingleTableSlideCustom(props) {
       const { data, totals, metrics, comparison, demographicData, rawData } =
         selectedData.value;
 
-      if (rawData.length === 0 || !rawData || !data || !totals || !metrics)
+      if (rawData.length === 0)
         return {
           data: {},
           totals: {},

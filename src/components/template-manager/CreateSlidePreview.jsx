@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 const CreateSlidePreview = memo(({ slide }) => {
   const {
     title,
+    name,
     Component,
     table = [],
     metricConvLength = 2,
@@ -21,15 +22,21 @@ const CreateSlidePreview = memo(({ slide }) => {
     FBPicturePerformBy = "",
   } = slide;
 
+  // console.log("🎯 slide:", slide);
+
   const dataSource = slide.dataSource;
 
   const buttonStatus = useMemo(() => {
-    if (!Component || dataSource === "") return true;
+    if (!Component) return true;
+    if (!name) return true;
+    if (name !== "single-table-slide") return false;
+    if (dataSource === "") return true;
     if (!dataGroupBy && !advancedFilter) return true;
     if (advancedFilter && (!advancedFilterBy || !advancedGroupBy)) return true;
     return false;
   }, [
     Component,
+    name,
     dataSource,
     dataGroupBy,
     advancedFilter,

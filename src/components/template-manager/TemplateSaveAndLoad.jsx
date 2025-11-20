@@ -1,7 +1,9 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { CREATE_SLIDE_LIST } from "@/configs/templateManagerConfig";
-// import { useData } from "@/contexts/DataContext";
+import { useData } from "@/contexts/DataContext";
+import UniversalLoadingDialog from "./UniversalLoadingDialog";
+import LoadDataWarningDialog from "./LoadDataWarningDialog";
 // import { AlertCircle } from "lucide-react";
 // import {
 //   Tooltip,
@@ -12,7 +14,11 @@ import { CREATE_SLIDE_LIST } from "@/configs/templateManagerConfig";
 
 function TemplateSaveAndLoad(props) {
   const { slide, setSlide } = props;
-  // const { isNoData } = useData();
+  const { isNoData } = useData();
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -32,6 +38,8 @@ function TemplateSaveAndLoad(props) {
             },
           ],
         });
+
+        setIsSaving(true);
 
         // Create a writable stream
         const writable = await handle.createWritable();
@@ -54,6 +62,8 @@ function TemplateSaveAndLoad(props) {
         console.error("Error saving file:", error);
         alert("Error saving file");
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -88,6 +98,8 @@ function TemplateSaveAndLoad(props) {
           multiple: false,
         });
 
+        setIsLoading(true);
+
         // Read the file
         const file = await fileHandle.getFile();
         const contents = await file.text();
@@ -109,7 +121,7 @@ function TemplateSaveAndLoad(props) {
           };
         });
         // setSlide(loadedData);
-        console.log("completeData", completeData);
+        // console.log("completeData", completeData);
         setSlide(completeData);
 
         console.log("File loaded successfully!");
@@ -122,6 +134,11 @@ function TemplateSaveAndLoad(props) {
       if (error.name !== "AbortError") {
         console.error("Error loading file:", error);
         alert("Error loading file");
+      }
+    } finally {
+      setIsLoading(false);
+      if (isNoData) {
+        setIsAlertOpen(true);
       }
     }
   };
@@ -179,6 +196,21 @@ function TemplateSaveAndLoad(props) {
         accept=".json"
         onChange={handleFileChange}
         style={{ display: "none" }}
+      />
+      <UniversalLoadingDialog
+        title="Saving..."
+        message="Saving your template..."
+        isProcessing={isSaving}
+      />
+      <UniversalLoadingDialog
+        title="Loading..."
+        message="Loading your template..."
+        isProcessing={isLoading}
+      />
+      <LoadDataWarningDialog
+        open={isAlertOpen}
+        onOpenChange={setIsAlertOpen}
+        onCancel={() => setIsAlertOpen(false)}
       />
     </div>
   );

@@ -6,7 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, LoaderPinwheel } from "lucide-react";
+import AnimatedPogressBar from "../custom-ui/AnimatedPogressBar";
 
 function ExportLoadingDialog({ open, inputLogs }) {
   const [logs, setLogs] = useState([]);
@@ -36,20 +37,22 @@ function ExportLoadingDialog({ open, inputLogs }) {
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
-        className="[&>button[aria-label='Close']]:hidden sm:max-w-md"
+        className="&>button[data-slot='dialog-close']]:hidden sm:max-w-md"
       >
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-xl font-semibold">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md"></div>
-                <Loader2 className="w-6 h-6 text-blue-600 animate-spin relative" />
+                <div className="flex items-center justify-center size-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg">
+                  <LoaderPinwheel className="w-8 h-8 text-white animate-spin" />
+                </div>
               </div>
               <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 Exporting slides
               </span>
             </div>
           </DialogTitle>
+          <AnimatedPogressBar />
           <DialogDescription className="hidden"></DialogDescription>
         </DialogHeader>
 
