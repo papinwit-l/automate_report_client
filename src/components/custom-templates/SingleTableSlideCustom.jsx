@@ -80,6 +80,8 @@ function SingleTableSlideCustom(props) {
       const dataList = getDataList();
       const selectedData = dataList.find((data) => data.label === dataSource);
 
+      console.log("selectedData", selectedData);
+
       if (!selectedData)
         return {
           data: {},
@@ -92,6 +94,16 @@ function SingleTableSlideCustom(props) {
 
       const { data, totals, metrics, comparison, demographicData, rawData } =
         selectedData.value;
+
+      if (rawData.length === 0 || !rawData || !data || !totals || !metrics)
+        return {
+          data: {},
+          totals: {},
+          metrics: [],
+          comparison: {},
+          demographicData: {},
+          displayTable: table,
+        };
 
       let disTable = table;
 
@@ -287,7 +299,8 @@ function SingleTableSlideCustom(props) {
 
     const { rawData, metrics } = selectedData.value;
 
-    if (!rawData) return { displayPicture: { name: null, url: null } };
+    if (!rawData || rawData.length === 0 || !metrics)
+      return { displayPicture: { name: null, url: null } };
 
     const allFields = Object.keys(rawData[0]);
     // console.log("🎯 allFields:", allFields);
@@ -621,7 +634,15 @@ function SingleTableSlideCustom(props) {
   // console.log("🎯 summaryData:", summaryData);
 
   const summarizeData = useCallback(() => {
-    if (!summaryData || summaryData.length === 0) {
+    if (
+      !summaryData ||
+      summaryData.length === 0 ||
+      !data ||
+      (Array.isArray(data) && data.length === 0) ||
+      (typeof data === "object" && Object.keys(data).length === 0) ||
+      !totals ||
+      (typeof totals === "object" && Object.keys(totals).length === 0)
+    ) {
       setSummaryText("<li>No data available for the selected period</li>");
       return;
     }
@@ -630,7 +651,7 @@ function SingleTableSlideCustom(props) {
         return acc + `<li>${item}</li>`;
       }, "")
     );
-  }, [summaryData]);
+  }, [summaryData, data, totals]);
 
   useEffect(() => {
     summarizeData();

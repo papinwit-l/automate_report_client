@@ -1,18 +1,18 @@
 import React, { useRef } from "react";
 import { Button } from "../ui/button";
 import { CREATE_SLIDE_LIST } from "@/configs/templateManagerConfig";
-import { useData } from "@/contexts/DataContext";
-import { AlertCircle } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+// import { useData } from "@/contexts/DataContext";
+// import { AlertCircle } from "lucide-react";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "../ui/tooltip";
 
 function TemplateSaveAndLoad(props) {
   const { slide, setSlide } = props;
-  const { isNoData } = useData();
+  // const { isNoData } = useData();
 
   const fileInputRef = useRef(null);
 
@@ -153,7 +153,8 @@ function TemplateSaveAndLoad(props) {
   return (
     <div className="flex items-center gap-3">
       <Button onClick={handleSave}>Save</Button>
-      <TooltipProvider>
+      <Button onClick={handleLoad}>Load</Button>
+      {/* <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <span>
@@ -169,7 +170,7 @@ function TemplateSaveAndLoad(props) {
             </TooltipContent>
           )}
         </Tooltip>
-      </TooltipProvider>
+      </TooltipProvider> */}
 
       {/* Hidden file input - fallback for unsupported browsers */}
       <input
