@@ -22,6 +22,7 @@ import { useData } from "@/contexts/DataContext";
 import CreateSlideDialog from "./CreateSlideDialog";
 import EditSlideDialog from "./EditSlideDialog";
 import { toast } from "sonner";
+import UniversalLoadingDialog from "./UniversalLoadingDialog";
 
 function TemplateManagerToolbar({
   slideTemplates,
@@ -510,6 +511,11 @@ function TemplateManagerToolbar({
         setIsEditDialogOpen={setIsEditDialogOpen}
         slideToEdit={slideToEdit}
         onUpdateSlide={handleUpdateSlide}
+      />
+      <UniversalLoadingDialog
+        title={"Loading Data..."}
+        message={"Loading your data..."}
+        isProcessing={isGenerating}
       />
     </div>
   );

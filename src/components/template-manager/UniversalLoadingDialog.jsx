@@ -28,19 +28,18 @@ function UniversalLoadingDialog({ title, message, isProcessing }) {
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center text-center gap-4">
-              {/* Spinner */}
-              <div className="flex items-center justify-center size-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg">
-                <Cog className="w-8 h-8 text-white animate-spin" />
-              </div>
-
-              {/* Title */}
-              <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                {title}
-              </h2>
+          <DialogTitle className="hidden" />
+          <div className="flex items-center text-center gap-4">
+            {/* Spinner */}
+            <div className="flex items-center justify-center size-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg">
+              <Cog className="w-8 h-8 text-white animate-spin" />
             </div>
-          </DialogTitle>
+
+            {/* Title */}
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+              {title}
+            </h2>
+          </div>
         </DialogHeader>
         <DialogDescription className="hidden"></DialogDescription>
 
