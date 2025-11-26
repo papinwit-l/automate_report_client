@@ -212,7 +212,8 @@ function CreateSlideDialog({
 
   const getTableList = () => {
     if (newSlideType === "overall-slide") {
-      return OVERALL_TABLE;
+      // return OVERALL_TABLE;
+      return CUSTOM_TABLE;
     }
     if (newSlideType === "single-table-slide") {
       return CUSTOM_TABLE;
