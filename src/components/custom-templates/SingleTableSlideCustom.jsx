@@ -37,25 +37,47 @@ import {
 import TextEditorModalCustom from "../template-manager/TextEditorModalCustom";
 import ImageFallback from "../slides/utils/ImageFallback";
 
+// Helper function to normalize advancedFilterBy to array
+const normalizeAdvancedFilterBy = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string" && value !== "") return [value];
+  return [];
+};
+
+// Helper function to safely format number
+const safeFormatNumber = (value, options = {}) => {
+  const num = parseFloat(value);
+  if (isNaN(num) || value === null || value === undefined) {
+    return "0";
+  }
+  return num.toLocaleString(undefined, options);
+};
+
 function SingleTableSlideCustom(props) {
   const {
     id,
     title,
-    table,
-    metricData,
-    metricConvLength,
+    table = [],
+    metricData = [],
+    metricConvLength = 0,
     dataSource,
     dataGroupBy,
-    dataChannel,
+    dataChannel = "All",
     advancedFilter,
     advancedFilterBy,
     advancedGroupBy,
-    summaryPosition,
-    extraContentType,
-    demographicChart,
-    summaryContent,
+    summaryPosition = "bottom",
+    extraContentType = "none",
+    demographicChart = [],
+    summaryContent = [],
     FBPicturePerformBy,
   } = props;
+
+  // Normalize advancedFilterBy to always be an array
+  const normalizedAdvancedFilterBy = useMemo(
+    () => normalizeAdvancedFilterBy(advancedFilterBy),
+    [advancedFilterBy]
+  );
 
   const { getDataList, enableDateRange, dateRange, FacebookAdsPicture } =
     useData();
@@ -67,51 +89,36 @@ function SingleTableSlideCustom(props) {
 
   const { data, totals, comparison, demographicData, displayTable } =
     useMemo(() => {
-      if (!dataSource)
-        return {
-          data: {},
-          totals: {},
-          metrics: [],
-          comparison: {},
-          demographicData: {},
-          displayTable: table,
-        };
+      const emptyResult = {
+        data: {},
+        totals: {},
+        metrics: [],
+        comparison: {},
+        demographicData: [],
+        displayTable: table,
+      };
+
+      if (!dataSource) return emptyResult;
 
       const dataList = getDataList();
+      if (!dataList || dataList.length === 0) return emptyResult;
+
       const selectedData = dataList.find((data) => data.label === dataSource);
 
-      // console.log("selectedData", selectedData);
-
-      if (!selectedData)
-        return {
-          data: {},
-          totals: {},
-          metrics: [],
-          comparison: {},
-          demographicData: {},
-          displayTable: table,
-        };
+      if (!selectedData?.value) return emptyResult;
 
       const { data, totals, metrics, comparison, demographicData, rawData } =
         selectedData.value;
 
-      if (rawData.length === 0)
-        return {
-          data: {},
-          totals: {},
-          metrics: [],
-          comparison: {},
-          demographicData: {},
-          displayTable: table,
-        };
+      if (!rawData || rawData.length === 0) return emptyResult;
 
       let disTable = table;
 
       if (dataGroupBy !== "default") {
-        const allFields = Object.keys(rawData[0]);
-        // console.log("🎯 allFields:", allFields);
+        const allFields = Object.keys(rawData[0] || {});
+        if (allFields.length === 0) return emptyResult;
+
         let cleanedData = cleanObjectData(rawData, metrics);
-        // console.log("🎯 cleanedData:", cleanedData);
 
         if (dataChannel !== "All") {
           cleanedData = cleanedData.filter(
@@ -119,19 +126,26 @@ function SingleTableSlideCustom(props) {
           );
         }
 
-        // grouping logic
+        // grouping logic - using normalized array
         let groupBy = dataGroupBy;
         if (dataGroupBy === "") {
-          if (advancedFilterBy && advancedFilterBy.length > 0) {
+          if (normalizedAdvancedFilterBy.length > 0) {
             cleanedData = cleanedData.filter((item) =>
-              advancedFilterBy.includes(item[advancedFilter])
+              normalizedAdvancedFilterBy.includes(item[advancedFilter])
             );
           }
           groupBy = advancedGroupBy;
         }
 
-        // Declare variables outside the conditions
-        let currentPeriodData = cleanedData; // Default to all cleaned data
+        // Check if we have data after filtering
+        if (cleanedData.length === 0) {
+          return {
+            ...emptyResult,
+            demographicData: demographicData || [],
+          };
+        }
+
+        let currentPeriodData = cleanedData;
         let previousPeriodData = [];
         let comparisonResult = {};
         let currentPeriodResults;
@@ -140,12 +154,20 @@ function SingleTableSlideCustom(props) {
         const platform = dataSource === "Youtube" ? "Youtube" : "default";
 
         // Case 1: Date range is enabled
-        if (enableDateRange && dateRange.from && dateRange.to) {
+        if (enableDateRange && dateRange?.from && dateRange?.to) {
           currentPeriodData = filterDataByDateRange(
             cleanedData,
             dateRange.from,
             dateRange.to
           );
+
+          // Check if current period has data
+          if (currentPeriodData.length === 0) {
+            return {
+              ...emptyResult,
+              demographicData: demographicData || [],
+            };
+          }
 
           const previousPeriodDates = getPreviousPeriodDates(
             dateRange.from,
@@ -168,19 +190,21 @@ function SingleTableSlideCustom(props) {
           );
 
           // Process previous period
-          previousPeriodResults = processAdvertisingData(
-            previousPeriodData,
-            allFields,
-            metrics,
-            groupBy,
-            platform
-          );
+          if (previousPeriodData.length > 0) {
+            previousPeriodResults = processAdvertisingData(
+              previousPeriodData,
+              allFields,
+              metrics,
+              groupBy,
+              platform
+            );
 
-          // Calculate comparison
-          comparisonResult = calculateComparison(
-            currentPeriodResults.enhancedTotals,
-            previousPeriodResults.enhancedTotals
-          );
+            // Calculate comparison
+            comparisonResult = calculateComparison(
+              currentPeriodResults?.enhancedTotals || {},
+              previousPeriodResults?.enhancedTotals || {}
+            );
+          }
 
           // Handle Facebook/TikTok
           if (
@@ -209,30 +233,31 @@ function SingleTableSlideCustom(props) {
               metrics,
               config
             );
-            previousPeriodResults = processSocialMediaData(
-              previousPeriodData,
-              allFields,
-              metrics,
-              config
-            );
-            comparisonResult = calculateComparison(
-              currentPeriodResults.enhancedTotals,
-              previousPeriodResults.enhancedTotals
-            );
+
+            if (previousPeriodData.length > 0) {
+              previousPeriodResults = processSocialMediaData(
+                previousPeriodData,
+                allFields,
+                metrics,
+                config
+              );
+              comparisonResult = calculateComparison(
+                currentPeriodResults?.enhancedTotals || {},
+                previousPeriodResults?.enhancedTotals || {}
+              );
+            }
           }
         }
         // Case 2: No date range - process all data
         else {
-          // Process all cleaned data
           currentPeriodResults = processAdvertisingData(
-            currentPeriodData, // This is cleanedData
+            currentPeriodData,
             allFields,
             metrics,
             groupBy,
             platform
           );
 
-          // No comparison when date range is disabled
           comparisonResult = {};
 
           // Handle Facebook/TikTok
@@ -257,7 +282,7 @@ function SingleTableSlideCustom(props) {
             disTable = table.map((item) => tableUtilsMapping(item));
 
             currentPeriodResults = processSocialMediaData(
-              currentPeriodData, // This is cleanedData
+              currentPeriodData,
               allFields,
               metrics,
               config
@@ -265,26 +290,39 @@ function SingleTableSlideCustom(props) {
           }
         }
 
-        // console.log("🎯 currentPeriodResults:", currentPeriodResults);
+        // Check if processing returned valid results
+        if (!currentPeriodResults) {
+          return {
+            ...emptyResult,
+            demographicData: demographicData || [],
+          };
+        }
 
         return {
-          data: currentPeriodResults.enhancedFieldData,
-          totals: currentPeriodResults.enhancedTotals,
-          metrics,
-          comparison: comparisonResult,
-          demographicData,
+          data: currentPeriodResults.enhancedFieldData || {},
+          totals: currentPeriodResults.enhancedTotals || {},
+          metrics: metrics || [],
+          comparison: comparisonResult || {},
+          demographicData: demographicData || [],
           displayTable: disTable,
         };
       }
 
-      return { data, totals, metrics, comparison, demographicData, rawData };
+      return {
+        data: data || {},
+        totals: totals || {},
+        metrics: metrics || [],
+        comparison: comparison || {},
+        demographicData: demographicData || [],
+        displayTable: table,
+      };
     }, [
       dataSource,
       getDataList,
       dataGroupBy,
       dataChannel,
       advancedFilter,
-      advancedFilterBy,
+      normalizedAdvancedFilterBy,
       advancedGroupBy,
       enableDateRange,
       dateRange,
@@ -292,22 +330,28 @@ function SingleTableSlideCustom(props) {
     ]);
 
   const { displayPicture } = useMemo(() => {
+    const emptyPicture = { name: null, url: null };
     const DATA_GROUP_BY = "Ad name";
 
+    if (!dataSource) return { displayPicture: emptyPicture };
+
     const dataList = getDataList();
+    if (!dataList || dataList.length === 0)
+      return { displayPicture: emptyPicture };
+
     const selectedData = dataList.find((data) => data.label === dataSource);
 
-    if (!selectedData) return { displayPicture: { name: null, url: null } };
+    if (!selectedData?.value) return { displayPicture: emptyPicture };
 
     const { rawData, metrics } = selectedData.value;
 
     if (!rawData || rawData.length === 0 || !metrics)
-      return { displayPicture: { name: null, url: null } };
+      return { displayPicture: emptyPicture };
 
-    const allFields = Object.keys(rawData[0]);
-    // console.log("🎯 allFields:", allFields);
+    const allFields = Object.keys(rawData[0] || {});
+    if (allFields.length === 0) return { displayPicture: emptyPicture };
+
     let cleanedData = cleanObjectData(rawData, metrics);
-    // console.log("🎯 cleanedData:", cleanedData);
 
     if (dataChannel !== "All") {
       cleanedData = cleanedData.filter(
@@ -315,55 +359,29 @@ function SingleTableSlideCustom(props) {
       );
     }
 
-    // Declare variables outside the conditions
-    let currentPeriodData = cleanedData; // Default to all cleaned data
-    let previousPeriodData = [];
-    let comparisonResult = {};
+    if (cleanedData.length === 0) return { displayPicture: emptyPicture };
+
+    let currentPeriodData = cleanedData;
     let currentPeriodResults;
-    let previousPeriodResults;
 
     const platform = dataSource === "Youtube" ? "Youtube" : "default";
 
-    if (enableDateRange && dateRange.from && dateRange.to) {
+    if (enableDateRange && dateRange?.from && dateRange?.to) {
       currentPeriodData = filterDataByDateRange(
         cleanedData,
         dateRange.from,
         dateRange.to
       );
 
-      const previousPeriodDates = getPreviousPeriodDates(
-        dateRange.from,
-        dateRange.to
-      );
+      if (currentPeriodData.length === 0)
+        return { displayPicture: emptyPicture };
 
-      previousPeriodData = filterDataByDateRange(
-        cleanedData,
-        previousPeriodDates.from,
-        previousPeriodDates.to
-      );
-
-      // Process current period
       currentPeriodResults = processAdvertisingData(
         currentPeriodData,
         allFields,
         metrics,
         DATA_GROUP_BY,
         platform
-      );
-
-      // Process previous period
-      previousPeriodResults = processAdvertisingData(
-        previousPeriodData,
-        allFields,
-        metrics,
-        DATA_GROUP_BY,
-        platform
-      );
-
-      // Calculate comparison
-      comparisonResult = calculateComparison(
-        currentPeriodResults.enhancedTotals,
-        previousPeriodResults.enhancedTotals
       );
 
       // Handle Facebook/TikTok
@@ -388,31 +406,15 @@ function SingleTableSlideCustom(props) {
           metrics,
           config
         );
-        previousPeriodResults = processSocialMediaData(
-          previousPeriodData,
-          allFields,
-          metrics,
-          config
-        );
-        comparisonResult = calculateComparison(
-          currentPeriodResults.enhancedTotals,
-          previousPeriodResults.enhancedTotals
-        );
       }
-    }
-    // Case 2: No date range - process all data
-    else {
-      // Process all cleaned data
+    } else {
       currentPeriodResults = processAdvertisingData(
-        currentPeriodData, // This is cleanedData
+        currentPeriodData,
         allFields,
         metrics,
         DATA_GROUP_BY,
         platform
       );
-
-      // No comparison when date range is disabled
-      comparisonResult = {};
 
       // Handle Facebook/TikTok
       if (
@@ -431,7 +433,7 @@ function SingleTableSlideCustom(props) {
         };
 
         currentPeriodResults = processSocialMediaData(
-          currentPeriodData, // This is cleanedData
+          currentPeriodData,
           allFields,
           metrics,
           config
@@ -439,39 +441,49 @@ function SingleTableSlideCustom(props) {
       }
     }
 
+    if (!currentPeriodResults) return { displayPicture: emptyPicture };
+
     const { enhancedFieldData } = currentPeriodResults;
 
-    // find picture part
-
-    if (!FBPicturePerformBy)
-      return { displayPicture: { name: null, url: null } };
+    if (!FBPicturePerformBy) return { displayPicture: emptyPicture };
 
     const key = dataSource.trim().toLowerCase().includes("facebook")
       ? tableUtilsMapping(FBPicturePerformBy)
       : FBPicturePerformBy;
 
     const dataEntries = Object.entries(enhancedFieldData || {});
-    if (dataEntries.length === 0) {
-      return { displayPicture: { name: null, url: null } };
-    }
+    if (dataEntries.length === 0) return { displayPicture: emptyPicture };
 
-    const topKeyData = dataEntries.reduce((max, current) =>
-      current[1][key] > max[1][key] ? current : max
-    );
+    // Filter out entries with invalid values for the key
+    const validEntries = dataEntries.filter(([_, value]) => {
+      const keyValue = value?.[key];
+      return keyValue !== undefined && keyValue !== null && !isNaN(keyValue);
+    });
+
+    if (validEntries.length === 0) return { displayPicture: emptyPicture };
+
+    const topKeyData = validEntries.reduce((max, current) => {
+      const currentValue = current[1]?.[key] || 0;
+      const maxValue = max[1]?.[key] || 0;
+      return currentValue > maxValue ? current : max;
+    });
 
     const topKey = topKeyData[0];
-    const topKeyValue = topKeyData[1][key];
+    const topKeyValue = topKeyData[1]?.[key];
+
     if (!topKeyValue || topKeyValue === undefined || isNaN(topKeyValue)) {
-      return { displayPicture: { name: null, url: null } };
+      return { displayPicture: emptyPicture };
+    }
+
+    if (!FacebookAdsPicture || !Array.isArray(FacebookAdsPicture)) {
+      return { displayPicture: emptyPicture };
     }
 
     const topKeyItem = FacebookAdsPicture.find(
-      (item) => item["Ad name"] === topKey
+      (item) => item?.["Ad name"] === topKey
     );
 
-    if (!topKeyItem) {
-      return { displayPicture: { name: null, url: null } };
-    }
+    if (!topKeyItem?.Ads) return { displayPicture: emptyPicture };
 
     return { displayPicture: { name: topKey, url: topKeyItem.Ads } };
   }, [
@@ -480,68 +492,88 @@ function SingleTableSlideCustom(props) {
     FacebookAdsPicture,
     dataChannel,
     enableDateRange,
-    dateRange.from,
-    dateRange.to,
+    dateRange?.from,
+    dateRange?.to,
     getDataList,
   ]);
 
-  // console.log("data--", rawData);
-
   const chartDataProcess = (demoData, chartTemplate, source) => {
-    const channelFilterd = demoData.filter((item) => {
-      if (source === "All") {
-        return true;
-      }
-      return item.Channel.trim().toLowerCase() === source.trim().toLowerCase();
-    });
-
-    if (channelFilterd.length === 0) {
+    if (!demoData || !Array.isArray(demoData) || demoData.length === 0) {
       return [];
     }
 
-    const chartData = chartTemplate.map((chart) => {
-      // console.log("🎯 chart:", chart);
-      const { chartBy, title, dataBy } = chart;
+    if (!chartTemplate || !Array.isArray(chartTemplate)) {
+      return [];
+    }
 
-      const data = channelFilterd.reduce((acc, item) => {
-        const key = item[chartBy];
-        const value = parseFloat(item[dataBy]);
-
-        if (key === undefined || isNaN(value)) return acc;
-
-        acc[key] = (acc[key] || 0) + value;
-        return acc;
-      }, {});
-
-      const sumData = Object.values(data).reduce((a, b) => a + b, 0);
-
-      const percentageData = Object.entries(data).reduce(
-        (acc, [key, value]) => {
-          acc[key] =
-            sumData > 0 ? ((value / sumData) * 100).toFixed(2) + "%" : "0%";
-          return acc;
-        },
-        {}
-      );
-
-      // console.log("data", data);
-      // console.log("sumData", sumData);
-      // console.log("percentageData", percentageData);
-
-      return {
-        title,
-        data,
-        percentageData,
-        chartBy,
-      };
+    const channelFiltered = demoData.filter((item) => {
+      if (!item) return false;
+      if (source === "All") return true;
+      const itemChannel = item.Channel;
+      if (!itemChannel) return false;
+      return itemChannel.trim().toLowerCase() === source.trim().toLowerCase();
     });
+
+    if (channelFiltered.length === 0) return [];
+
+    const chartData = chartTemplate
+      .filter((chart) => chart && chart.chartBy && chart.chartBy !== "None")
+      .map((chart) => {
+        const { chartBy, title, dataBy } = chart;
+
+        if (!chartBy || !dataBy) {
+          return null;
+        }
+
+        const data = channelFiltered.reduce((acc, item) => {
+          if (!item) return acc;
+
+          const key = item[chartBy];
+          const value = parseFloat(item[dataBy]);
+
+          if (key === undefined || key === null || isNaN(value)) return acc;
+
+          acc[key] = (acc[key] || 0) + value;
+          return acc;
+        }, {});
+
+        const sumData = Object.values(data).reduce((a, b) => a + b, 0);
+
+        const percentageData = Object.entries(data).reduce(
+          (acc, [key, value]) => {
+            acc[key] =
+              sumData > 0 ? ((value / sumData) * 100).toFixed(2) + "%" : "0%";
+            return acc;
+          },
+          {}
+        );
+
+        return {
+          title: title || "",
+          data,
+          percentageData,
+          chartBy,
+        };
+      })
+      .filter(Boolean); // Remove null entries
 
     return chartData;
   };
 
   const { chartData } = useMemo(() => {
-    // console.log("demographicData", demographicData);
-    if (!demographicData || !Array.isArray(demographicData)) {
+    if (
+      !demographicData ||
+      !Array.isArray(demographicData) ||
+      demographicData.length === 0
+    ) {
+      return { chartData: [] };
+    }
+
+    if (
+      !demographicChart ||
+      !Array.isArray(demographicChart) ||
+      demographicChart.length === 0
+    ) {
       return { chartData: [] };
     }
 
@@ -551,80 +583,89 @@ function SingleTableSlideCustom(props) {
       dataChannel
     );
 
-    // console.log("🎯 chartsData:", chartsData);
     return { chartData: chartsData };
   }, [demographicData, demographicChart, dataChannel]);
 
-  // console.log("displayTable", displayTable);
-
   const { summaryData } = useMemo(() => {
     const groupBy = !dataGroupBy ? advancedGroupBy : dataGroupBy;
-    if (!summaryContent || !groupBy) {
-      return {
-        summaryData: [],
-      };
+
+    if (!summaryContent || !Array.isArray(summaryContent) || !groupBy) {
+      return { summaryData: [] };
+    }
+
+    if (!totals || Object.keys(totals).length === 0) {
+      return { summaryData: [] };
     }
 
     const summaryData = summaryContent.reduce((acc, item) => {
+      if (!item) return acc;
+
       const contentType = item.contentType;
       const dataBy = item.dataBy;
 
       if (!contentType || !dataBy) return acc;
 
-      const key = totals[dataBy] ? dataBy : tableUtilsMapping(dataBy);
-      // console.log("🎯 key:", key);
+      const key =
+        totals[dataBy] !== undefined ? dataBy : tableUtilsMapping(dataBy);
 
       if (contentType === "overall") {
-        const overallText = `Overall ${formatMetricName(key)}: ** ${parseFloat(
-          totals[key]?.toFixed(2) || 0
-        )?.toLocaleString()} ${formatMetricName(key)} **`;
-        acc.push(overallText);
+        const value = totals[key];
+        if (value !== undefined && value !== null && !isNaN(value)) {
+          const overallText = `Overall ${formatMetricName(
+            key
+          )}: ** ${safeFormatNumber(value, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          })} ${formatMetricName(key)} **`;
+          acc.push(overallText);
+        }
       }
 
       if (contentType === "average-cpx") {
-        const averageCPXText = `Average ${key.toUpperCase()}: ** ${parseFloat(
-          totals[key]
-        ).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} THB **`;
-        acc.push(averageCPXText);
+        const value = totals[key];
+        if (value !== undefined && value !== null && !isNaN(value)) {
+          const averageCPXText = `Average ${key.toUpperCase()}: ** ${safeFormatNumber(
+            value,
+            { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+          )} THB **`;
+          acc.push(averageCPXText);
+        }
       }
 
-      const dataEntries = Object.entries(data || {});
+      // Handle best-perform and best-potential
+      if (contentType === "best-perform" || contentType === "best-potential") {
+        const dataEntries = Object.entries(data || {});
 
-      // console.log("🎯 dataEntries:", dataEntries);
+        if (dataEntries.length === 0) return acc;
 
-      if (dataEntries.length === 0) {
-        return acc;
-      }
+        // Filter valid entries
+        const validEntries = dataEntries.filter(([_, value]) => {
+          const keyValue = value?.[key];
+          return (
+            keyValue !== undefined && keyValue !== null && !isNaN(keyValue)
+          );
+        });
 
-      const topKeyData = dataEntries.reduce((max, current) =>
-        current[1][key] > max[1][key] ? current : max
-      );
+        if (validEntries.length === 0) return acc;
 
-      // console.log("🎯 topKeyData:", topKeyData);
+        const topKeyData = validEntries.reduce((max, current) => {
+          const currentValue = current[1]?.[key] || 0;
+          const maxValue = max[1]?.[key] || 0;
+          return currentValue > maxValue ? current : max;
+        });
 
-      const topKey = topKeyData[0];
-      if (contentType === "best-perform") {
-        const topKeyText = `Best perform ${groupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
-          key
-        ]?.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} ${formatMetricName(key)})**`;
-        acc.push(topKeyText);
-      }
+        const topKey = topKeyData[0];
+        const topKeyValue = topKeyData[1]?.[key];
 
-      if (contentType === "best-potential") {
-        // console.log("topKeyData", topKeyData[1][key]);
-        const topKeyText = `Potential ${groupBy.toLowerCase()}: **${topKey} (with ${topKeyData[1][
-          key
-        ]?.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} ${formatMetricName(key)})**`;
-        acc.push(topKeyText);
+        if (topKeyValue !== undefined && !isNaN(topKeyValue)) {
+          const label =
+            contentType === "best-perform" ? "Best perform" : "Potential";
+          const topKeyText = `${label} ${groupBy.toLowerCase()}: **${topKey} (with ${safeFormatNumber(
+            topKeyValue,
+            { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+          )} ${formatMetricName(key)})**`;
+          acc.push(topKeyText);
+        }
       }
 
       return acc;
@@ -632,8 +673,6 @@ function SingleTableSlideCustom(props) {
 
     return { summaryData };
   }, [summaryContent, dataGroupBy, data, totals, advancedGroupBy]);
-
-  // console.log("🎯 summaryData:", summaryData);
 
   const summarizeData = useCallback(() => {
     if (
@@ -660,6 +699,8 @@ function SingleTableSlideCustom(props) {
   }, [summaryData, summarizeData]);
 
   const renderFormattedText = (text) => {
+    if (!text || typeof text !== "string") return "";
+
     return text
       .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold">$1</span>')
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
@@ -678,15 +719,11 @@ function SingleTableSlideCustom(props) {
   };
 
   const formattedMetrics = useMemo(() => {
-    if (!totals || !comparison) {
+    if (!totals || Object.keys(totals).length === 0) {
       return {};
     }
 
-    // console.log("🎯 overallTotals:", overallTotals);
-    // console.log("🎯 totals:", totals);
-    // console.log("🎯 comparison:", comparison);
-
-    return metricDataProcess(totals, comparison);
+    return metricDataProcess(totals, comparison || {});
   }, [totals, comparison]);
 
   // Show loading state
@@ -713,9 +750,6 @@ function SingleTableSlideCustom(props) {
     );
   }
 
-  // console.log("data", data);
-  // console.log("displayTable", displayTable);
-
   return (
     <div
       id={id}
@@ -733,17 +767,17 @@ function SingleTableSlideCustom(props) {
           <Edit />
         </Button>
       </div>
-      <SlideHeader title={title} />
+      <SlideHeader title={title || "Untitled Slide"} />
       <div className="grid grid-cols-16">
         <div
           className={`flex flex-col gap-2 ${
             extraContentType === "none" ? "col-span-16" : "col-span-12"
           }`}
         >
-          <div className={`grid grid-cols-${metricData.length || 1} gap-2`}>
+          <div className={`grid grid-cols-${metricData?.length || 1} gap-2`}>
             <h4
               className={`col-span-${
-                metricData.length - metricConvLength
+                (metricData?.length || 0) - (metricConvLength || 0)
               } text-lg font-semibold`}
             >
               Awareness & Considerations
@@ -751,16 +785,19 @@ function SingleTableSlideCustom(props) {
             <h4
               className={`${
                 metricConvLength > 0 && "col-span-" + metricConvLength
-              } text-lg font-semibold ${metricConvLength === 0 && "hidden"}`}
+              } text-lg font-semibold ${
+                !metricConvLength || metricConvLength === 0 ? "hidden" : ""
+              }`}
             >
               Conversions
             </h4>
 
-            {metricData.map((metric, index) => {
+            {metricData?.map((metric, index) => {
+              if (!metric) return null;
               return (
                 <NumberDisplayBox
                   key={index}
-                  title={metric.label}
+                  title={metric.label || ""}
                   value={formattedMetrics[metric.value]?.displayValue}
                   compareValue={formattedMetrics[metric.value]?.compareValue}
                   isNegative={formattedMetrics[metric.value]?.isNegative}
@@ -775,10 +812,10 @@ function SingleTableSlideCustom(props) {
               Performance by {dataGroupBy || advancedGroupBy || "Keywords"}
             </h4>
             <AdvancedDataTable
-              firstMetric={dataGroupBy || advancedGroupBy}
-              channelData={data}
-              totalData={totals}
-              metrics={displayTable}
+              firstMetric={dataGroupBy || advancedGroupBy || ""}
+              channelData={data || {}}
+              totalData={totals || {}}
+              metrics={displayTable || []}
               formatValue={formatTableValue}
               maxRows={maxTableRows[0]}
               defaultSortBy="Conversions"
@@ -787,7 +824,9 @@ function SingleTableSlideCustom(props) {
             />
           </div>
           {/* Summary */}
-          {(summaryPosition === "bottom" || chartData.length === 0) && (
+          {(summaryPosition === "bottom" ||
+            !chartData ||
+            chartData.length === 0) && (
             <div className="p-4">
               <h4 className="text-lg font-semibold">Summary</h4>
               <ul className="list-disc pl-6">
@@ -801,16 +840,16 @@ function SingleTableSlideCustom(props) {
             </div>
           )}
         </div>
-        {extraContentType !== "none" && chartData.length > 0 && (
+        {extraContentType !== "none" && chartData && chartData.length > 0 && (
           <div className="col-span-4 flex flex-col">
             {extraContentType === "demographic" &&
               chartData.map(
                 (chart, index) =>
-                  chart.chartBy !== "None" && (
+                  chart?.chartBy !== "None" && (
                     <DonutChart
                       key={index}
-                      data={chart.percentageData}
-                      title={chart.title}
+                      data={chart?.percentageData || {}}
+                      title={chart?.title || ""}
                       width={200}
                       height={160}
                       innerRadius={30}
@@ -819,18 +858,18 @@ function SingleTableSlideCustom(props) {
                     />
                   )
               )}
-            {extraContentType === "picture" && displayPicture.url && (
+            {extraContentType === "picture" && displayPicture?.url && (
               <div className="flex flex-col gap-2 pl-4">
                 <ImageFallback
                   src={displayPicture.url}
-                  alt={displayPicture.name}
+                  alt={displayPicture.name || "Ad Image"}
                   width={100}
                   height={100}
                   className="rounded-lg"
                 />
                 <div>
                   <h4 className="text-md font-semibold text-center">
-                    {displayPicture.name}
+                    {displayPicture.name || ""}
                   </h4>
                 </div>
               </div>
