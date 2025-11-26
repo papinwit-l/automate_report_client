@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,7 @@ import {
 import { cleanObjectData } from "@/utils/dataProcessors";
 import { filterDataByDateRange } from "@/utils/dataUtils";
 import { NON_NUMERIC_COLUMNS } from "@/configs/dataConfigs";
+import SearchCheckbox from "../custom-ui/SearchCheckbox";
 
 function EditSlideDialog({
   isEditDialogOpen,
@@ -60,12 +61,16 @@ function EditSlideDialog({
 }) {
   const { getDataList, enableDateRange, dateRange } = useData();
 
+  const dialogRef = useRef(null);
+
   const [editSlideTitle, setEditSlideTitle] = useState("");
   const [editSlideType, setEditSlideType] = useState("");
   const [editSlide, setEditSlide] = useState({ ...INITIAL_NEW_SLIDE });
 
   // Advanced Filter Section
   const [isAdvancedFilterEnabled, setIsAdvancedFilterEnabled] = useState(false);
+  const [filterBySearchValue, setFilterBySearchValue] = useState("");
+  const [filterByFilteredItems, setFilterByFilteredItems] = useState([]);
 
   // Table Section
   const [isTableRemoveMode, setIsTableRemoveMode] = useState(false);
@@ -93,7 +98,17 @@ function EditSlideDialog({
   // Initialize the form when slideToEdit changes
   useEffect(() => {
     if (slideToEdit && isEditDialogOpen) {
-      setEditSlide({ ...slideToEdit });
+      // Ensure advancedFilterBy is an array
+      const normalizedSlide = {
+        ...slideToEdit,
+        advancedFilterBy: Array.isArray(slideToEdit.advancedFilterBy)
+          ? slideToEdit.advancedFilterBy
+          : slideToEdit.advancedFilterBy
+          ? [slideToEdit.advancedFilterBy]
+          : [],
+      };
+
+      setEditSlide(normalizedSlide);
       setEditSlideTitle(slideToEdit.title || "");
 
       // Find the slide type from CREATE_SLIDE_LIST
@@ -129,9 +144,10 @@ function EditSlideDialog({
   const handleIsAdvancedFilterEnabledChange = (value) => {
     setEditSlide((prev) => ({
       ...prev,
-      advancedFilterBy: "",
+      advancedFilterBy: [],
       advancedFilter: "",
       advancedGroupBy: "",
+      dataGroupBy: "",
     }));
     setIsAdvancedFilterEnabled(value);
   };
@@ -141,18 +157,25 @@ function EditSlideDialog({
     setEditSlide((prev) => ({
       ...prev,
       advancedFilter: value,
-      advancedFilterBy: "",
+      advancedFilterBy: [],
       advancedGroupBy: "",
     }));
   };
 
   const handleAdvancedFilterByChange = (value) => {
     console.log("🎯 handleAdvancedFilterByChange:", value);
-    setEditSlide((prev) => ({
-      ...prev,
-      advancedFilterBy: value,
-      advancedGroupBy: "",
-    }));
+    setEditSlide((prev) => {
+      const currentFilters = prev.advancedFilterBy || [];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter((item) => item !== value)
+        : [...currentFilters, value];
+
+      return {
+        ...prev,
+        advancedFilterBy: newFilters,
+        advancedGroupBy: "",
+      };
+    });
   };
 
   const handleAdvancedGroupByChange = (value) => {
@@ -232,7 +255,7 @@ function EditSlideDialog({
 
   const getTableList = () => {
     if (editSlideType === "overall-slide") {
-      return OVERALL_TABLE;
+      return CUSTOM_TABLE;
     }
     if (editSlideType === "single-table-slide") {
       return CUSTOM_TABLE;
@@ -372,7 +395,7 @@ function EditSlideDialog({
           dataChannel: "All",
           extraContentType: "none",
           advancedFilter: "",
-          advancedFilterBy: "",
+          advancedFilterBy: [],
           advancedGroupBy: "",
           demographicChart: [
             {
@@ -407,7 +430,7 @@ function EditSlideDialog({
         dataChannel: "All",
         extraContentType: "none",
         advancedFilter: "",
-        advancedFilterBy: "",
+        advancedFilterBy: [],
         advancedGroupBy: "",
         demographicChart: [
           {
@@ -699,9 +722,19 @@ function EditSlideDialog({
     );
   }, [editSlide.advancedFilter, dataGroupByList]);
 
+  // Sync filtered items when advancedFilterByList changes
+  useEffect(() => {
+    setFilterByFilteredItems(advancedFilterByList);
+  }, [advancedFilterByList]);
+
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent className="!w-[80vw] !h-[80vh] !max-w-none !max-h-[80vh] flex flex-col">
+      <DialogContent
+        ref={dialogRef}
+        className="!w-[80vw] !h-[80vh] !max-w-none !max-h-[80vh] flex flex-col"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Edit Slide</DialogTitle>
           <DialogDescription>
@@ -744,7 +777,7 @@ function EditSlideDialog({
               {editSlideType !== "overall-slide" && (
                 <div className="space-y-2">
                   <h3 className="text-md font-medium">Data Source:</h3>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center flex-wrap">
                     <Select
                       value={editSlide.dataSource}
                       onValueChange={handleDataSourceChange}
@@ -788,7 +821,7 @@ function EditSlideDialog({
                         </div>
 
                         <div>
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm font-medium flex items-center gap-2">
                             <Checkbox
                               checked={isAdvancedFilterEnabled}
                               onCheckedChange={
@@ -825,30 +858,117 @@ function EditSlideDialog({
                               </Select>
                             </div>
 
-                            <div className="flex gap-2 items-center">
+                            {/* Advanced Filter By - Updated with SearchCheckbox */}
+                            <div className="flex gap-2 items-start">
                               <Label
                                 htmlFor="group-filter-by"
-                                className="text-sm font-medium"
+                                className="text-sm font-medium pt-2"
                               >
                                 Group Filter By:
                               </Label>
-                              <Select
-                                value={editSlide.advancedFilterBy}
-                                onValueChange={handleAdvancedFilterByChange}
-                              >
-                                <SelectTrigger id="group-filter-by">
-                                  <SelectValue placeholder="Select group filter by" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                  {advancedFilterByList.map(
-                                    (groupBy, index) => (
-                                      <SelectItem key={index} value={groupBy}>
-                                        {groupBy}
-                                      </SelectItem>
-                                    )
-                                  )}
-                                </SelectContent>
-                              </Select>
+                              <div className="flex flex-col gap-2">
+                                <SearchCheckbox
+                                  inputValue={filterBySearchValue}
+                                  setInputValue={setFilterBySearchValue}
+                                  items={advancedFilterByList}
+                                  filteredItems={filterByFilteredItems}
+                                  setFilteredItems={setFilterByFilteredItems}
+                                  selectedItem={
+                                    editSlide.advancedFilterBy || []
+                                  }
+                                  setSelectedItem={(updater) => {
+                                    setEditSlide((prev) => ({
+                                      ...prev,
+                                      advancedFilterBy:
+                                        typeof updater === "function"
+                                          ? updater(prev.advancedFilterBy || [])
+                                          : updater,
+                                      advancedGroupBy: "",
+                                    }));
+                                  }}
+                                  className="w-[300px]"
+                                  placeholder="Search filters..."
+                                />
+
+                                {/* Selected tags */}
+                                {editSlide.advancedFilterBy?.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 max-w-[400px]">
+                                    {editSlide.advancedFilterBy.length <= 5 ? (
+                                      editSlide.advancedFilterBy.map(
+                                        (item, index) => (
+                                          <span
+                                            key={index}
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                          >
+                                            <span className="max-w-[150px] truncate">
+                                              {item}
+                                            </span>
+                                            <X
+                                              className="h-3 w-3 cursor-pointer hover:text-blue-600 flex-shrink-0"
+                                              onClick={() => {
+                                                setEditSlide((prev) => ({
+                                                  ...prev,
+                                                  advancedFilterBy:
+                                                    prev.advancedFilterBy.filter(
+                                                      (i) => i !== item
+                                                    ),
+                                                  advancedGroupBy: "",
+                                                }));
+                                              }}
+                                            />
+                                          </span>
+                                        )
+                                      )
+                                    ) : (
+                                      <>
+                                        {editSlide.advancedFilterBy
+                                          .slice(0, 3)
+                                          .map((item, index) => (
+                                            <span
+                                              key={index}
+                                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                            >
+                                              <span className="max-w-[100px] truncate">
+                                                {item}
+                                              </span>
+                                              <X
+                                                className="h-3 w-3 cursor-pointer hover:text-blue-600 flex-shrink-0"
+                                                onClick={() => {
+                                                  setEditSlide((prev) => ({
+                                                    ...prev,
+                                                    advancedFilterBy:
+                                                      prev.advancedFilterBy.filter(
+                                                        (i) => i !== item
+                                                      ),
+                                                    advancedGroupBy: "",
+                                                  }));
+                                                }}
+                                              />
+                                            </span>
+                                          ))}
+                                        <span className="inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                                          +
+                                          {editSlide.advancedFilterBy.length -
+                                            3}{" "}
+                                          more
+                                        </span>
+                                        <button
+                                          className="text-xs text-red-500 hover:text-red-700 ml-1"
+                                          onClick={() =>
+                                            setEditSlide((prev) => ({
+                                              ...prev,
+                                              advancedFilterBy: [],
+                                              advancedGroupBy: "",
+                                            }))
+                                          }
+                                        >
+                                          Clear all
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             <div className="flex gap-2 items-center">
@@ -1476,7 +1596,7 @@ function EditSlideDialog({
                           Best Performance by:
                         </Label>
                         <Select
-                          value={editSlide.FBPicturePerformBy || "conversions"}
+                          value={editSlide.FBPicturePerformBy || "Impressions"}
                           onValueChange={handleFBPicturePerformByChange}
                         >
                           <SelectTrigger
@@ -1580,7 +1700,7 @@ function EditSlideDialog({
                       </div>
                       <div className="flex flex-col">
                         {editSlide.dataSource &&
-                          editSlide.summaryContent.map((item, index) => {
+                          editSlide.summaryContent?.map((item, index) => {
                             return (
                               <div
                                 key={index}
@@ -1645,7 +1765,11 @@ function EditSlideDialog({
                                       <SelectValue placeholder="Select data by" />
                                     </SelectTrigger>
                                     <SelectContent position="popper">
-                                      {CUSTOM_TABLE.map((content, index) => (
+                                      {CUSTOM_TABLE.filter((itemf) =>
+                                        item.contentType === "average-cpx"
+                                          ? itemf.value.startsWith("cp")
+                                          : !itemf.value.startsWith("cp")
+                                      ).map((content, index) => (
                                         <SelectItem
                                           key={index}
                                           value={content.value}
@@ -1679,8 +1803,8 @@ function EditSlideDialog({
                                     <button
                                       className={`hover:bg-slate-100 rounded p-0.5 ${
                                         index ===
-                                          editSlide.summaryContent.length - 1 &&
-                                        "hidden"
+                                          editSlide.summaryContent?.length -
+                                            1 && "hidden"
                                       }`}
                                       onClick={(e) => {
                                         e.stopPropagation();

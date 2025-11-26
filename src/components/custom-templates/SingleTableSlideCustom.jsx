@@ -122,9 +122,11 @@ function SingleTableSlideCustom(props) {
         // grouping logic
         let groupBy = dataGroupBy;
         if (dataGroupBy === "") {
-          cleanedData = cleanedData.filter(
-            (item) => item[advancedFilter] === advancedFilterBy
-          );
+          if (advancedFilterBy && advancedFilterBy.length > 0) {
+            cleanedData = cleanedData.filter((item) =>
+              advancedFilterBy.includes(item[advancedFilter])
+            );
+          }
           groupBy = advancedGroupBy;
         }
 

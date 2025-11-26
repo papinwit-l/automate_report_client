@@ -36,7 +36,7 @@ export const INITIAL_NEW_SLIDE = {
   summaryPosition: "bottom",
   FBPicturePerformBy: "Impressions",
   advancedFilter: "",
-  advancedFilterBy: "",
+  advancedFilterBy: [],
   advancedGroupBy: "",
   demographicChart: [
     {

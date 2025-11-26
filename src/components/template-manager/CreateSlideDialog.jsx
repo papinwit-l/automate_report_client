@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,9 +31,11 @@ import {
 } from "@/configs/templateManagerConfig";
 import CreateSlidePreview from "./CreateSlidePreview";
 import {
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronsUpDown,
   ChevronUp,
   Minus,
   Plus,
@@ -51,6 +53,17 @@ import {
 import { cleanObjectData } from "@/utils/dataProcessors";
 import { filterDataByDateRange } from "@/utils/dataUtils";
 import { NON_NUMERIC_COLUMNS } from "@/configs/dataConfigs";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import SearchCheckbox from "../custom-ui/SearchCheckbox";
 
 function CreateSlideDialog({
   isAddDialogOpen,
@@ -58,7 +71,8 @@ function CreateSlideDialog({
   onAddSlide,
 }) {
   const { getDataList, enableDateRange, dateRange, setIsNoData } = useData();
-  // console.log("🎯 CreateSlideDialog getDataList:", getDataList());
+
+  const dialogRef = useRef(null);
 
   const [newSlideTitle, setNewSlideTitle] = useState("New Slide");
   const [newSlideType, setNewSlideType] = useState("");
@@ -66,6 +80,8 @@ function CreateSlideDialog({
 
   // Advanced Filter Section
   const [isAdvancedFilterEnabled, setIsAdvancedFilterEnabled] = useState(false);
+  const [filterBySearchValue, setFilterBySearchValue] = useState("");
+  const [filterByFilteredItems, setFilterByFilteredItems] = useState([]);
 
   // Table Section
   const [isTableRemoveMode, setIsTableRemoveMode] = useState(false);
@@ -108,7 +124,7 @@ function CreateSlideDialog({
   const handleIsAdvancedFilterEnabledChange = (value) => {
     setNewSlide((prev) => ({
       ...prev,
-      advancedFilterBy: "",
+      advancedFilterBy: [],
       advancedFilter: "",
       advancedGroupBy: "",
       dataGroupBy: "",
@@ -121,18 +137,25 @@ function CreateSlideDialog({
     setNewSlide((prev) => ({
       ...prev,
       advancedFilter: value,
-      advancedFilterBy: "",
+      advancedFilterBy: [],
       advancedGroupBy: "",
     }));
   };
 
   const handleAdvancedFilterByChange = (value) => {
     console.log("🎯 handleAdvancedFilterByChange:", value);
-    setNewSlide((prev) => ({
-      ...prev,
-      advancedFilterBy: value,
-      advancedGroupBy: "",
-    }));
+    setNewSlide((prev) => {
+      const currentFilters = prev.advancedFilterBy || [];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter((item) => item !== value)
+        : [...currentFilters, value];
+
+      return {
+        ...prev,
+        advancedFilterBy: newFilters,
+        advancedGroupBy: "",
+      };
+    });
   };
 
   const handleAdvancedGroupByChange = (value) => {
@@ -212,7 +235,6 @@ function CreateSlideDialog({
 
   const getTableList = () => {
     if (newSlideType === "overall-slide") {
-      // return OVERALL_TABLE;
       return CUSTOM_TABLE;
     }
     if (newSlideType === "single-table-slide") {
@@ -223,14 +245,14 @@ function CreateSlideDialog({
 
   const handleAddTableSelect = (tableValue) => {
     if (newSlide.table.includes(tableValue)) {
-      setTableSelectValue(""); // Reset even if it's a duplicate
+      setTableSelectValue("");
       return;
     }
     const newTable = [...newSlide.table, tableValue];
     setNewSlide((prev) => ({ ...prev, table: newTable }));
     setShowTableList(false);
     setTableSearchQuery("");
-    setTableSelectValue(""); // Reset the select value
+    setTableSelectValue("");
   };
 
   // Metric Data handlers
@@ -281,7 +303,7 @@ function CreateSlideDialog({
       return;
     }
     setSelectedMetric(metric);
-    setIsConversionToggle(false); // Reset to false by default
+    setIsConversionToggle(false);
     setMetricSelectValue("");
   };
 
@@ -299,7 +321,7 @@ function CreateSlideDialog({
     setIsConversionToggle(false);
     setShowMetricList(false);
     setMetricSearchQuery("");
-    setMetricSelectValue(""); // Reset select value
+    setMetricSelectValue("");
   };
 
   const handleCancelAddMetric = () => {
@@ -307,7 +329,7 @@ function CreateSlideDialog({
     setIsConversionToggle(false);
     setShowMetricList(false);
     setMetricSearchQuery("");
-    setMetricSelectValue(""); // Reset select value
+    setMetricSelectValue("");
   };
 
   const filteredTableList = getTableList().filter((table) =>
@@ -335,20 +357,7 @@ function CreateSlideDialog({
       const selectedData = allData.find((d) => d.label === value);
 
       const rawData = selectedData.value.rawData;
-      // const dataMetric = selectedData.value.metrics;
       const firstRowKeys = Object.keys(rawData[0]);
-      // const cleanedData = cleanObjectData(rawData, dataMetric);
-      // console.log("cleanedData", cleanedData);
-
-      // const channelList = cleanedData.reduce((acc, item) => {
-      //   const channel = item["Channel"];
-      //   if (!acc.includes(channel)) {
-      //     acc.push(channel);
-      //   }
-      //   return acc;
-      // }, []);
-
-      // console.log("channelList", channelList);
 
       const groupBy = firstRowKeys.filter((key) =>
         GROUP_BY_LIST.some(
@@ -366,7 +375,7 @@ function CreateSlideDialog({
           dataChannel: "All",
           extraContentType: "none",
           advancedFilter: "",
-          advancedFilterBy: "",
+          advancedFilterBy: [],
           advancedGroupBy: "",
           demographicChart: [
             {
@@ -400,6 +409,9 @@ function CreateSlideDialog({
         dataGroupBy: groupBy[0],
         dataChannel: "All",
         extraContentType: "none",
+        advancedFilter: "",
+        advancedFilterBy: [],
+        advancedGroupBy: "",
         demographicChart: [
           {
             title: "Chart 1",
@@ -480,7 +492,7 @@ function CreateSlideDialog({
       const newSummaryContent = [...(prev.summaryContent || [])];
       newSummaryContent[summaryContentIndex] = {
         ...newSummaryContent[summaryContentIndex],
-        contentType: value, // value is already a string, not event.target.value
+        contentType: value,
       };
       return { ...prev, summaryContent: newSummaryContent };
     });
@@ -683,7 +695,6 @@ function CreateSlideDialog({
       return acc;
     }, []);
 
-    // console.log("keyList", keyList);
     return keyList;
   }, [newSlide.advancedFilter, rawData]);
 
@@ -697,11 +708,18 @@ function CreateSlideDialog({
     );
   }, [newSlide.advancedFilter, dataGroupByList]);
 
-  // console.log("🎯 newSlide:", newSlide);
+  useEffect(() => {
+    setFilterByFilteredItems(advancedFilterByList);
+  }, [advancedFilterByList]);
 
   return (
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-      <DialogContent className="!w-[80vw] !h-[80vh] !max-w-none !max-h-[80vh] flex flex-col">
+      <DialogContent
+        ref={dialogRef}
+        className="!w-[80vw] !h-[80vh] !max-w-none !max-h-[80vh] flex flex-col"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Add New Slide</DialogTitle>
           <DialogDescription>
@@ -744,7 +762,7 @@ function CreateSlideDialog({
               {newSlideType !== "overall-slide" && (
                 <div className="space-y-2">
                   <h3 className="text-md font-medium">Data Source:</h3>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center flex-wrap">
                     <Select
                       value={newSlide.dataSource}
                       onValueChange={handleDataSourceChange}
@@ -788,7 +806,7 @@ function CreateSlideDialog({
                         </div>
 
                         <div>
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm font-medium flex items-center gap-2">
                             <Checkbox
                               checked={isAdvancedFilterEnabled}
                               onCheckedChange={
@@ -825,30 +843,115 @@ function CreateSlideDialog({
                               </Select>
                             </div>
 
-                            <div className="flex gap-2 items-center">
+                            {/* Advanced Filter By */}
+                            <div className="flex gap-2 items-start">
                               <Label
                                 htmlFor="group-filter-by"
-                                className="text-sm font-medium"
+                                className="text-sm font-medium pt-2"
                               >
                                 Group Filter By:
                               </Label>
-                              <Select
-                                value={newSlide.advancedFilterBy}
-                                onValueChange={handleAdvancedFilterByChange}
-                              >
-                                <SelectTrigger id="group-filter-by">
-                                  <SelectValue placeholder="Select group filter by" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                  {advancedFilterByList.map(
-                                    (groupBy, index) => (
-                                      <SelectItem key={index} value={groupBy}>
-                                        {groupBy}
-                                      </SelectItem>
-                                    )
-                                  )}
-                                </SelectContent>
-                              </Select>
+                              <div className="flex flex-col gap-2">
+                                <SearchCheckbox
+                                  inputValue={filterBySearchValue}
+                                  setInputValue={setFilterBySearchValue}
+                                  items={advancedFilterByList}
+                                  filteredItems={filterByFilteredItems}
+                                  setFilteredItems={setFilterByFilteredItems}
+                                  selectedItem={newSlide.advancedFilterBy || []}
+                                  setSelectedItem={(updater) => {
+                                    // Handle both function and direct value
+                                    setNewSlide((prev) => ({
+                                      ...prev,
+                                      advancedFilterBy:
+                                        typeof updater === "function"
+                                          ? updater(prev.advancedFilterBy || [])
+                                          : updater,
+                                      advancedGroupBy: "",
+                                    }));
+                                  }}
+                                  className="w-[300px]"
+                                  placeholder="Search filters..."
+                                />
+
+                                {/* Selected tags */}
+                                {newSlide.advancedFilterBy?.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 max-w-[400px]">
+                                    {newSlide.advancedFilterBy.length <= 5 ? (
+                                      newSlide.advancedFilterBy.map(
+                                        (item, index) => (
+                                          <span
+                                            key={index}
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                          >
+                                            <span className="max-w-[150px] truncate">
+                                              {item}
+                                            </span>
+                                            <X
+                                              className="h-3 w-3 cursor-pointer hover:text-blue-600 flex-shrink-0"
+                                              onClick={() => {
+                                                setNewSlide((prev) => ({
+                                                  ...prev,
+                                                  advancedFilterBy:
+                                                    prev.advancedFilterBy.filter(
+                                                      (i) => i !== item
+                                                    ),
+                                                  advancedGroupBy: "",
+                                                }));
+                                              }}
+                                            />
+                                          </span>
+                                        )
+                                      )
+                                    ) : (
+                                      <>
+                                        {newSlide.advancedFilterBy
+                                          .slice(0, 3)
+                                          .map((item, index) => (
+                                            <span
+                                              key={index}
+                                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                            >
+                                              <span className="max-w-[100px] truncate">
+                                                {item}
+                                              </span>
+                                              <X
+                                                className="h-3 w-3 cursor-pointer hover:text-blue-600 flex-shrink-0"
+                                                onClick={() => {
+                                                  setNewSlide((prev) => ({
+                                                    ...prev,
+                                                    advancedFilterBy:
+                                                      prev.advancedFilterBy.filter(
+                                                        (i) => i !== item
+                                                      ),
+                                                    advancedGroupBy: "",
+                                                  }));
+                                                }}
+                                              />
+                                            </span>
+                                          ))}
+                                        <span className="inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                                          +
+                                          {newSlide.advancedFilterBy.length - 3}{" "}
+                                          more
+                                        </span>
+                                        <button
+                                          className="text-xs text-red-500 hover:text-red-700 ml-1"
+                                          onClick={() =>
+                                            setNewSlide((prev) => ({
+                                              ...prev,
+                                              advancedFilterBy: [],
+                                              advancedGroupBy: "",
+                                            }))
+                                          }
+                                        >
+                                          Clear all
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
 
                             <div className="flex gap-2 items-center">
@@ -1362,11 +1465,6 @@ function CreateSlideDialog({
                                   <SelectValue placeholder="Select data by" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {/* {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
-                                    <SelectItem key={index} value={data.value}>
-                                      {data.label}
-                                    </SelectItem>
-                                  ))} */}
                                   {chartDataByList.map((data, index) => (
                                     <SelectItem key={index} value={data}>
                                       {data}
@@ -1471,11 +1569,6 @@ function CreateSlideDialog({
                                   <SelectValue placeholder="Select data by" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {/* {DEMOGRAPHIC_DATA_LIST.map((data, index) => (
-                                    <SelectItem key={index} value={data.value}>
-                                      {data.label}
-                                    </SelectItem>
-                                  ))} */}
                                   {chartDataByList.map((data, index) => (
                                     <SelectItem key={index} value={data}>
                                       {data}
