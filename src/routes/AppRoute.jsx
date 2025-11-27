@@ -2,6 +2,7 @@ import { DataProvider } from "@/contexts/dataContext";
 import MainLayout from "@/layouts/MainLayout";
 import DataSheet from "@/pages/DataSheet";
 import Home from "@/pages/Home";
+import HomePage from "@/pages/HomePage";
 import SlideRport from "@/pages/SlideRport";
 import TemplateManager from "@/pages/TemplateManager";
 import React from "react";
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <HomePage />,
       },
       {
         path: "/data-sheet",

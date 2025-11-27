@@ -104,6 +104,7 @@ import AsiaHotelFBConv01 from "@/components/slides/asia-hotel/AsiaHotelFBConv01"
 import AsiaHotelFBConv02 from "@/components/slides/asia-hotel/AsiaHotelFBConv02";
 import NokkualokTiktokReach from "@/components/slides/nokkualok/NokkualokTiktokReach";
 import OverallCustom from "@/components/custom-templates/OverallCustom";
+import { useNavigate } from "react-router-dom";
 
 function SlideReport() {
   const [isExporting, setIsExporting] = React.useState(false);
@@ -133,6 +134,8 @@ function SlideReport() {
     enableCustomTemplate,
   } = useData();
   const [mediaPlanData, setMediaPlanData] = React.useState(null);
+
+  const navigate = useNavigate();
 
   const handleProjectNameChange = (event) => {
     setProjectName(event.target.value);
@@ -775,15 +778,18 @@ function SlideReport() {
       <div className="flex flex-col h-screen">
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white/80 backdrop-blur-sm px-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <button
+            onClick={() => navigate("/")} // Or use <a href="/">
+            className="flex items-center gap-3 group cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
               <Presentation className="h-4 w-4 text-white" />
             </div>
             <h1 className="text-xl font-bold text-slate-900">
               Automate Report
             </h1>
-            {/* <button onClick={() => handleGetMediaPlan()}>TEST</button> */}
-          </div>
+          </button>
+
           <div className="ml-auto text-sm text-slate-600">
             {/* Transform your Google Sheets data into beautiful presentation slides */}
           </div>
