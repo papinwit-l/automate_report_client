@@ -71,6 +71,10 @@ export const processAdvertisingData = (
               return true;
             }
           });
+        } else if (key === "Conversion value") {
+          const numValue =
+            Number(item[key]) || Number(item["Conversion Value"]) || 0;
+          acc[fieldValue][key] += numValue;
         } else {
           const numValue = Number(item[key]) || 0;
           acc[fieldValue][key] += numValue;

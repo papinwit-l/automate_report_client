@@ -362,8 +362,12 @@ export const metricDataProcess = (totalsData, comparisonData) => {
       "number"
     ),
     conversionValueData: formatDisplayData(
-      totalsData["Conversion value"] || totalsData?.conversionValue,
-      comparisonData["Conversion value"] || comparisonData?.conversionValue,
+      totalsData["Conversion value"] ||
+        totalsData["Purchase conversion value"] ||
+        totalsData?.conversionValue,
+      comparisonData["Conversion value"] ||
+        totalsData["Purchase conversion value"] ||
+        comparisonData?.conversionValue,
       "compact"
     ),
     cplData: formatDisplayData(totalsData?.cpl, comparisonData?.cpl, "compact"),

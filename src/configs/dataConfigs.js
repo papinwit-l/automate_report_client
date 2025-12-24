@@ -194,6 +194,7 @@ export const DATA_CONFIGS = {
       "Conversions",
       "conRate",
       "Purchase conversion value",
+      "Conversion value",
       "Post Engagement",
       "cpl",
       "Spent",
