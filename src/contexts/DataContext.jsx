@@ -281,7 +281,7 @@ export const DataProvider = ({ children }) => {
   ] = useState({});
 
   // Facebook Ads
-  const [FacebookAdsPicture, setFacebookAdsPicture] = useState({});
+  const [FacebookAdsPicture, setFacebookAdsPicture] = useState([]);
 
   // TikTok Data
   const [TikTokAudienceData, setTikTokAudienceData] = useState({});
@@ -872,34 +872,45 @@ export const DataProvider = ({ children }) => {
 
   // ✅ Updated: Use centralized axios instance with relative URL
   const fetchFacebookPicture = async (id) => {
-    const axiosInstance = await createAxiosInstance();
-    const response = await axiosInstance.get(
-      `/data-sheets/facebook-picture/${id}`
-    );
-    const rawData = response.data.data;
-    const headers = rawData[0];
-    const dataRows = rawData.slice(1);
+    try {
+      const axiosInstance = await createAxiosInstance();
+      const response = await axiosInstance.get(
+        `/data-sheets/facebook-picture/${id}`
+      );
+      const rawData = response?.data?.data;
+      if (!Array.isArray(rawData) || rawData.length < 2) {
+        // No picture tab / no rows in this sheet — not fatal
+        setFacebookAdsPicture([]);
+        return;
+      }
+      const headers = rawData[0];
+      const dataRows = rawData.slice(1);
 
-    // Transform raw data to objects
-    const dataObjects = dataRows.map((row) =>
-      Object.fromEntries(headers.map((header, index) => [header, row[index]]))
-    );
-    // console.log("dataObjects", dataObjects);
-    const dateFilteredData = filterDataByDate(dataObjects, dateRange);
-    // console.log("data:", dateFilteredData);
-    // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
-    const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
-    // console.log("resultData:", resultData);
-    const finalResult = resultData.map((item) => {
-      const allKeys = Object.keys(item);
-      const keyIndex = allKeys.findIndex((keyItem) => keyItem.includes("URL"));
-      const key = allKeys[keyIndex];
-      return { ...item, Ads: item?.Ads || item[key] };
-    });
+      // Transform raw data to objects
+      const dataObjects = dataRows.map((row) =>
+        Object.fromEntries(headers.map((header, index) => [header, row[index]]))
+      );
+      // console.log("dataObjects", dataObjects);
+      const dateFilteredData = filterDataByDate(dataObjects, dateRange);
+      // console.log("data:", dateFilteredData);
+      // const resultData = removeDuplicateByColumnMap(dateFilteredData, "Ad name");
+      const resultData = removeDuplicateByColumn(dateFilteredData, "Ad name");
+      // console.log("resultData:", resultData);
+      const finalResult = resultData.map((item) => {
+        const allKeys = Object.keys(item);
+        const keyIndex = allKeys.findIndex((keyItem) => keyItem.includes("URL"));
+        const key = allKeys[keyIndex];
+        return { ...item, Ads: item?.Ads || item[key] };
+      });
 
-    // console.log("finalResult:", finalResult);
+      // console.log("finalResult:", finalResult);
 
-    setFacebookAdsPicture(finalResult);
+      setFacebookAdsPicture(finalResult);
+    } catch (err) {
+      // Don't let a missing/broken picture tab break the whole report
+      console.warn("fetchFacebookPicture failed:", err);
+      setFacebookAdsPicture([]);
+    }
   };
 
   const getFBPicture = (data) => {};
@@ -986,6 +997,7 @@ export const DataProvider = ({ children }) => {
 
   const removeDuplicateByColumn = (data, column) => {
     const map = {};
+    if (!Array.isArray(data) || data.length === 0) return [];
 
     // debug log
     // console.log("🎯 removeDuplicateByColumn data:", data);
